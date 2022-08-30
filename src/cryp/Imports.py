@@ -4,4 +4,4 @@ from Crypto.Hash import SHA256
 from Crypto.PublicKey import RSA
 from os import urandom
 from time import time
-from src.main.SystemExceptions import *
+from src.SystemExceptions import *
