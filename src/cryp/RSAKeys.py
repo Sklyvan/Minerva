@@ -42,7 +42,7 @@ class RSAKeys:
         try:
             return self.cipherDec.decrypt(cipher)
         except ValueError:
-            print("ERROR: Wrong Secret Key. Please check if the Secret Key is correct.")
+            raise WrongSecretKeyError("ERROR: Wrong Secret Key. Please check if the Secret Key is correct.")
             return False
 
     def sign(self, text, ignoreWarning=False) -> bytes:
@@ -57,7 +57,12 @@ class RSAKeys:
                 print("WARNING: RSAKeys.sign() was passed a non-bytes object.")
             text = text.encode()
         hashedText = SHA256.new(text)
-        return self.cipherSig.sign(hashedText)
+        # Raise error if the hash is not valid.
+        try:
+            return self.cipherSig.sign(hashedText)
+        except ValueError:
+            raise WrongSecretKeyError("ERROR: Wrong Secret Key. Please check if the Secret Key is correct.")
+            return False
 
     def verify(self, text, signature, withKey, ignoreWarning=False) -> bool:
         """
