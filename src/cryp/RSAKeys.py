@@ -8,12 +8,12 @@ class RSAKeys:
         self.cipherDec = PKCS1_OAEP.new(self.secretKey) # Used to decrypt messages for this user.
         self.cipherSig = pkcs1_15.new(self.secretKey) # Used by this user to sign messages.
 
-    def generateKeys(self, keySize=2048):
+    def generateKeys(self, keySize=2048) -> (RSA.RsaKey, RSA.RsaKey):
         SK = RSA.generate(keySize)
         PK = SK.publickey()
         return SK, PK
 
-    def encrypt(self, text, withKey, ignoreWarning=False):
+    def encrypt(self, text, withKey, ignoreWarning=False) -> bytes:
         """
         Encrypts a text using the given Public Key.
         :param text: Bytes to be encrypted.
@@ -28,7 +28,7 @@ class RSAKeys:
         cipherEnc = PKCS1_OAEP.new(withKey)
         return cipherEnc.encrypt(text)
 
-    def decrypt(self, cipher, ignoreWarning=False):
+    def decrypt(self, cipher, ignoreWarning=False) -> bytes:
         """
         Decrypts a cipher using the stored Private Key.
         :param cipher: Bytes to be decrypted.
@@ -45,7 +45,7 @@ class RSAKeys:
             print("ERROR: Wrong Secret Key. Please check if the Secret Key is correct.")
             return False
 
-    def sign(self, text, ignoreWarning=False):
+    def sign(self, text, ignoreWarning=False) -> bytes:
         """
         Signs a text using the stored Private Key.
         :param text: Bytes to be signed.
@@ -59,7 +59,7 @@ class RSAKeys:
         hashedText = SHA256.new(text)
         return self.cipherSig.sign(hashedText)
 
-    def verify(self, text, signature, withKey, ignoreWarning=False):
+    def verify(self, text, signature, withKey, ignoreWarning=False) -> bool:
         """
         Verifies a signature using the given Public Key.
         :param text: Bytes to be verified.
@@ -80,7 +80,7 @@ class RSAKeys:
         except (ValueError, TypeError):
             return False
 
-    def checkKeys(self, testSize=200):
+    def checkKeys(self, testSize=200) -> bool:
         m = urandom(testSize)
         test1 = (self.decrypt(self.encrypt(m, self.publicKey)) == m)
         test2 = (self.verify(m, self.sign(m), self.publicKey))
