@@ -12,6 +12,18 @@ class User:
         self.userFriends = userFriends
         self.messages = messages
 
+    def regenerateKeys(self):
+        self.encryptionKeys.regenerateKeys()
+        self.signingKeys.regenerateKeys()
+
+    def exportKeys(self, encryptionPath: str, signingPath: str):
+        self.encryptionKeys.exportKeys(encryptionPath)
+        self.signingKeys.exportKeys(signingPath)
+
+    def importKeys(self, encryptionPath: str, signingPath: str):
+        self.encryptionKeys.importKeys(encryptionPath)
+        self.signingKeys.importKeys(signingPath)
+
     def checkKeys(self):
         return self.encryptionKeys.checkKeys() and self.signingKeys.checkKeys()
 
