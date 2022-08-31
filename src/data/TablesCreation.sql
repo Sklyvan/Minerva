@@ -26,4 +26,11 @@ CREATE TABLE IF NOT EXISTS 'Contacts'
     RSAPublicKey TEXT NOT NULL,
     CircuitID INTEGER NOT NULL,
     PRIMARY KEY (ID)
-)
+);
+
+CREATE TRIGGER IF NOT EXISTS UpdateMetadata
+AFTER INSERT ON Messages
+BEGIN
+    -- Set the LastUpdate to the current date and add one to the number of messages.
+    UPDATE Metadata SET LastUpdate = datetime('now'), NumberMessages = NumberMessages + 1;
+END;
