@@ -82,7 +82,9 @@ class RSAKeys:
         try:
             cipherVer.verify(hashedText, signature)
             return True
-        except (ValueError, TypeError):
+        except (ValueError, TypeError) as errorMessage:
+            if not ignoreWarning:
+                print("WARNING: Could not verify the message,", str(errorMessage).lower()+'.')
             return False
 
     def checkKeys(self, testSize=200) -> bool:
