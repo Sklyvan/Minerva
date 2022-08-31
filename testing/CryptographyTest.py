@@ -1,5 +1,5 @@
 import unittest
-import random
+import random, glob, os
 from src.cryp.RSAKeys import *
 
 
@@ -75,6 +75,21 @@ class RSATesting(unittest.TestCase):
         signature = keys.sign(text)
         self.assertTrue(keys.verify(text, signature, keys.publicKey),
                         "8192 Signing/Verification failed.")
+
+
+    def testImportExport(self):
+        Keys1 = RSAKeys()
+        Keys2 = RSAKeys(emptyInstance=True)
+
+        Keys1.export("TestKey.pem")
+        Keys2.importKeys("TestKey.pem")
+
+        self.assertTrue(Keys1 == Keys2, "Import/Export failed.")
+
+        # Remove the exported file
+        for file in glob.glob("TestKey.*"):
+            os.remove(file)
+
 
 if __name__ == '__main__':
     unittest.main()
