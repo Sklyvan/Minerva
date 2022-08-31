@@ -1,6 +1,7 @@
 from src.SystemExceptions import *
 from src.main.Circuit import Circuit
 from src.main.PublicUser import *
+import sqlite3, os
 
 class Message:
     def __init__(self, messageID: int, content: bytes, signature: bytes, circuitUsed: Circuit,
@@ -64,4 +65,38 @@ class Message:
         return self.content[item]
 
 class MessagesDB:
-    None
+    def __init__(self, dbPath: str="Messages.db"):
+        self.dbPath = dbPath
+        self.dbConnection = sqlite3.connect(self.dbPath)
+        self.cursor = self.dbConnection.cursor()
+
+        with open("TablesCreation.sql", "r") as f:
+            x = f.read()
+            self.cursor.executescript(x)
+        self.dbConnection.commit()
+
+        dbStored = self.cursor.execute("SELECT 'NumberMessages' "
+                                       "FROM Metadata").fetchone()
+        if not dbStored: self.numberMessages = 0
+        else: self.numberMessages = dbStored[0]
+
+    def addMessage(self, msg: Message):
+        if msg.isEncrypted:
+            # Transform the bytes into a string of hexadecimal numbers.
+            content = msg.content.hex()
+        else:
+            content = msg.content.decode("utf-8")
+
+        sqlQuery = f"INSERT INTO 'Messages' VALUES " \
+                   f"({msg.messageID}, " \
+                   f"{msg.sender.userID}, " \
+                   f"{msg.receiver.userID}, " \
+                   f"{msg.timeSent}, " \
+                   f"{msg.timeReceived}, " \
+                   f"'{content}')"
+        self.cursor.execute(sqlQuery)
+        self.dbConnection.commit()
+        self.numberMessages += 1
+
+    def __len__(self):
+        return self.numberMessages
