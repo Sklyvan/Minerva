@@ -6,3 +6,6 @@ class WrongSecretKeyError(Exception):
 
 class WrongSignatureError(Exception):
     None
+
+class WrongUserError(Exception):
+    None
