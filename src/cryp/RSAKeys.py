@@ -1,12 +1,20 @@
 from src.cryp.Imports import *
 
 class RSAKeys:
-    def __init__(self, keySize=2048): # TODO: Implement this system in GoLang, Python is too slow.
-        self.secretKey, self.publicKey = self.generateKeys(keySize)
-        self.keySize = keySize
-        self.creationTime = time()
-        self.cipherDec = PKCS1_OAEP.new(self.secretKey) # Used to decrypt messages for this user.
-        self.cipherSig = pkcs1_15.new(self.secretKey) # Used by this user to sign messages.
+    def __init__(self, keySize=2048, emptyInstance=False): # TODO: Implement this system in GoLang, Python is too slow.
+        if emptyInstance: # Don't generate keys if we are going to import them.
+            self.secretKey = None
+            self.publicKey = None
+            self.keySize = None
+            self.creationTime = None
+            self.cipherDec = None
+            self.cipherSig = None
+        else:
+            self.secretKey, self.publicKey = self.generateKeys(keySize)
+            self.keySize = keySize
+            self.creationTime = time()
+            self.cipherDec = PKCS1_OAEP.new(self.secretKey) # Used to decrypt messages for this user.
+            self.cipherSig = pkcs1_15.new(self.secretKey) # Used by this user to sign messages.
 
     def generateKeys(self, keySize=2048) -> (RSA.RsaKey, RSA.RsaKey):
         SK = RSA.generate(keySize)
@@ -86,6 +94,32 @@ class RSAKeys:
             if not ignoreWarning:
                 print("WARNING: Could not verify the message,", str(errorMessage).lower()+'.')
             return False
+
+    def export(self, fileName):
+        """
+        Exports the keys to two files.
+        :param fileName: Name of the file to be exported to.
+        """
+        with open(fileName+'.pub', 'wb') as file:
+            file.write(self.publicKey.exportKey())
+        with open(fileName+'.priv', 'wb') as file:
+            file.write(self.secretKey.exportKey())
+        with open(fileName+'.info', 'w') as file:
+            file.write(f"{self.keySize}\n{self.creationTime}")
+
+    def importKeys(self, fileName):
+        """
+        Imports the keys from a file.
+        :param fileName: Name of the file to be imported from.
+        """
+        with open(fileName+'.pub', 'rb') as file:
+            self.publicKey = RSA.importKey(file.read())
+        with open(fileName+'.priv', 'rb') as file:
+            self.secretKey = RSA.importKey(file.read())
+        with open(fileName+'.info', 'r') as file:
+            self.keySize = int(file.readline())
+            self.creationTime = float(file.readline())
+        self.cipherDec = PKCS1_OAEP.new(self.secretKey)
 
     def checkKeys(self, testSize=200) -> bool:
         m = urandom(testSize)
