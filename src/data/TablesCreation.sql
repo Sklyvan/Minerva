@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS 'Messages'
     FromUser INTEGER NOT NULL,
     ToUser INTEGER NOT NULL,
     SentDate DATETIME NOT NULL,
-    ReceivedDate DATETIME NOT NULL,
+    ReceivedDate DATETIME,
     Content TEXT NOT NULL,
     PRIMARY KEY (ID),
     FOREIGN KEY (FromUser) REFERENCES Contacts(ID),
