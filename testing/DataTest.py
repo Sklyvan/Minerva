@@ -23,7 +23,9 @@ class MessageTest(unittest.TestCase):
         Message1U2.decrypt() # Decrypt the message
         self.assertEqual(Message1U2.content, b"Hello World!", "Decryption failed.")
 
-    def testMessagesDB(self):
+    def testMessageDBCounting(self):
+        for file in glob.glob("*.db"): os.remove(file)
+
         User1 = User(1, "User1", [RSAKeys(), RSAKeys()], "127.0.0.1", ForwardingTable(), Queue(), {}, MessagesDB())
         User1Public = PublicUser(1, "User1", [User1.encryptionKeys.publicKey, User1.signingKeys.publicKey],
                                  Circuit())
@@ -40,14 +42,14 @@ class MessageTest(unittest.TestCase):
         Message1U2.verify()
         Message1U2.decrypt()
 
-        DB = MessagesDB("DBTest.db")
+        DB = MessagesDB("Messages.db")
         DB.addMessage(Message1U1)
         self.assertEqual(len(DB), 1, "Message 1 not being counted.")
         DB.addMessage(Message1U2)
         self.assertEqual(len(DB), 2, "Message 2 not being counted.")
 
-        for file in glob.glob("*.db"):
-            os.remove(file)
+    def testMessageDBInsert(self):
+        self.assert_(True), "Message DB Insertion not implemented."
 
 
 if __name__ == '__main__':
