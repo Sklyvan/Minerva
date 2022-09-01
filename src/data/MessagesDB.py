@@ -71,7 +71,7 @@ class MessagesDB:
         self.cursor = self.dbConnection.cursor()
 
         with open("TablesCreation.sql", "r") as f:
-            x = f.read()
+            x = f.read() # Creation of the tables if they don't exist.
             self.cursor.executescript(x)
         self.dbConnection.commit()
 
@@ -87,16 +87,31 @@ class MessagesDB:
         else:
             content = msg.content.decode("utf-8")
 
-        sqlQuery = f"INSERT INTO 'Messages' VALUES " \
-                   f"({msg.messageID}, " \
-                   f"{msg.sender.userID}, " \
-                   f"{msg.receiver.userID}, " \
-                   f"{msg.timeSent}, " \
-                   f"{msg.timeReceived}, " \
-                   f"'{content}')"
-        self.cursor.execute(sqlQuery)
+        if not msg.timeReceived: timeReceived = 'NULL'
+        else: timeReceived = msg.timeReceived
+
+        with open('InsertMessage.sql', 'r') as f:
+            x = f.read() # Insert SQL Query (Parametrized).
+            self.cursor.execute(x, (msg.messageID,
+                                    msg.sender.userID, msg.receiver.userID,
+                                    msg.timeSent, timeReceived,
+                                    content))
         self.dbConnection.commit()
         self.numberMessages += 1
+
+    def getMessage(self, messageID: int, justContent: bool=False):
+        """
+        This function used the queries from InsertMessage.sql
+        If justContent is False, we read and execute the first line of the file.
+        If justContent is True, we read and execute the second line of the file.
+        """
+        with open('InsertMessage.sql', 'r') as f:
+            x = f.read().split(";")
+            if justContent:
+                msg = self.cursor.execute(x[1], (messageID,)).fetchone()[0]
+            else:
+                msg = self.cursor.execute(x[0], (messageID,)).fetchone()[0]
+        return msg
 
     def __len__(self):
         return self.numberMessages
