@@ -1,8 +1,8 @@
 CREATE TABLE IF NOT EXISTS 'Metadata'
 (
-    CreationDate DATETIME NOT NULL,
-    LastUpdate DATETIME NOT NULL,
-    NumberMessages INTEGER NOT NULL,
+    CreationDate INTEGER NOT NULL, -- Unix timestamp
+    LastUpdate INTEGER NOT NULL, -- Unix timestamp
+    NumberMessages INTEGER NOT NULL DEFAULT 0,
     PRIMARY KEY (CreationDate)
 );
 
@@ -11,8 +11,8 @@ CREATE TABLE IF NOT EXISTS 'Messages'
     ID INTEGER NOT NULL,
     FromUser INTEGER NOT NULL,
     ToUser INTEGER NOT NULL,
-    SentDate DATETIME NOT NULL,
-    ReceivedDate DATETIME,
+    SentDate INTEGER NOT NULL,
+    ReceivedDate INTEGER DEFAULT NULL,
     Content TEXT NOT NULL,
     PRIMARY KEY (ID),
     FOREIGN KEY (FromUser) REFERENCES Contacts(ID),
@@ -29,15 +29,17 @@ CREATE TABLE IF NOT EXISTS 'Contacts'
 );
 
 CREATE TRIGGER IF NOT EXISTS addMessage
-AFTER INSERT ON Messages
+AFTER INSERT ON 'Messages'
 BEGIN
     -- Set the LastUpdate to the current date and add one to the number of messages.
-    UPDATE Metadata SET LastUpdate = datetime('now', 'localtime'), NumberMessages = NumberMessages + 1;
+    UPDATE 'Metadata' SET LastUpdate = strftime('%s', datetime('now')),
+                          NumberMessages = NumberMessages + 1;
 END;
 
 CREATE TRIGGER IF NOT EXISTS deleteMessage
-AFTER DELETE ON Messages
+AFTER DELETE ON 'Messages'
 BEGIN
     -- Set the LastUpdate to the current date and subtract one from the number of messages.
-    UPDATE Metadata SET LastUpdate = datetime('now', 'localtime'), NumberMessages = NumberMessages - 1;
+    UPDATE 'Metadata' SET LastUpdate = strftime('%s', datetime('now')),
+                          NumberMessages = NumberMessages - 1;
 END;
