@@ -90,8 +90,7 @@ class MessagesDB:
     def countMessages(self):
         dbStored = self.cursor.execute("SELECT NumberMessages "
                                        "FROM Metadata").fetchone()
-        self.numberMessages = dbStored[0]
-        return self.numberMessages
+        return dbStored[0]
 
     def addMessage(self, msg: Message):
         if msg.isEncrypted:
@@ -135,11 +134,15 @@ class MessagesDB:
             raise MessageNotFoundError(f"Message {messageID} not found at {self.dbPath} database.")
 
     def deleteMessage(self, messageID: int):
+        isDeleted = False
         with open('DeleteMessage.sql', 'r') as f:
             x = f.read()
             self.cursor.execute(x, (messageID,))
         self.dbConnection.commit()
+        oldCount = self.numberMessages
         self.numberMessages = self.countMessages()
+        isDeleted = self.numberMessages < oldCount
+        return isDeleted
 
     def __len__(self):
         return self.numberMessages
