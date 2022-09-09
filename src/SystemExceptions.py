@@ -9,3 +9,6 @@ class WrongSignatureError(Exception):
 
 class WrongUserError(Exception):
     None
+
+class MessageNotFoundError(Exception):
+    None
