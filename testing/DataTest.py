@@ -49,7 +49,31 @@ class MessageTest(unittest.TestCase):
         self.assertEqual(len(DB), 2, "Message 2 not being counted.")
 
     def testMessageDBInsert(self):
-        self.assert_(True), "Message DB Insertion not implemented."
+        for file in glob.glob("*.db"): os.remove(file)
+
+        User1 = User(1, "User1", [RSAKeys(), RSAKeys()], "127.0.0.1", ForwardingTable(), Queue(), {}, MessagesDB())
+        User1Public = PublicUser(1, "User1", [User1.encryptionKeys.publicKey, User1.signingKeys.publicKey],
+                                 Circuit())
+        User2 = User(2, "User2", [RSAKeys(), RSAKeys()], "127.0.0.2", ForwardingTable(), Queue(), {}, MessagesDB())
+        User2Public = PublicUser(2, "User2", [User2.encryptionKeys.publicKey, User2.signingKeys.publicKey],
+                                 Circuit())
+
+        Message1U1 = Message(1, b"Hello World!", b"", Circuit(), User1, User2Public, time(), time())
+        Message1U1.encrypt()
+        Message1U1.sign()
+
+        Message1U2 = Message(2, Message1U1.content, Message1U1.signature, Circuit(), User1Public, User2,
+                             Message1U1.timeSent, time(), True, True)
+        Message1U2.verify()
+        Message1U2.decrypt()
+
+        DB = MessagesDB("Messages.db")
+        DB.addMessage(Message1U1)
+        DB.addMessage(Message1U2)
+        self.assertEqual(DB.getMessage(Message1U1.messageID, justContent=True), Message1U1.content.hex(), "Message 1 not being inserted.")
+        self.assertEqual(DB.getMessage(Message1U2.messageID, justContent=True), Message1U2.content.decode('utf-8'), "Message 2 not being inserted.")
+
+
 
 
 if __name__ == '__main__':
