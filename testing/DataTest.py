@@ -12,13 +12,13 @@ class MessageTest(unittest.TestCase):
         User2Public = PublicUser(2, "User2", [User2.encryptionKeys.publicKey, User2.signingKeys.publicKey],
                                       Circuit())
 
-        Message1U1 = Message(1, b"Hello World!", b"", Circuit(), User1, User2Public, time()) # Create a sample message
+        Message1U1 = Message(1, b"Hello World!", b"", Circuit(), User1, User2Public, int(time())) # Create a sample message
         # Initially, the message is not encrypted or signed. We encrypt for User 2 and sign as User 1.
         Message1U1.encrypt()
         Message1U1.sign()
 
         Message1U2 = Message(1, Message1U1.content, Message1U1.signature, Circuit(), User1Public, User2,
-                             Message1U1.timeSent, time(), True, True) # Simulate the message being sent to User 2
+                             Message1U1.timeSent, int(time()), True, True) # Simulate the message being sent to User 2
         self.assertTrue(Message1U2.verify(), "Verification failed.") # Verify the signature
         Message1U2.decrypt() # Decrypt the message
         self.assertEqual(Message1U2.content, b"Hello World!", "Decryption failed.")
@@ -33,12 +33,12 @@ class MessageTest(unittest.TestCase):
         User2Public = PublicUser(2, "User2", [User2.encryptionKeys.publicKey, User2.signingKeys.publicKey],
                                  Circuit())
 
-        Message1U1 = Message(1, b"Hello World!", b"", Circuit(), User1, User2Public, time(), time())
+        Message1U1 = Message(1, b"Hello World!", b"", Circuit(), User1, User2Public, int(time()), int(time()))
         Message1U1.encrypt()
         Message1U1.sign()
 
         Message1U2 = Message(2, Message1U1.content, Message1U1.signature, Circuit(), User1Public, User2,
-                             Message1U1.timeSent, time(), True, True)
+                             Message1U1.timeSent, int(time()), True, True)
         Message1U2.verify()
         Message1U2.decrypt()
 
@@ -58,12 +58,12 @@ class MessageTest(unittest.TestCase):
         User2Public = PublicUser(2, "User2", [User2.encryptionKeys.publicKey, User2.signingKeys.publicKey],
                                  Circuit())
 
-        Message1U1 = Message(1, b"Hello World!", b"", Circuit(), User1, User2Public, time(), time())
+        Message1U1 = Message(1, b"Hello World!", b"", Circuit(), User1, User2Public, int(time()))
         Message1U1.encrypt()
         Message1U1.sign()
 
         Message1U2 = Message(2, Message1U1.content, Message1U1.signature, Circuit(), User1Public, User2,
-                             Message1U1.timeSent, time(), True, True)
+                             Message1U1.timeSent, int(time())+10, True, True)
         Message1U2.verify()
         Message1U2.decrypt()
 
@@ -72,8 +72,6 @@ class MessageTest(unittest.TestCase):
         DB.addMessage(Message1U2)
         self.assertEqual(DB.getMessage(Message1U1.messageID, justContent=True), Message1U1.content.hex(), "Message 1 not being inserted.")
         self.assertEqual(DB.getMessage(Message1U2.messageID, justContent=True), Message1U2.content.decode('utf-8'), "Message 2 not being inserted.")
-
-
 
 
 if __name__ == '__main__':
