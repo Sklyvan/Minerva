@@ -66,6 +66,7 @@ class Message:
 
 class MessagesDB:
     def __init__(self, dbPath: str="Messages.db"):
+        firstTime = not(os.path.isfile(dbPath))
         self.dbPath = dbPath
         self.dbConnection = sqlite3.connect(self.dbPath)
         self.cursor = self.dbConnection.cursor()
@@ -75,10 +76,22 @@ class MessagesDB:
             self.cursor.executescript(x)
         self.dbConnection.commit()
 
-        dbStored = self.cursor.execute("SELECT 'NumberMessages' "
+        if firstTime:
+            with open('InitializeMetadata.sql', 'r') as f:
+                x = f.read()
+                self.cursor.executescript(x)
+            self.dbConnection.commit()
+            self.numberMessages = 0
+        else:
+            dbStored = self.cursor.execute("SELECT 'NumberMessages' "
                                        "FROM Metadata").fetchone()
-        if not dbStored: self.numberMessages = 0
-        else: self.numberMessages = dbStored[0]
+            self.numberMessages = dbStored[0]
+
+    def countMessages(self):
+        dbStored = self.cursor.execute("SELECT NumberMessages "
+                                       "FROM Metadata").fetchone()
+        self.numberMessages = dbStored[0]
+        return self.numberMessages
 
     def addMessage(self, msg: Message):
         if msg.isEncrypted:
@@ -87,17 +100,19 @@ class MessagesDB:
         else:
             content = msg.content.decode("utf-8")
 
-        if not msg.timeReceived: timeReceived = 'NULL'
-        else: timeReceived = msg.timeReceived
-
         with open('InsertMessage.sql', 'r') as f:
-            x = f.read() # Insert SQL Query (Parametrized).
-            self.cursor.execute(x, (msg.messageID,
-                                    msg.sender.userID, msg.receiver.userID,
-                                    msg.timeSent, timeReceived,
-                                    content))
+            x = f.read().replace('\n', '').split(";")
+            if not msg.timeReceived: # Insert time received as NULL.
+                self.cursor.execute(x[1], (msg.messageID,
+                                        msg.sender.userID, msg.receiver.userID,
+                                        msg.timeSent, content))
+            else:
+                self.cursor.execute(x[0], (msg.messageID,
+                                        msg.sender.userID, msg.receiver.userID,
+                                        msg.timeSent, msg.timeReceived,
+                                        content))
         self.dbConnection.commit()
-        self.numberMessages += 1
+        self.numberMessages = self.countMessages()
 
     def getMessage(self, messageID: int, justContent: bool=False):
         """
@@ -112,19 +127,19 @@ class MessagesDB:
 
             else:
                 msg = self.cursor.execute(x[0], (str(messageID),)).fetchone()
+        self.dbConnection.commit()
 
         if msg:
             return msg[0]
         else:
             raise MessageNotFoundError(f"Message {messageID} not found at {self.dbPath} database.")
 
-
     def deleteMessage(self, messageID: int):
         with open('DeleteMessage.sql', 'r') as f:
             x = f.read()
             self.cursor.execute(x, (messageID,))
         self.dbConnection.commit()
-        self.numberMessages -= 1
+        self.numberMessages = self.countMessages()
 
     def __len__(self):
         return self.numberMessages
