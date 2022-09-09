@@ -101,17 +101,30 @@ class MessagesDB:
 
     def getMessage(self, messageID: int, justContent: bool=False):
         """
-        This function used the queries from InsertMessage.sql
+        This function uses the queries from GetMessage.sql
         If justContent is False, we read and execute the first line of the file.
         If justContent is True, we read and execute the second line of the file.
         """
-        with open('InsertMessage.sql', 'r') as f:
-            x = f.read().split(";")
+        with open('GetMessage.sql', 'r') as f:
+            x = f.read().replace('\n', '').split(";")
             if justContent:
-                msg = self.cursor.execute(x[1], (messageID,)).fetchone()[0]
+                msg = self.cursor.execute(x[1], (str(messageID),)).fetchone()
+
             else:
-                msg = self.cursor.execute(x[0], (messageID,)).fetchone()[0]
-        return msg
+                msg = self.cursor.execute(x[0], (str(messageID),)).fetchone()
+
+        if msg:
+            return msg[0]
+        else:
+            raise MessageNotFoundError(f"Message {messageID} not found at {self.dbPath} database.")
+
+
+    def deleteMessage(self, messageID: int):
+        with open('DeleteMessage.sql', 'r') as f:
+            x = f.read()
+            self.cursor.execute(x, (messageID,))
+        self.dbConnection.commit()
+        self.numberMessages -= 1
 
     def __len__(self):
         return self.numberMessages
