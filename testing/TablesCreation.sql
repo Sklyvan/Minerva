@@ -28,9 +28,16 @@ CREATE TABLE IF NOT EXISTS 'Contacts'
     PRIMARY KEY (ID)
 );
 
-CREATE TRIGGER IF NOT EXISTS UpdateMetadata
+CREATE TRIGGER IF NOT EXISTS addMessage
 AFTER INSERT ON Messages
 BEGIN
     -- Set the LastUpdate to the current date and add one to the number of messages.
     UPDATE Metadata SET LastUpdate = datetime('now', 'localtime'), NumberMessages = NumberMessages + 1;
+END;
+
+CREATE TRIGGER IF NOT EXISTS deleteMessage
+AFTER DELETE ON Messages
+BEGIN
+    -- Set the LastUpdate to the current date and subtract one from the number of messages.
+    UPDATE Metadata SET LastUpdate = datetime('now', 'localtime'), NumberMessages = NumberMessages - 1;
 END;
