@@ -116,3 +116,4 @@ func main() {
 	keysPair := GenerateRSAKeyPair(keySizeInt)
 	exportToPEMFormat(keysPair, "UserKeys")
 }
+// Compile with: go build GenerateRSA.go
