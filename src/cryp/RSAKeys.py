@@ -1,25 +1,22 @@
 from src.cryp.Imports import *
 
 class RSAKeys:
-    def __init__(self, keySize=2048, emptyInstance=False):
-        if emptyInstance: # Don't generate keys if we are going to import them.
-            self.secretKey = None
-            self.publicKey = None
-            self.keySize = None
-            self.creationTime = None
-            self.cipherDec = None
-            self.cipherSig = None
-        else:
-            self.secretKey, self.publicKey = self.generateKeys(keySize)
-            self.keySize = keySize
-            self.creationTime = time()
-            self.cipherDec = PKCS1_OAEP.new(self.secretKey) # Used to decrypt messages for this user.
-            self.cipherSig = pkcs1_15.new(self.secretKey) # Used by this user to sign messages.
+    def __init__(self, keySize=2048, fileName='UserKeys', toImport=False):
+        """
+        Creates the class to store a PK and SK of RSA keys,
+        the generation is done by a GoLang script.
+        :param fileName: Name of the keys file.
+        :param keySize: Bite size of the keys.
+        :param toImport: If this is True, then we just import PEM files.
+        """
+        self.filename = fileName
 
-    def generateKeys(self, keySize=2048) -> (RSA.RsaKey, RSA.RsaKey):
-        SK = RSA.generate(keySize)
-        PK = SK.publickey()
-        return SK, PK
+        if not toImport: system(f'./GenerateRSA {keySize} {fileName}')
+        self.importKeys(fileName)
+
+    def updateKeys(self, keySize=2048):
+        system(f'./GenerateRSA {keySize} {fileName}')
+        self.importKeys(self.filename)
 
     def encrypt(self, text, withKey, ignoreWarning=False) -> bytes:
         """
@@ -95,7 +92,7 @@ class RSAKeys:
                 print("WARNING: Could not verify the message,", str(errorMessage).lower()+'.')
             return False
 
-    def export(self, fileName):
+    def exportKeys(self, fileName):
         """
         Exports the keys to two files.
         :param fileName: Name of the file to be exported to.
