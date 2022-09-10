@@ -11,7 +11,8 @@ class RSAKeys:
         """
         self.filename = fileName
 
-        if not toImport: system(f'./GenerateRSA {keySize} {fileName}')
+        if not toImport:
+            system(f'../cryp/GenerateRSA {keySize} {fileName}')
         self.importKeys(fileName)
 
     def updateKeys(self, keySize=2048):
