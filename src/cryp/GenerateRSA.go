@@ -112,5 +112,5 @@ func exportToPEMFormat(keys RSAKeys, fileName string) {
 
 func main() {
 	keysPair := GenerateRSAKeyPair(2048)
-	exportToPEMFormat(keysPair, "./src/cryp/RSAKeys")
+	exportToPEMFormat(keysPair, "./src/cryp/UserKeys")
 }
