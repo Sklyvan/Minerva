@@ -146,3 +146,9 @@ class MessagesDB:
 
     def __len__(self):
         return self.numberMessages
+
+    def __getitem__(self, item):
+        return self.getMessage(item)
+
+    def __str__(self):
+        return f"Messages database with {self.numberMessages} messages."
