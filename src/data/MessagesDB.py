@@ -150,5 +150,8 @@ class MessagesDB:
     def __getitem__(self, item):
         return self.getMessage(item)
 
+    def __eq__(self, other):
+        return self.dbPath == other.dbPath
+
     def __str__(self):
         return f"Messages database with {self.numberMessages} messages."
