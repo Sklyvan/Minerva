@@ -635,3 +635,6 @@ oldUSB/
 
 *.db
 *.pem
+
+src/testing/GenerateRSA
+src/cryp/GenerateRSA
