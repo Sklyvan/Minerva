@@ -114,5 +114,5 @@ func main() {
 	keySize := os.Args[1]
 	keySizeInt, _ := strconv.Atoi(keySize)
 	keysPair := GenerateRSAKeyPair(keySizeInt)
-	exportToPEMFormat(keysPair, "./src/cryp/UserKeys")
+	exportToPEMFormat(keysPair, "UserKeys")
 }
