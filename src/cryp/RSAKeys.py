@@ -1,7 +1,7 @@
 from src.cryp.Imports import *
 
 class RSAKeys:
-    def __init__(self, keySize=2048, emptyInstance=False): # TODO: Implement this system in GoLang, Python is too slow.
+    def __init__(self, keySize=2048, emptyInstance=False):
         if emptyInstance: # Don't generate keys if we are going to import them.
             self.secretKey = None
             self.publicKey = None
