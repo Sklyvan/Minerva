@@ -111,6 +111,8 @@ func exportToPEMFormat(keys RSAKeys, fileName string) {
 }
 
 func main() {
-	keysPair := GenerateRSAKeyPair(2048)
+	keySize := os.Args[1]
+	keySizeInt, _ := strconv.Atoi(keySize)
+	keysPair := GenerateRSAKeyPair(keySizeInt)
 	exportToPEMFormat(keysPair, "./src/cryp/UserKeys")
 }
