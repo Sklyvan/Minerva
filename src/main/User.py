@@ -13,8 +13,8 @@ class User:
         self.messages = messages
 
     def regenerateKeys(self):
-        self.encryptionKeys.regenerateKeys()
-        self.signingKeys.regenerateKeys()
+        self.encryptionKeys.updateKeys()
+        self.signingKeys.updateKeys()
 
     def exportKeys(self, encryptionPath: str, signingPath: str):
         self.encryptionKeys.exportKeys(encryptionPath)
