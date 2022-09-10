@@ -1,6 +1,7 @@
 package main
 
 import (
+	"C"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
@@ -112,8 +113,10 @@ func exportToPEMFormat(keys RSAKeys, fileName string) {
 
 func main() {
 	keySize := os.Args[1]
+	fileName := os.Args[2]
 	keySizeInt, _ := strconv.Atoi(keySize)
 	keysPair := GenerateRSAKeyPair(keySizeInt)
-	exportToPEMFormat(keysPair, "UserKeys")
+	exportToPEMFormat(keysPair, fileName)
 }
+
 // Compile with: go build GenerateRSA.go
