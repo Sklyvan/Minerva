@@ -5,10 +5,12 @@ import glob, os
 
 class MessageTest(unittest.TestCase):
     def testMessageSecurity(self):
-        User1 = User(1, "User1", [RSAKeys(), RSAKeys()], "127.0.0.1", ForwardingTable(), Queue(), {}, MessagesDB())
+        User1 = User(1, "User1", [RSAKeys(fileName='TestKey'), RSAKeys(fileName='TestKey')],
+                     "127.0.0.1", ForwardingTable(), Queue(), {}, MessagesDB())
         User1Public = PublicUser(1, "User1", [User1.encryptionKeys.publicKey, User1.signingKeys.publicKey],
                                       Circuit())
-        User2 = User(2, "User2", [RSAKeys(), RSAKeys()], "127.0.0.2", ForwardingTable(), Queue(), {}, MessagesDB())
+        User2 = User(2, "User2", [RSAKeys(fileName='TestKey'), RSAKeys(fileName='TestKey')],
+                     "127.0.0.2", ForwardingTable(), Queue(), {}, MessagesDB())
         User2Public = PublicUser(2, "User2", [User2.encryptionKeys.publicKey, User2.signingKeys.publicKey],
                                       Circuit())
 
@@ -26,10 +28,12 @@ class MessageTest(unittest.TestCase):
     def testMessageDBCounting(self):
         for file in glob.glob("*.db"): os.remove(file)
 
-        User1 = User(1, "User1", [RSAKeys(), RSAKeys()], "127.0.0.1", ForwardingTable(), Queue(), {}, MessagesDB())
+        User1 = User(1, "User1", [RSAKeys(fileName='TestKey'), RSAKeys(fileName='TestKey')],
+                     "127.0.0.1", ForwardingTable(), Queue(), {}, MessagesDB())
         User1Public = PublicUser(1, "User1", [User1.encryptionKeys.publicKey, User1.signingKeys.publicKey],
                                  Circuit())
-        User2 = User(2, "User2", [RSAKeys(), RSAKeys()], "127.0.0.2", ForwardingTable(), Queue(), {}, MessagesDB())
+        User2 = User(2, "User2", [RSAKeys(fileName='TestKey'), RSAKeys(fileName='TestKey')],
+                     "127.0.0.2", ForwardingTable(), Queue(), {}, MessagesDB())
         User2Public = PublicUser(2, "User2", [User2.encryptionKeys.publicKey, User2.signingKeys.publicKey],
                                  Circuit())
 
@@ -51,10 +55,12 @@ class MessageTest(unittest.TestCase):
     def testMessageDBInsert(self):
         for file in glob.glob("*.db"): os.remove(file)
 
-        User1 = User(1, "User1", [RSAKeys(), RSAKeys()], "127.0.0.1", ForwardingTable(), Queue(), {}, MessagesDB())
+        User1 = User(1, "User1", [RSAKeys(fileName='TestKey'), RSAKeys(fileName='TestKey')],
+                     "127.0.0.1", ForwardingTable(), Queue(), {}, MessagesDB())
         User1Public = PublicUser(1, "User1", [User1.encryptionKeys.publicKey, User1.signingKeys.publicKey],
                                  Circuit())
-        User2 = User(2, "User2", [RSAKeys(), RSAKeys()], "127.0.0.2", ForwardingTable(), Queue(), {}, MessagesDB())
+        User2 = User(2, "User2", [RSAKeys(fileName='TestKey'), RSAKeys(fileName='TestKey')],
+                     "127.0.0.2", ForwardingTable(), Queue(), {}, MessagesDB())
         User2Public = PublicUser(2, "User2", [User2.encryptionKeys.publicKey, User2.signingKeys.publicKey],
                                  Circuit())
 
@@ -76,10 +82,12 @@ class MessageTest(unittest.TestCase):
     def testMessageDBDelete(self):
         for file in glob.glob("*.db"): os.remove(file)
 
-        User1 = User(1, "User1", [RSAKeys(), RSAKeys()], "127.0.0.1", ForwardingTable(), Queue(), {}, MessagesDB())
+        User1 = User(1, "User1", [RSAKeys(fileName='TestKey'), RSAKeys(fileName='TestKey')],
+                     "127.0.0.1", ForwardingTable(), Queue(), {}, MessagesDB())
         User1Public = PublicUser(1, "User1", [User1.encryptionKeys.publicKey, User1.signingKeys.publicKey],
                                  Circuit())
-        User2 = User(2, "User2", [RSAKeys(), RSAKeys()], "127.0.0.2", ForwardingTable(), Queue(), {}, MessagesDB())
+        User2 = User(2, "User2", [RSAKeys(fileName='TestKey'), RSAKeys(fileName='TestKey')],
+                     "127.0.0.2", ForwardingTable(), Queue(), {}, MessagesDB())
         User2Public = PublicUser(2, "User2", [User2.encryptionKeys.publicKey, User2.signingKeys.publicKey],
                                  Circuit())
 
