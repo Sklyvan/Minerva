@@ -100,11 +100,11 @@ class RSAKeys:
         Exports the keys to two files.
         :param fileName: Name of the file to be exported to.
         """
-        with open(fileName+'.pub', 'wb') as file:
+        with open(fileName+'-Publ.pem', 'wb') as file:
             file.write(self.publicKey.exportKey())
-        with open(fileName+'.priv', 'wb') as file:
+        with open(fileName+'-Priv.pem', 'wb') as file:
             file.write(self.secretKey.exportKey())
-        with open(fileName+'.info', 'w') as file:
+        with open(fileName+'-Info.pem', 'w') as file:
             file.write(f"{self.keySize}\n{self.creationTime}")
 
     def importKeys(self, fileName):
@@ -112,14 +112,15 @@ class RSAKeys:
         Imports the keys from a file.
         :param fileName: Name of the file to be imported from.
         """
-        with open(fileName+'.pub', 'rb') as file:
+        with open(fileName+'-Publ.pem', 'rb') as file:
             self.publicKey = RSA.importKey(file.read())
-        with open(fileName+'.priv', 'rb') as file:
+        with open(fileName+'-Priv.pem', 'rb') as file:
             self.secretKey = RSA.importKey(file.read())
-        with open(fileName+'.info', 'r') as file:
+        with open(fileName+'-Info.pem', 'r') as file:
             self.keySize = int(file.readline())
             self.creationTime = float(file.readline())
         self.cipherDec = PKCS1_OAEP.new(self.secretKey)
+        self.cipherSig = pkcs1_15.new(self.secretKey)
 
     def checkKeys(self, testSize=200) -> bool:
         m = urandom(testSize)
