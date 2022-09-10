@@ -636,6 +636,7 @@ oldUSB/
 *.db
 *.pem
 *.pkl
+*.json
 
 src/testing/GenerateRSA
 src/cryp/GenerateRSA
