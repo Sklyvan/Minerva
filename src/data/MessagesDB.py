@@ -113,6 +113,17 @@ class MessagesDB:
         self.dbConnection.commit()
         self.numberMessages = self.countMessages()
 
+    def deleteMessage(self, messageID: int):
+        isDeleted = False
+        with open('DeleteMessage.sql', 'r') as f:
+            x = f.read()
+            self.cursor.execute(x, (messageID,))
+        self.dbConnection.commit()
+        oldCount = self.numberMessages
+        self.numberMessages = self.countMessages()
+        isDeleted = self.numberMessages < oldCount
+        return isDeleted
+
     def getMessage(self, messageID: int, justContent: bool=False):
         """
         This function uses the queries from GetMessage.sql
@@ -132,17 +143,6 @@ class MessagesDB:
             return msg[0]
         else:
             raise MessageNotFoundError(f"Message {messageID} not found at {self.dbPath} database.")
-
-    def deleteMessage(self, messageID: int):
-        isDeleted = False
-        with open('DeleteMessage.sql', 'r') as f:
-            x = f.read()
-            self.cursor.execute(x, (messageID,))
-        self.dbConnection.commit()
-        oldCount = self.numberMessages
-        self.numberMessages = self.countMessages()
-        isDeleted = self.numberMessages < oldCount
-        return isDeleted
 
     def __len__(self):
         return self.numberMessages
