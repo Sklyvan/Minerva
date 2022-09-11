@@ -1,5 +1,3 @@
-import Crypto.PublicKey.RSA
-
 from src.cryp.Imports import *
 
 class RSAKeys:
@@ -21,7 +19,7 @@ class RSAKeys:
         system(f'./GenerateRSA {keySize} {fileName}')
         self.importKeys(self.filename)
 
-    def encrypt(self, text: bytes, withKey: Crypto.PublicKey.RSA.RsaKey, ignoreWarning=False) -> bytes:
+    def encrypt(self, text: bytes, withKey: RSA.RsaKey, ignoreWarning=False) -> bytes:
         """
         Encrypts a text using the given Public Key.
         :param text: Bytes to be encrypted.
@@ -72,7 +70,7 @@ class RSAKeys:
             raise WrongSecretKeyError("Wrong Secret Key. Please check if the Secret Key is correct.")
             return False
 
-    def verify(self, text: bytes, signature: bytes, withKey: Crypto.PublicKey.RSA.RsaKey, ignoreWarning=False) -> bool:
+    def verify(self, text: bytes, signature: bytes, withKey: RSA.RsaKey, ignoreWarning=False) -> bool:
         """
         Verifies a signature using the given Public Key.
         :param text: Bytes to be verified.
