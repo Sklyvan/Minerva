@@ -44,7 +44,7 @@ class User:
             self.userFriends = data["userFriends"]
             self.messages = MessagesDB(dbPath=data["messages"])
 
-    def asJSON(self):
+    def asJSON(self) -> dict:
         return {"userID": self.userID,
                 "userName": self.userName,
                 "encryptionKeys": self.encryptionKeys.filename,
