@@ -1,7 +1,4 @@
-from src.SystemExceptions import *
-from src.main.Circuit import Circuit
-from src.main.PublicUser import *
-import sqlite3, os
+from src.data.Imports import *
 
 class Message:
     def __init__(self, messageID: int, content: bytes, signature: bytes, circuitUsed: Circuit,
@@ -55,7 +52,7 @@ class Message:
     def __repr__(self):
         return f"Message object with ID {self.messageID} from {self.sender} to {self.receiver}."
 
-    def __eq__(self, other: Message):
+    def __eq__(self, other: "Message"):
         return self.messageID == other.messageID
 
     def __len__(self):
@@ -150,7 +147,7 @@ class MessagesDB:
     def __getitem__(self, item: int):
         return self.getMessage(item)
 
-    def __eq__(self, other: MessagesDB):
+    def __eq__(self, other: "MessagesDB"):
         return self.dbPath == other.dbPath
 
     def __str__(self):

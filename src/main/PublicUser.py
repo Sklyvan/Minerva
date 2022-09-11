@@ -14,5 +14,5 @@ class PublicUser:
     def __repr__(self):
         return f"PublicUser object with user name {self.userName} and ID {self.userID}."
 
-    def __eq__(self, other: PublicUser):
+    def __eq__(self, other: "PublicUser"):
         return self.userID == other.userID
