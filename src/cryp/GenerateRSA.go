@@ -12,18 +12,18 @@ import (
 	"time"
 )
 
-type RSAKeys struct {
+type RSAKey struct {
 	KeySize      int
 	PublicKey    *rsa.PublicKey
 	PrivateKey   *rsa.PrivateKey
 	CreationTime int64
 }
 
-func GenerateRSAKeyPair(keySize int) RSAKeys {
+func GenerateRSAKeyPair(keySize int) RSAKey {
 	privateKey, _ := rsa.GenerateKey(rand.Reader, keySize)
 	publicKey := &privateKey.PublicKey
 	creationTime := time.Now().Unix()
-	keysPair := RSAKeys{keySize, publicKey, privateKey, creationTime}
+	keysPair := RSAKey{keySize, publicKey, privateKey, creationTime}
 	return keysPair
 }
 
@@ -77,7 +77,7 @@ func savePrivateKeyToPEM(fName string, key *rsa.PrivateKey) {
 	}
 }
 
-func exportToPEMFormat(keys RSAKeys, fileName string) {
+func exportToPEMFormat(keys RSAKey, fileName string) {
 	/*
 		This function exports the keys.PublicKey to the fileName-Publ.pem file
 		and the keys.PrivateKey to the fileName-Priv.pem file. It also exports
