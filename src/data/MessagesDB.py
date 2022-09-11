@@ -39,7 +39,7 @@ class Message:
         else:
             raise WrongUserError("The sender must be a User and the receiver a PublicUser.")
 
-    def verify(self): # When the receiver is me, we verify the message with the sender's Public Key.
+    def verify(self) -> bool: # When the receiver is me, we verify the message with the sender's Public Key.
         # Sender: PublicUser, Receiver: User
         if type(self.sender) is PublicUser and type(self.receiver) is not PublicUser:
             senderPK = self.sender.verificationKey # RSA Public Key of the sender.
@@ -55,13 +55,13 @@ class Message:
     def __repr__(self):
         return f"Message object with ID {self.messageID} from {self.sender} to {self.receiver}."
 
-    def __eq__(self, other):
+    def __eq__(self, other: Message):
         return self.messageID == other.messageID
 
     def __len__(self):
         return len(self.content)
 
-    def __getitem__(self, item):
+    def __getitem__(self, item:int):
         return self.content[item]
 
 class MessagesDB:
@@ -87,7 +87,7 @@ class MessagesDB:
                                        "FROM Metadata").fetchone()
             self.numberMessages = dbStored[0]
 
-    def countMessages(self):
+    def countMessages(self) -> int:
         dbStored = self.cursor.execute("SELECT NumberMessages "
                                        "FROM Metadata").fetchone()
         return dbStored[0]
@@ -113,7 +113,7 @@ class MessagesDB:
         self.dbConnection.commit()
         self.numberMessages = self.countMessages()
 
-    def deleteMessage(self, messageID: int):
+    def deleteMessage(self, messageID: int) -> bool:
         isDeleted = False
         with open('../data/sqls/DeleteMessage.sql', 'r') as f:
             x = f.read()
@@ -124,7 +124,7 @@ class MessagesDB:
         isDeleted = self.numberMessages < oldCount
         return isDeleted
 
-    def getMessage(self, messageID: int, justContent: bool=False):
+    def getMessage(self, messageID: int, justContent: bool=False) -> Message:
         """
         This function uses the queries from GetMessage.sql
         If justContent is False, we read and execute the first line of the file.
@@ -147,10 +147,10 @@ class MessagesDB:
     def __len__(self):
         return self.numberMessages
 
-    def __getitem__(self, item):
+    def __getitem__(self, item: int):
         return self.getMessage(item)
 
-    def __eq__(self, other):
+    def __eq__(self, other: MessagesDB):
         return self.dbPath == other.dbPath
 
     def __str__(self):
