@@ -1,3 +1,5 @@
+import Crypto.PublicKey.RSA
+
 from src.cryp.Imports import *
 
 class RSAKeys:
@@ -19,7 +21,7 @@ class RSAKeys:
         system(f'./GenerateRSA {keySize} {fileName}')
         self.importKeys(self.filename)
 
-    def encrypt(self, text, withKey, ignoreWarning=False) -> bytes:
+    def encrypt(self, text: bytes, withKey: Crypto.PublicKey.RSA.RsaKey, ignoreWarning=False) -> bytes:
         """
         Encrypts a text using the given Public Key.
         :param text: Bytes to be encrypted.
@@ -34,7 +36,7 @@ class RSAKeys:
         cipherEnc = PKCS1_OAEP.new(withKey)
         return cipherEnc.encrypt(text)
 
-    def decrypt(self, cipher, ignoreWarning=False) -> bytes:
+    def decrypt(self, cipher: bytes, ignoreWarning=False) -> bytes:
         """
         Decrypts a cipher using the stored Private Key.
         :param cipher: Bytes to be decrypted.
@@ -51,7 +53,7 @@ class RSAKeys:
             raise WrongSecretKeyError("Wrong Secret Key. Please check if the Secret Key is correct.")
             return False
 
-    def sign(self, text, ignoreWarning=False) -> bytes:
+    def sign(self, text: bytes, ignoreWarning=False) -> bytes:
         """
         Signs a text using the stored Private Key.
         :param text: Bytes to be signed.
@@ -70,7 +72,7 @@ class RSAKeys:
             raise WrongSecretKeyError("Wrong Secret Key. Please check if the Secret Key is correct.")
             return False
 
-    def verify(self, text, signature, withKey, ignoreWarning=False) -> bool:
+    def verify(self, text: bytes, signature: bytes, withKey: Crypto.PublicKey.RSA.RsaKey, ignoreWarning=False) -> bool:
         """
         Verifies a signature using the given Public Key.
         :param text: Bytes to be verified.
@@ -93,32 +95,40 @@ class RSAKeys:
                 print("WARNING: Could not verify the message,", str(errorMessage).lower()+'.')
             return False
 
-    def exportKeys(self, fileName):
+    def exportKeys(self, fileName: str) -> bool:
         """
         Exports the keys to two files.
         :param fileName: Name of the file to be exported to.
         """
-        with open(fileName+'-Publ.pem', 'wb') as file:
-            file.write(self.publicKey.exportKey())
-        with open(fileName+'-Priv.pem', 'wb') as file:
-            file.write(self.secretKey.exportKey())
-        with open(fileName+'-Info.pem', 'w') as file:
-            file.write(f"{self.keySize}\n{self.creationTime}")
+        try:
+            with open(fileName+'-Publ.pem', 'wb') as file:
+                file.write(self.publicKey.exportKey())
+            with open(fileName+'-Priv.pem', 'wb') as file:
+                file.write(self.secretKey.exportKey())
+            with open(fileName+'-Info.pem', 'w') as file:
+                file.write(f"{self.keySize}\n{self.creationTime}")
+            return True
+        except:
+            return False
 
-    def importKeys(self, fileName):
+    def importKeys(self, fileName: str) -> bool:
         """
         Imports the keys from a file.
         :param fileName: Name of the file to be imported from.
         """
-        with open(fileName+'-Publ.pem', 'rb') as file:
-            self.publicKey = RSA.importKey(file.read())
-        with open(fileName+'-Priv.pem', 'rb') as file:
-            self.secretKey = RSA.importKey(file.read())
-        with open(fileName+'-Info.pem', 'r') as file:
-            self.keySize = int(file.readline())
-            self.creationTime = float(file.readline())
-        self.cipherDec = PKCS1_OAEP.new(self.secretKey)
-        self.cipherSig = pkcs1_15.new(self.secretKey)
+        try:
+            with open(fileName+'-Publ.pem', 'rb') as file:
+                self.publicKey = RSA.importKey(file.read())
+            with open(fileName+'-Priv.pem', 'rb') as file:
+                self.secretKey = RSA.importKey(file.read())
+            with open(fileName+'-Info.pem', 'r') as file:
+                self.keySize = int(file.readline())
+                self.creationTime = float(file.readline())
+            self.cipherDec = PKCS1_OAEP.new(self.secretKey)
+            self.cipherSig = pkcs1_15.new(self.secretKey)
+            return True
+        except:
+            return False
 
     def checkKeys(self, testSize=200) -> bool:
         m = urandom(testSize)
