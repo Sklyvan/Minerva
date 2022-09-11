@@ -24,6 +24,8 @@ class MessageTest(unittest.TestCase):
         self.assertTrue(Message1U2.verify(), "Verification failed.") # Verify the signature
         Message1U2.decrypt() # Decrypt the message
         self.assertEqual(Message1U2.content, b"Hello World!", "Decryption failed.")
+        for file in glob.glob("*.db"): os.remove(file)
+        for file in glob.glob("*.pem"): os.remove(file)
 
     def testMessageDBCounting(self):
         for file in glob.glob("*.db"): os.remove(file)
@@ -51,6 +53,8 @@ class MessageTest(unittest.TestCase):
         self.assertEqual(len(DB), 1, "Message 1 not being counted.")
         DB.addMessage(Message1U2)
         self.assertEqual(len(DB), 2, "Message 2 not being counted.")
+        for file in glob.glob("*.db"): os.remove(file)
+        for file in glob.glob("*.pem"): os.remove(file)
 
     def testMessageDBInsert(self):
         for file in glob.glob("*.db"): os.remove(file)
@@ -78,6 +82,8 @@ class MessageTest(unittest.TestCase):
         DB.addMessage(Message1U2)
         self.assertEqual(DB.getMessage(Message1U1.messageID, justContent=True), Message1U1.content.hex(), "Message 1 not being inserted.")
         self.assertEqual(DB.getMessage(Message1U2.messageID, justContent=True), Message1U2.content.decode('utf-8'), "Message 2 not being inserted.")
+        for file in glob.glob("*.db"): os.remove(file)
+        for file in glob.glob("*.pem"): os.remove(file)
 
     def testMessageDBDelete(self):
         for file in glob.glob("*.db"): os.remove(file)
@@ -110,6 +116,8 @@ class MessageTest(unittest.TestCase):
         DB.deleteMessage(Message1U2.messageID)
         self.assertEqual(len(DB), 0, "Message 2 not being deleted.")
         DB.deleteMessage(-1)
+        for file in glob.glob("*.db"): os.remove(file)
+        for file in glob.glob("*.pem"): os.remove(file)
 
 
 if __name__ == '__main__':

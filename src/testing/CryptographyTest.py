@@ -12,6 +12,7 @@ class RSATesting(unittest.TestCase):
         cipher = keys.encrypt(text, keys.publicKey)
         self.assertEqual(keys.decrypt(cipher), text,
                          "1024 Encryption/Decryption failed.")
+        for file in glob.glob("TestKey*"): os.remove(file)
 
     def testSigningVerification1024(self):
         keys = RSAKeys(1024, fileName='TestKey')
@@ -21,6 +22,7 @@ class RSATesting(unittest.TestCase):
         signature = keys.sign(text)
         self.assertTrue(keys.verify(text, signature, keys.publicKey),
                         "1024 Signing/Verification failed.")
+        for file in glob.glob("TestKey*"): os.remove(file)
 
     def testEncryptionDecryption2048(self):
         keys = RSAKeys(2048, fileName='TestKey')
@@ -30,6 +32,7 @@ class RSATesting(unittest.TestCase):
         cipher = keys.encrypt(text, keys.publicKey)
         self.assertEqual(keys.decrypt(cipher), text,
                          "2048 Encryption/Decryption failed.")
+        for file in glob.glob("TestKey*"): os.remove(file)
 
     def testSigningVerification2048(self):
         keys = RSAKeys(2048, fileName='TestKey')
@@ -39,6 +42,7 @@ class RSATesting(unittest.TestCase):
         signature = keys.sign(text)
         self.assertTrue(keys.verify(text, signature, keys.publicKey),
                         "2048 Signing/Verification failed.")
+        for file in glob.glob("TestKey*"): os.remove(file)
 
     def testEncryptionDecryption4096(self):
         keys = RSAKeys(4096, fileName='TestKey')
@@ -48,6 +52,7 @@ class RSATesting(unittest.TestCase):
         cipher = keys.encrypt(text, keys.publicKey)
         self.assertEqual(keys.decrypt(cipher), text,
                          "4096 Encryption/Decryption failed.")
+        for file in glob.glob("TestKey*"): os.remove(file)
 
     def testSigningVerification4096(self):
         keys = RSAKeys(4096, fileName='TestKey')
@@ -57,6 +62,7 @@ class RSATesting(unittest.TestCase):
         signature = keys.sign(text)
         self.assertTrue(keys.verify(text, signature, keys.publicKey),
                         "4096 Signing/Verification failed.")
+        for file in glob.glob("TestKey*"): os.remove(file)
 
     def testEncryptionDecryption8192(self):
         keys = RSAKeys(8192, fileName='TestKey')
@@ -66,6 +72,7 @@ class RSATesting(unittest.TestCase):
         cipher = keys.encrypt(text, keys.publicKey)
         self.assertEqual(keys.decrypt(cipher), text,
                          "8192 Encryption/Decryption failed.")
+        for file in glob.glob("TestKey*"): os.remove(file)
 
     def testSigningVerification8192(self):
         keys = RSAKeys(8192, fileName='TestKey')
@@ -75,6 +82,7 @@ class RSATesting(unittest.TestCase):
         signature = keys.sign(text)
         self.assertTrue(keys.verify(text, signature, keys.publicKey),
                         "8192 Signing/Verification failed.")
+        for file in glob.glob("TestKey*"): os.remove(file)
 
 
     def testImportExport(self):
@@ -85,6 +93,7 @@ class RSATesting(unittest.TestCase):
         Keys2.importKeys("TestKey")
 
         self.assertTrue(Keys1 == Keys2, "Import/Export failed.")
+        for file in glob.glob("TestKey*"): os.remove(file)
 
 
 if __name__ == '__main__':
