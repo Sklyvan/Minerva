@@ -5,3 +5,6 @@ from Crypto.PublicKey import RSA
 from os import urandom, path, system
 from time import time
 from src.SystemExceptions import *
+from cryptography.hazmat.primitives import hashes
+from cryptography.hazmat.primitives.asymmetric import ec
+from cryptography.hazmat.primitives.kdf.hkdf import HKDF
