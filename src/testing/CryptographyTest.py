@@ -1,7 +1,7 @@
 import unittest
 import random, glob, os
 from src.cryp.RSAKeys import *
-
+from src.cryp.DiffieHellmanKey import *
 
 class RSATesting(unittest.TestCase):
     def testEncryptionDecryption1024(self):
@@ -86,6 +86,15 @@ class RSATesting(unittest.TestCase):
 
         self.assertTrue(Keys1 == Keys2, "Import/Export failed.")
         for file in glob.glob("TestKey*"): os.remove(file)
+
+
+class DiffieHellmanTesting(unittest.TestCase):
+    def testDiffieHellmanSECP384R1(self):
+        Alice = DiffieHellmanKey()
+        Bob = DiffieHellmanKey()
+        Alice.generateSharedKey(Bob.publicKey)
+        Bob.generateSharedKey(Alice.publicKey)
+        self.assertEqual(Alice.sharedKey, Bob.sharedKey, "Diffie-Hellman failed.")
 
 
 if __name__ == '__main__':
