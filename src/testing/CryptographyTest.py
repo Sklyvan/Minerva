@@ -89,12 +89,21 @@ class RSATesting(unittest.TestCase):
 
 
 class DiffieHellmanTesting(unittest.TestCase):
-    def testDiffieHellmanSECP384R1(self):
+    def testEncryptionDecryption(self):
         Alice = DiffieHellmanKey()
         Bob = DiffieHellmanKey()
         Alice.generateSharedKey(Bob.publicKey)
         Bob.generateSharedKey(Alice.publicKey)
         self.assertEqual(Alice.sharedKey, Bob.sharedKey, "Diffie-Hellman failed.")
+
+    def testImportExport(self):
+        Key = DiffieHellmanKey()
+        Key.generateSharedKey(ec.generate_private_key(ec.SECP384R1()).public_key())
+        Key.exportDerivedKey("TestKey.dh")
+        importedKey = importDerivedKey("TestKey.dh")
+        self.assertEqual(Key.derivedKey, importedKey, "Import/Export failed.")
+
+        for file in glob.glob("*.dh"): os.remove(file)
 
 
 if __name__ == '__main__':
