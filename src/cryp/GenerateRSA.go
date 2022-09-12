@@ -4,6 +4,7 @@ import (
 	"C"
 	"crypto/rand"
 	"crypto/rsa"
+	"crypto/sha256"
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
@@ -111,12 +112,33 @@ func exportToPEMFormat(keys RSAKey, fileName string) {
 	}
 }
 
-func main() {
-	keySize := os.Args[1]
-	fileName := os.Args[2]
-	keySizeInt, _ := strconv.Atoi(keySize)
-	keysPair := GenerateRSAKeyPair(keySizeInt)
-	exportToPEMFormat(keysPair, fileName)
+func verifyKeys(keys RSAKey) bool { // Debugging function
+	// Checks if Dec(Enc(m)) = m
+	message := []byte("Hello World!")
+	ciphertext, err := rsa.EncryptOAEP(sha256.New(), rand.Reader, keys.PublicKey, message, nil)
+	if err != nil {
+		fmt.Println("Fatal error ", err.Error())
+		os.Exit(1)
+	}
+	plaintext, err := rsa.DecryptOAEP(sha256.New(), rand.Reader, keys.PrivateKey, ciphertext, nil)
+	if err != nil {
+		fmt.Println("Fatal error ", err.Error())
+		os.Exit(1)
+	}
+	return string(plaintext) == string(message)
 }
 
-// Compile with: go build GenerateRSA.go
+func areEqual(keys1 RSAKey, keys2 RSAKey) bool { // Debugging function
+	return keys1.KeySize == keys2.KeySize &&
+		keys1.CreationTime == keys2.CreationTime &&
+		keys1.PublicKey.E == keys2.PublicKey.E &&
+		keys1.PublicKey.N.Cmp(keys2.PublicKey.N) == 0 &&
+		keys1.PrivateKey.D.Cmp(keys2.PrivateKey.D) == 0 &&
+		keys1.PrivateKey.Primes[0].Cmp(keys2.PrivateKey.Primes[0]) == 0 &&
+		keys1.PrivateKey.Primes[1].Cmp(keys2.PrivateKey.Primes[1]) == 0
+}
+
+func GenerateKeys(keySize int, fileName string) {
+	keysPair := GenerateRSAKeyPair(keySize)
+	exportToPEMFormat(keysPair, fileName)
+}
