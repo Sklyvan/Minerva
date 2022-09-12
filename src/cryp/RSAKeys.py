@@ -1,5 +1,7 @@
 import subprocess
 
+import Crypto.Hash.SHA1
+
 from src.cryp.Imports import *
 
 class RSAKeys:
@@ -21,6 +23,52 @@ class RSAKeys:
         system(f'../cryp/RSA {keySize} {fileName}')
         self.importKeys(self.filename)
 
+    def canEncrypt(self, inputSize: int, keySize: int) -> bool:
+        """
+        Checks if the input can be encrypted with the key.
+        :param inputSize: Size of the input in bytes.
+        :param keySize: Size of the key in bits.
+        :return: Boolean value of the verification.
+        """
+        keyBytes = int(keySize / 8)
+        if inputSize > keyBytes - 2 - 2 * SHA256.digest_size:
+            return False
+        return True
+
+    def canDecrypt(self, inputSize: int, keySize: int) -> bool:
+        """
+        Checks if the input can be decrypted with the key.
+        :param inputSize: Size of the input in bytes.
+        :param keySize: Size of the key in bits.
+        :return: Boolean value of the verification.
+        """
+        keyBytes = int(keySize / 8)
+        if inputSize > keyBytes:
+            return False
+        return True
+
+    def splitMessage(self, message: bytes, keySize: int) -> [bytes]:
+        """
+        Splits a message into chunks that can be encrypted with the given key.
+        :param message: Bytes to be split.
+        :param keySize: Size of the key in bits.
+        :return: List of bytes objects of the chunks.
+        """
+        keyBytes = int(keySize / 8)
+        chunkSize = keyBytes - 2 - 2 * SHA256.digest_size
+        return [message[i:i+chunkSize] for i in range(0, len(message), chunkSize)]
+
+    def splitCipher(self, cipher: bytes, keySize: int) -> [bytes]:
+        """
+        Splits a cipher into chunks that can be decrypted with the given key.
+        :param cipher: Bytes to be split.
+        :param keySize: Size of the key in bits.
+        :return: List of bytes objects of the chunks.
+        """
+        keyBytes = int(keySize / 8)
+        chunkSize = keyBytes
+        return [cipher[i:i+chunkSize] for i in range(0, len(cipher), chunkSize)]
+
     def encrypt(self, text: bytes, withKey: RSA.RsaKey, ignoreWarning=False) -> bytes:
         """
         Encrypts a text using the given Public Key.
@@ -33,17 +81,46 @@ class RSAKeys:
             if not ignoreWarning:
                 print("WARNING: RSAKeys.encrypt() was passed a non-bytes object.")
             text = text.encode()
-        cipherEnc = PKCS1_OAEP.new(withKey)
+        if not self.canEncrypt(len(text), withKey.size_in_bits()):
+            messageParts = self.splitMessage(text, withKey.size_in_bits())
+            cipher = b""
+            for part in messageParts:
+                cipher += self.encrypt(part, withKey)
+            return cipher
+        cipherEnc = PKCS1_OAEP.new(withKey, hashAlgo=SHA256)
         return cipherEnc.encrypt(text)
 
     def decrypt(self, cipher: bytes, ignoreWarning=False) -> bytes:
         """
         Decrypts a cipher using the stored Private Key.
-        :param cipher: Bytes to be decrypted.
+        :param cipher: Bytes/Array of bytes to be decrypted.
         :param ignoreWarning: Inform or not the user if the cipher is not bytes.
         :return: Bytes object of the plain text.
         """
         if type(cipher) not in [bytes, bytearray]:
+            if not ignoreWarning:
+                print("WARNING: RSAKeys.decrypt() was passed a non-bytes object.")
+            cipher = cipher.encode()
+        if not self.canDecrypt(len(cipher), self.keySize):
+            cipherParts = self.splitCipher(cipher, self.keySize)
+            plain = b""
+            for part in cipherParts:
+                plain += self.decrypt(part)
+            return plain
+        try:
+            return self.cipherDec.decrypt(cipher)
+        except ValueError:
+            raise WrongSecretKeyError("Wrong Secret Key. Please check if the Secret Key is correct.")
+            return False
+
+    def decrypt_(self, cipher: bytes, ignoreWarning=False) -> bytes:
+        """
+        Decrypts a cipher using the stored Private Key.
+        :param cipher: Bytes/Array of bytes to be decrypted.
+        :param ignoreWarning: Inform or not the user if the cipher is not bytes.
+        :return: Bytes object of the plain text.
+        """
+        if type(cipher[0]) not in [bytes, bytearray]:
             if not ignoreWarning:
                 print("WARNING: RSAKeys.decrypt() was passed a non-bytes object.")
             cipher = cipher.encode()
@@ -124,7 +201,7 @@ class RSAKeys:
             with open(fileName+'-Info.pem', 'r') as file:
                 self.keySize = int(file.readline())
                 self.creationTime = float(file.readline())
-            self.cipherDec = PKCS1_OAEP.new(self.secretKey)
+            self.cipherDec = PKCS1_OAEP.new(self.secretKey, hashAlgo=SHA256)
             self.cipherSig = pkcs1_15.new(self.secretKey)
             return True
         except:
