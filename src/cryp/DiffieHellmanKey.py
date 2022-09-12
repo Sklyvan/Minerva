@@ -53,3 +53,7 @@ class DiffieHellmanKey:
 
     def __hash__(self):
         return hash(self.derivedKey)
+
+def importDerivedKey(path: str):
+    with open(path, 'rb') as f:
+        return f.read()
