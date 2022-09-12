@@ -7,8 +7,7 @@ class RSATesting(unittest.TestCase):
     def testEncryptionDecryption1024(self):
         keys = RSAKeys(1024, fileName='TestKey')
         # Generate a random text
-        text = ''.join([chr(random.randint(0, 255)) for i in range(0, random.randint(0, 50))])
-        text = text.encode()
+        text = (''.join([chr(random.randint(32, 126)) for _ in range(25)])).encode()
         cipher = keys.encrypt(text, keys.publicKey)
         self.assertEqual(keys.decrypt(cipher), text,
                          "1024 Encryption/Decryption failed.")
@@ -17,8 +16,7 @@ class RSATesting(unittest.TestCase):
     def testSigningVerification1024(self):
         keys = RSAKeys(1024, fileName='TestKey')
         # Generate a random text
-        text = ''.join([chr(random.randint(0, 255)) for i in range(0, random.randint(0, 50))])
-        text = text.encode()
+        text = (''.join([chr(random.randint(32, 126)) for _ in range(25)])).encode()
         signature = keys.sign(text)
         self.assertTrue(keys.verify(text, signature, keys.publicKey),
                         "1024 Signing/Verification failed.")
@@ -27,8 +25,7 @@ class RSATesting(unittest.TestCase):
     def testEncryptionDecryption2048(self):
         keys = RSAKeys(2048, fileName='TestKey')
         # Generate a random text
-        text = ''.join([chr(random.randint(0, 255)) for i in range(0, random.randint(0, 100))])
-        text = text.encode()
+        text = (''.join([chr(random.randint(32, 126)) for _ in range(50)])).encode()
         cipher = keys.encrypt(text, keys.publicKey)
         self.assertEqual(keys.decrypt(cipher), text,
                          "2048 Encryption/Decryption failed.")
@@ -37,8 +34,7 @@ class RSATesting(unittest.TestCase):
     def testSigningVerification2048(self):
         keys = RSAKeys(2048, fileName='TestKey')
         # Generate a random text
-        text = ''.join([chr(random.randint(0, 255)) for i in range(0, random.randint(0, 100))])
-        text = text.encode()
+        text = (''.join([chr(random.randint(32, 126)) for _ in range(50)])).encode()
         signature = keys.sign(text)
         self.assertTrue(keys.verify(text, signature, keys.publicKey),
                         "2048 Signing/Verification failed.")
@@ -47,8 +43,7 @@ class RSATesting(unittest.TestCase):
     def testEncryptionDecryption4096(self):
         keys = RSAKeys(4096, fileName='TestKey')
         # Generate a random text
-        text = ''.join([chr(random.randint(0, 255)) for i in range(0, random.randint(0, 100))])
-        text = text.encode()
+        text = (''.join([chr(random.randint(32, 126)) for _ in range(50)])).encode()
         cipher = keys.encrypt(text, keys.publicKey)
         self.assertEqual(keys.decrypt(cipher), text,
                          "4096 Encryption/Decryption failed.")
@@ -57,8 +52,7 @@ class RSATesting(unittest.TestCase):
     def testSigningVerification4096(self):
         keys = RSAKeys(4096, fileName='TestKey')
         # Generate a random text
-        text = ''.join([chr(random.randint(0, 255)) for i in range(0, random.randint(0, 100))])
-        text = text.encode()
+        text = (''.join([chr(random.randint(32, 126)) for _ in range(50)])).encode()
         signature = keys.sign(text)
         self.assertTrue(keys.verify(text, signature, keys.publicKey),
                         "4096 Signing/Verification failed.")
@@ -67,8 +61,7 @@ class RSATesting(unittest.TestCase):
     def testEncryptionDecryption8192(self):
         keys = RSAKeys(8192, fileName='TestKey')
         # Generate a random text
-        text = ''.join([chr(random.randint(0, 255)) for i in range(0, random.randint(0, 100))])
-        text = text.encode()
+        text = (''.join([chr(random.randint(32, 126)) for _ in range(50)])).encode()
         cipher = keys.encrypt(text, keys.publicKey)
         self.assertEqual(keys.decrypt(cipher), text,
                          "8192 Encryption/Decryption failed.")
@@ -77,8 +70,7 @@ class RSATesting(unittest.TestCase):
     def testSigningVerification8192(self):
         keys = RSAKeys(8192, fileName='TestKey')
         # Generate a random text
-        text = ''.join([chr(random.randint(0, 255)) for i in range(0, random.randint(0, 100))])
-        text = text.encode()
+        text = (''.join([chr(random.randint(32, 126)) for _ in range(50)])).encode()
         signature = keys.sign(text)
         self.assertTrue(keys.verify(text, signature, keys.publicKey),
                         "8192 Signing/Verification failed.")
