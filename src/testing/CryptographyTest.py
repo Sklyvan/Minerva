@@ -2,6 +2,7 @@ import unittest
 import random, glob, os
 from src.cryp.RSAKeys import *
 from src.cryp.DiffieHellmanKey import *
+from src.cryp.AES import *
 
 class RSATesting(unittest.TestCase):
     def testEncryptionDecryption1024(self):
@@ -97,13 +98,28 @@ class DiffieHellmanTesting(unittest.TestCase):
         self.assertEqual(Alice.sharedKey, Bob.sharedKey, "Diffie-Hellman failed.")
 
     def testImportExport(self):
-        Key = DiffieHellmanKey()
-        Key.generateSharedKey(ec.generate_private_key(ec.SECP384R1()).public_key())
-        Key.exportDerivedKey("TestKey.dh")
+        key = DiffieHellmanKey()
+        key.generateSharedKey(ec.generate_private_key(ec.SECP384R1()).public_key())
+        key.exportDerivedKey("TestKey.dh")
         importedKey = importDerivedKey("TestKey.dh")
-        self.assertEqual(Key.derivedKey, importedKey, "Import/Export failed.")
+        self.assertEqual(key.derivedKey, importedKey, "Import/Export failed.")
 
         for file in glob.glob("*.dh"): os.remove(file)
+
+
+class AESTesting(unittest.TestCase):
+    def testEncryptionDecryption(self):
+        key = os.urandom(32)
+        nonce = os.urandom(8)
+        message = urandom(1000)
+
+        c1 = KeyAES(key, nonce)
+        encMessage = c1.encrypt(message)
+
+        c2 = KeyAES(key, nonce)
+        decMessage = c2.decrypt(encMessage)
+
+        self.assertEqual(message, decMessage, "AES Encryption/Decryption failed.")
 
 
 if __name__ == '__main__':
