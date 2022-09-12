@@ -23,17 +23,21 @@ func main() {
 			message += " " + os.Args[i]
 		}
 
-		// KEY := importFromPEMFormat(keyFileName)
+		/*
+			WARNING: This script is not used and should be not used to verify messages since it does not work.
+			After running some GoLang vs Python benchmarks, the GoLang Encryption/Decryption is slower.
+			This script is just here for reference. It is not used in the project.
+		*/
 
 		if operation == "ENC" {
 			KEY := importPublicKey(keyFileName + "-Publ.pem")
 			ciphertext := encrypt(message, KEY)
-			// The ciphertext is a byte array, so we need to convert it to a base64 string
+			// The ciphertext is a byte array, so we need to convert it to a Base64 string
 			out := base64.StdEncoding.EncodeToString(ciphertext)
 			fmt.Println(out)
 		} else if operation == "DEC" {
 			KEY := importPrivateKey(keyFileName + "-Priv.pem")
-			// The ciphertext is a base64 string, so we need to convert it to a byte array
+			// The ciphertext is a Base64 string, so we need to convert it to a byte array
 			ciphertext, _ := base64.StdEncoding.DecodeString(message)
 			out := decrypt([]byte(ciphertext), KEY)
 			fmt.Println(out)

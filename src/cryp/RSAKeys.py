@@ -36,14 +36,6 @@ class RSAKeys:
         cipherEnc = PKCS1_OAEP.new(withKey)
         return cipherEnc.encrypt(text)
 
-    def encrypt_(self, text: bytes, withKey: RSA.RsaKey, ignoreWarning=False) -> str:
-        out = subprocess.check_output(f'../cryp/RSA {self.filename} ENC {text}', shell=True)
-        return out[:-1].decode()
-
-    def decrypt_(self, cipher: str, ignoreWarning=False) -> bytes:
-        out = subprocess.check_output(f'../cryp/RSA {self.filename} DEC {cipher}', shell=True)
-        return out[1:-1].replace(b'\\\\', b'\\') # TODO: This solution works, but it is not the best.
-
     def decrypt(self, cipher: bytes, ignoreWarning=False) -> bytes:
         """
         Decrypts a cipher using the stored Private Key.
