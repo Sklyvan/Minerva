@@ -638,5 +638,5 @@ oldUSB/
 *.pkl
 *.json
 
-src/testing/GenerateRSA
-src/cryp/GenerateRSA
+src/testing/RSA
+src/cryp/RSA
