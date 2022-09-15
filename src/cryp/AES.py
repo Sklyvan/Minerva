@@ -22,3 +22,6 @@ class KeyAES:
 
     def __eq__(self, other: 'KeyAES') -> bool:
         return self.key == other.key and self.nonce == other.nonce
+
+    def __len__(self):
+        return len(self.key) + len(self.nonce)
