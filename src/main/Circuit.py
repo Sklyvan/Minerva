@@ -1,5 +1,6 @@
 from src.SystemExceptions import *
 from src.cryp.DiffieHellmanKey import *
+import json, base64
 
 class Node:
     def __init__(self, nodeIP: str, key: DiffieHellmanKey):
@@ -7,22 +8,40 @@ class Node:
         self.key = key
 
     def isOnline(self) -> bool:
+        """
+        This method checks if the node is online or not.
+        The system pings the nodeIP to check if it is online.
+        :return: True/False
+        """
         raise NotImplementedError("This method is not implemented yet.")
 
     def checkKey(self) -> bool:
-        raise NotImplementedError("This method is not implemented yet.")
+        return self.key.derivedKey is not None
 
     def exportNode(self, path: str):
-        raise NotImplementedError("This method is not implemented yet.")
+        with open(path, "w") as f:
+            f.write(json.dumps(self.asJSON()))
 
     def importNode(self, path: str):
-        raise NotImplementedError("This method is not implemented yet.")
+        with open(path, "r") as f:
+            node = json.loads(f.read())
+        importedKey = DiffieHellmanKey()
+        importedKey.derivedKey = base64.b64decode(node["DiffieHellmanKey"])
+        self.nodeIP = node["IP"]
+        self.key = importedKey
 
     def __str__(self):
         return f"Node {self.nodeIP}"
 
     def __eq__(self, other: "Node"):
-        return self.nodeIP == other.nodeIP
+        return self.nodeIP == other.nodeIP and self.key == other.key
+
+    def asJSON(self):
+        asDict = {
+            "IP": str(self.nodeIP),
+            "DiffieHellmanKey": repr(self.key)
+        }
+        return asDict
 
 
 class Circuit:
@@ -43,13 +62,22 @@ class Circuit:
         return all((node.isOnline() for node in self.nodes))
 
     def checkKeys(self) -> bool:
-        raise NotImplementedError("This method is not implemented yet.")
+        return all((node.checkKey() for node in self.nodes))
 
     def exportCircuit(self, path: str):
-        raise NotImplementedError("This method is not implemented yet.")
+        with open(path, "w") as f:
+            f.write(json.dumps(self.asJSON()))
 
     def importCircuit(self, path: str):
-        raise NotImplementedError("This method is not implemented yet.")
+        with open(path, "r") as f:
+            circuit = json.loads(f.read())
+        self.circuitID = circuit["ID"]
+        self.size = 0
+        for node in circuit["Nodes"]:
+            importedKey = DiffieHellmanKey()
+            importedKey.derivedKey = base64.b64decode(node["DiffieHellmanKey"])
+            self.nodes.append(Node(node["IP"], importedKey))
+            self.size += 1
 
     def __len__(self):
         return self.size
@@ -81,3 +109,16 @@ class Circuit:
 
     def __reversed__(self):
         return reversed(self.nodes)
+
+    def __eq__(self, other: "Circuit"):
+        sameID = self.circuitID == other.circuitID
+        sameSize = self.size == other.size
+        sameNodes = all((self.nodes[i] == other.nodes[i] for i in range(self.size)))
+        return sameID and sameSize and sameNodes
+
+    def asJSON(self):
+        asDict = {
+            "ID": str(self.circuitID),
+            "Nodes": [node.asJSON() for node in self.nodes]
+        }
+        return asDict
