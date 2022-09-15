@@ -4,17 +4,47 @@ import glob, os
 
 class UserTest(unittest.TestCase):
     def testImportExportData(self):
-        MyUser1 = User(1, "MyUser", [RSAKeys(fileName='EncKeys'), RSAKeys(fileName='SigKeys')],
-                       "127.0.0.1", 'None', 'None', 'None', MessagesDB('Messages.db'))
+        K1 = DiffieHellmanKey()
+        K2 = DiffieHellmanKey()
+        K3 = DiffieHellmanKey()
+        K4 = DiffieHellmanKey()
 
-        MyUser1.exportUser('User.json')
+        K1.generateSharedKey(K2.publicKey)
+        K2.generateSharedKey(K1.publicKey)
+        K3.generateSharedKey(K4.publicKey)
+        K4.generateSharedKey(K3.publicKey)
 
-        MyUser2 = User(None, None, [None, None], None)
-        MyUser2.importUser('User.json')
+        N1 = Node("127.0.0.1", K1)
+        N2 = Node("127.0.0.2", K2)
+        N3 = Node("127.0.0.3", K3)
+        N4 = Node("127.0.0.4", K4)
 
-        self.assertEqual(MyUser1, MyUser2)
+        Circuit1 = Circuit("CIRCUIT1", [N1, N2])
+        Circuit2 = Circuit("CIRCUIT1", [N3, N4])
 
-        for file in glob.glob("*.pem"): os.remove(file)
+        ExampleTable = ForwardingTable()
+        ExampleTable.addEntry("CIRCUIT1", N1)
+        ExampleTable.addEntry("CIRCUIT2", N2)
+        ExampleTable.addEntry("CIRCUIT3", N3)
+        ExampleTable.addEntry("CIRCUIT4", N4)
+
+        User1 = PublicUser(1, "User1", [RSA.generate(2048).public_key(), RSA.generate(2048).public_key()], Circuit1)
+        User2 = PublicUser(2, "User2", [RSA.generate(2048).public_key(), RSA.generate(2048).public_key()], Circuit2)
+
+        Friends = Contacts()
+        Friends.addContact(User1)
+        Friends.addContact(User2)
+
+        MyUser = User(1, "MyUser", [RSAKeys(fileName='../keys/EncKeys'), RSAKeys(fileName='../keys/SigKeys')], "127.0.0.1",
+                      forwardingTable=ExampleTable, contacts=Friends, messages=MessagesDB(dbPath='Messages.db'))
+        MyUser.exportUser('MyUser.json')
+
+        MyUserCheck = User(None, None, [None, None], None)
+        MyUserCheck.importUser('MyUser.json')
+
+        self.assertEqual(MyUser, MyUserCheck, "Users are not equal.")
+
+        for file in glob.glob("../keys/*.pem"): os.remove(file)
         for file in glob.glob("*.db"): os.remove(file)
         for file in glob.glob("*.json"): os.remove(file)
 
