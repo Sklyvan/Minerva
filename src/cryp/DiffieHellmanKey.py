@@ -48,8 +48,8 @@ class DiffieHellmanKey:
     def __str__(self):
         return f"DiffieHellmanKey object with derived key {self.derivedKey}"
 
-    def __repr__(self):
-        return f"DiffieHellmanKey object with derived key {self.derivedKey}"
+    def __repr__(self): # This function is used to store the object in a JSON file.
+        return b64encode(self.derivedKey).decode()
 
     def __hash__(self):
         return hash(self.derivedKey)
