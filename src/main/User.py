@@ -2,14 +2,14 @@ from src.main.Imports import *
 
 class User:
     def __init__(self, userID: int, userName: str, rsaKeys: [RSAKeys, RSAKeys], IP: str,
-                 forwardingTable: ForwardingTable = None, messagesQueue: Queue = None, userFriends: dict = None, messages: MessagesDB = None):
+                 forwardingTable: ForwardingTable = None, messagesQueue: Queue = None, contacts: Contacts = None, messages: MessagesDB = None):
         self.userID = userID
         self.userName = userName
         self.encryptionKeys, self.signingKeys = rsaKeys
         self.IP = IP
         self.forwardingTable = forwardingTable
         self.messagesQueue = messagesQueue
-        self.userFriends = userFriends
+        self.contacts = contacts
         self.messages = messages
 
     def regenerateKeys(self):
@@ -39,9 +39,15 @@ class User:
             self.encryptionKeys = RSAKeys(toImport=True, fileName=data["EncryptionKeys"])
             self.signingKeys = RSAKeys(toImport=True, fileName=data["SigningKeys"])
             self.IP = data["IP"]
-            self.forwardingTable = data["ForwardingTable"]
-            self.messagesQueue = data["MessagesQueue"]
-            self.userFriends = data["UserFriends"]
+
+            self.forwardingTable = ForwardingTable()
+            self.forwardingTable.readTable(data["ForwardingTable"])
+
+            self.messagesQueue = None
+
+            self.contacts = Contacts()
+            self.contacts.readContacts(data["UserFriends"])
+
             self.messages = MessagesDB(dbPath=data["Messages"])
 
     def asJSON(self) -> dict:
@@ -50,9 +56,9 @@ class User:
                 "EncryptionKeys": self.encryptionKeys.filename,
                 "SigningKeys": self.signingKeys.filename,
                 "IP": self.IP,
-                "ForwardingTable": 'None', # TODO: Implement forwarding table.
-                "MessagesQueue": 'None', # TODO: Implement messages queue.
-                "UserFriends": 'None', # TODO: Implement user friends.
+                "ForwardingTable": self.forwardingTable.asJSON(),
+                "MessagesQueue": None, # TODO: Implement messages queue.
+                "UserFriends": self.contacts.asJSON(),
                 "Messages": self.messages.dbPath}
 
     def __eq__(self, other):
@@ -63,7 +69,7 @@ class User:
                and self.IP == other.IP \
                and self.forwardingTable == other.forwardingTable \
                and self.messagesQueue == other.messagesQueue \
-               and self.userFriends == other.userFriends \
+               and self.contacts == other.contacts \
                and self.messages == other.messages
 
     def __str__(self):
