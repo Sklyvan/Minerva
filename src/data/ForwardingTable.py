@@ -33,6 +33,12 @@ class ForwardingTable:
             importedKey.derivedKey = base64.b64decode(node["DiffieHellmanKey"])
             self.addEntry(circuitID, Node(node["IP"], importedKey))
 
+    def readTable(self, jsonContent: dict):
+        for circuitID, node in jsonContent.items():
+            importedKey = DiffieHellmanKey()
+            importedKey.derivedKey = base64.b64decode(node["DiffieHellmanKey"])
+            self.addEntry(circuitID, Node(node["IP"], importedKey))
+
     def __getitem__(self, circuitID: str) -> Node:
         return self.table[circuitID]
 

@@ -9,7 +9,10 @@ class PublicUser:
         self.userID = userID
         self.userName = userName
         self.encryptionKey, self.verificationKey = rsaPublicKeys
-        self.throughCircuit = throughCircuit
+        if type(throughCircuit) is Circuit:
+            self.throughCircuitID = throughCircuit.circuitID
+        else:
+            self.throughCircuitID = None
 
     def asJSON(self):
         return {
@@ -17,8 +20,15 @@ class PublicUser:
             "UserName": self.userName,
             "EncryptionKey": self.encryptionKey.export_key().decode("utf-8"),
             "VerificationKey": self.verificationKey.export_key().decode("utf-8"),
-            "ThroughCircuit": self.throughCircuit.asJSON()
+            "ThroughCircuit": self.throughCircuitID
         }
+
+    def readUser(self, data: str):
+        self.userID = data["UserID"]
+        self.userName = data["UserName"]
+        self.encryptionKey = RSA.import_key(data["EncryptionKey"])
+        self.verificationKey = RSA.import_key(data["VerificationKey"])
+        self.throughCircuitID = data["ThroughCircuit"]
 
     def __str__(self):
         return f"User {self.userName} (ID: {self.userID})"
@@ -30,7 +40,7 @@ class PublicUser:
         idCheck = self.userID == other.userID
         nameCheck = self.userName == other.userName
         encryptionKeyCheck = self.encryptionKey == other.encryptionKey
-        circuitCheck = self.throughCircuit == other.throughCircuit
+        circuitCheck = self.throughCircuitID == other.throughCircuitID
         return idCheck and nameCheck and encryptionKeyCheck and circuitCheck
 
 class Contacts:
@@ -45,6 +55,12 @@ class Contacts:
 
     def asJSON(self):
         return [contact.asJSON() for contact in self.contacts.values()]
+
+    def readContacts(self, json: list):
+        for contact in json:
+            user = PublicUser(None, None, [None, None], None)
+            user.readUser(contact)
+            self.addContact(user)
 
     def __str__(self):
         return f"Contacts: {self.contacts}"
