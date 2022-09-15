@@ -1,8 +1,11 @@
+import Crypto.PublicKey.RSA
+
 from src.cryp.Imports import RSA
 from src.main.Circuit import Circuit
 
 class PublicUser:
-    def __init__(self, userID: int, userName: str, rsaPublicKeys: [RSA.RsaKey, RSA.RsaKey], throughCircuit: Circuit):
+    def __init__(self, userID: int, userName: str,
+                 rsaPublicKeys: [Crypto.PublicKey.RSA.RsaKey, Crypto.PublicKey.RSA.RsaKey], throughCircuit: Circuit):
         self.userID = userID
         self.userName = userName
         self.encryptionKey, self.verificationKey = rsaPublicKeys
@@ -29,3 +32,31 @@ class PublicUser:
         encryptionKeyCheck = self.encryptionKey == other.encryptionKey
         circuitCheck = self.throughCircuit == other.throughCircuit
         return idCheck and nameCheck and encryptionKeyCheck and circuitCheck
+
+class Contacts:
+    def __init__(self, contacts = {}):
+        self.contacts = contacts # contacts[userName] = PublicUser
+
+    def addContact(self, contact: PublicUser):
+        self.contacts[contact.userName] = contact
+
+    def removeContact(self, contact: PublicUser):
+        del self.contacts[contact.userName]
+
+    def asJSON(self):
+        return [contact.asJSON() for contact in self.contacts.values()]
+
+    def __str__(self):
+        return f"Contacts: {self.contacts}"
+
+    def __repr__(self):
+        return f"Contacts object with {len(self.contacts)} contacts."
+
+    def __eq__(self, other: "Contacts"):
+        for contact in self.contacts.values():
+            if contact not in other.contacts.values():
+                return False
+        return True
+
+    def __len__(self):
+        return len(self.contacts)
