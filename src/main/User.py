@@ -34,26 +34,26 @@ class User:
     def importUser(self, path: str):
         with open(path, "r") as f:
             data = json.loads(f.read())
-            self.userID = data["userID"]
-            self.userName = data["userName"]
-            self.encryptionKeys = RSAKeys(toImport=True, fileName=data["encryptionKeys"])
-            self.signingKeys = RSAKeys(toImport=True, fileName=data["signingKeys"])
+            self.userID = data["UserID"]
+            self.userName = data["UserName"]
+            self.encryptionKeys = RSAKeys(toImport=True, fileName=data["EncryptionKeys"])
+            self.signingKeys = RSAKeys(toImport=True, fileName=data["SigningKeys"])
             self.IP = data["IP"]
-            self.forwardingTable = data["forwardingTable"]
-            self.messagesQueue = data["messagesQueue"]
-            self.userFriends = data["userFriends"]
-            self.messages = MessagesDB(dbPath=data["messages"])
+            self.forwardingTable = data["ForwardingTable"]
+            self.messagesQueue = data["MessagesQueue"]
+            self.userFriends = data["UserFriends"]
+            self.messages = MessagesDB(dbPath=data["Messages"])
 
     def asJSON(self) -> dict:
-        return {"userID": self.userID,
-                "userName": self.userName,
-                "encryptionKeys": self.encryptionKeys.filename,
-                "signingKeys": self.signingKeys.filename,
+        return {"UserID": self.userID,
+                "UserName": self.userName,
+                "EncryptionKeys": self.encryptionKeys.filename,
+                "SigningKeys": self.signingKeys.filename,
                 "IP": self.IP,
-                "forwardingTable": 'None', # TODO: Implement forwarding table.
-                "messagesQueue": 'None', # TODO: Implement messages queue.
-                "userFriends": 'None', # TODO: Implement user friends.
-                "messages": self.messages.dbPath}
+                "ForwardingTable": 'None', # TODO: Implement forwarding table.
+                "MessagesQueue": 'None', # TODO: Implement messages queue.
+                "UserFriends": 'None', # TODO: Implement user friends.
+                "Messages": self.messages.dbPath}
 
     def __eq__(self, other):
         return self.userID == other.userID \
