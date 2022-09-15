@@ -1,4 +1,5 @@
 from src.data.Imports import *
+from src.cryp import AES
 
 class Message:
     def __init__(self, messageID: int, content: bytes, signature: bytes, circuitUsed: Circuit,
@@ -140,6 +141,35 @@ class MessagesDB:
             return msg[0]
         else:
             raise MessageNotFoundError(f"Message {messageID} not found at {self.dbPath} database.")
+
+    def encryptDatabase(self, key: str) -> (bytes, bytes):
+        """
+        This function opens the content on the dbPath file, reads it as bytes
+        and encrypts it with the key provided and the random 16 bytes.
+        It returns the encrypted content as bytes and the nonce.
+        :param key: Any string used to encrypt the data.
+        :return: Database content encrypted as bytes and the nonce used.
+        """
+        keyBytes, nonce = key.encode(), urandom(16)
+        with open(self.dbPath, "rb") as f:
+            dbContent = f.read()
+
+        encryptor = AES.new(keyBytes, nonce)
+        return encryptor.encrypt(dbContent), nonce
+
+    def decryptDatabase(self, key: str, nonce: bytes) -> bytes:
+        """
+        This function decrypts the content of the dbPath file with the key and nonce provided.
+        :param key: Any string used to decrypt the data.
+        :param nonce: The nonce used to encrypt the data.
+        :return: Database content decrypted as bytes.
+        """
+        keyBytes = key.encode()
+        with open(self.dbPath, "rb") as f:
+            dbContent = f.read()
+
+        decryptor = AES.new(keyBytes, nonce)
+        return decryptor.decrypt(dbContent)
 
     def __len__(self):
         return self.numberMessages
