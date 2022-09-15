@@ -1,4 +1,6 @@
 from src.cryp.RSAKeys import *
+from src.cryp.DiffieHellmanKey import *
+from src.cryp.AES import *
 from src.data.MessagesQueue import *
 from src.data.ForwardingTable import *
 from src.data.MessagesDB import *
