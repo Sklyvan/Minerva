@@ -9,7 +9,7 @@ class PublicUser:
         self.userID = userID
         self.userName = userName
         self.encryptionKey, self.verificationKey = rsaPublicKeys
-        if type(throughCircuit) is Circuit:
+        if type(throughCircuit) is Circuit: # Sometimes can be instantiated with a None, so we check for that.
             self.throughCircuitID = throughCircuit.circuitID
         else:
             self.throughCircuitID = None
