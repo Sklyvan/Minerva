@@ -1,4 +1,4 @@
-from src.cryp.Imports import RSA
+from src.cryp.Imports import RSA, PKCS1_OAEP, pkcs1_15, SHA256
 from src.netw.Circuit import Circuit
 
 class PublicUser:
@@ -7,7 +7,45 @@ class PublicUser:
         self.userID = userID
         self.userName = userName
         self.encryptionKey, self.verificationKey = rsaPublicKeys
+        self.cipherEnc = PKCS1_OAEP.new(self.encryptionKey, hashAlgo=SHA256)
+        self.cipherVer = pkcs1_15.new(self.verificationKey)
         self.throughCircuit = throughCircuit
+
+    def canEncrypt(self, inputSize: int, keySize: int) -> bool:
+        """
+        Checks if the input can be encrypted with the key.
+        :param inputSize: Size of the input in bytes.
+        :param keySize: Size of the key in bits.
+        :return: Boolean value of the verification.
+        """
+        keyBytes = int(keySize / 8)
+        if inputSize > keyBytes - 2 - 2 * SHA256.digest_size:
+            return False
+        return True
+
+    def splitMessage(self, message: bytes, keySize: int) -> [bytes]:
+        """
+        Splits a message into chunks that can be encrypted with the given key.
+        :param message: Bytes to be split.
+        :param keySize: Size of the key in bits.
+        :return: List of bytes objects of the chunks.
+        """
+        keyBytes = int(keySize / 8)
+        chunkSize = keyBytes - 2 - 2 * SHA256.digest_size
+        return [message[i:i+chunkSize] for i in range(0, len(message), chunkSize)]
+
+    def encrypt(self, content: bytes) -> bytes:
+        if not self.canEncrypt(len(content), self.encryptionKey.size_in_bits()):
+            messageParts = self.splitMessage(content, self.encryptionKey.size_in_bits())
+            cipher = b""
+            for part in messageParts:
+                cipher += self.encrypt(part)
+            return cipher
+        return self.cipherEnc.encrypt(content)
+
+    def verify(self, content: bytes, signature: bytes) -> bool:
+        return self.cipherVer.verify(content, signature)
+
     def asJSON(self):
         return {
             "UserID": self.userID,
