@@ -21,7 +21,7 @@ class MessageTest(unittest.TestCase):
         Message1U1.sign()
 
         Message1U2 = Message(1, Message1U1.content, Message1U1.signature, Circuit(), User1Public, User2,
-                             Message1U1.timeSent, int(time()), True, True) # Simulate the message being sent to User 2
+                             Message1U1.timeCreated, int(time()), True, True) # Simulate the message being sent to User 2
         self.assertTrue(Message1U2.verify(), "Verification failed.") # Verify the signature
         Message1U2.decrypt() # Decrypt the message
         self.assertEqual(Message1U2.content, b"Hello World!", "Decryption failed.")
@@ -45,7 +45,7 @@ class MessageTest(unittest.TestCase):
         Message1U1.sign()
 
         Message1U2 = Message(2, Message1U1.content, Message1U1.signature, Circuit(), User1Public, User2,
-                             Message1U1.timeSent, int(time()), True, True)
+                             Message1U1.timeCreated, int(time()), True, True)
         Message1U2.verify()
         Message1U2.decrypt()
 
@@ -74,7 +74,7 @@ class MessageTest(unittest.TestCase):
         Message1U1.sign()
 
         Message1U2 = Message(2, Message1U1.content, Message1U1.signature, Circuit(), User1Public, User2,
-                             Message1U1.timeSent, int(time())+10, True, True)
+                             Message1U1.timeCreated, int(time()) + 10, True, True)
         Message1U2.verify()
         Message1U2.decrypt()
 
@@ -103,7 +103,7 @@ class MessageTest(unittest.TestCase):
         Message1U1.sign()
 
         Message1U2 = Message(2, Message1U1.content, Message1U1.signature, Circuit(), User1Public, User2,
-                             Message1U1.timeSent, int(time())+10, True, True)
+                             Message1U1.timeCreated, int(time()) + 10, True, True)
         Message1U2.verify()
         Message1U2.decrypt()
 

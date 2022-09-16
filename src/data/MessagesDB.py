@@ -1,14 +1,14 @@
 from src.data.Imports import *
 
 class Message:
-    def __init__(self, messageID: int, content: bytes, signature: bytes, circuitUsed: Circuit,
-                 sender, receiver, timeSent: float, timeReceived: float=None, isEncrypted: bool=False, isSigned: bool=False):
+    def __init__(self, messageID: str, content: bytes, signature: bytes, circuitUsed: Circuit,
+                 sender: "User", receiver: "User", timeCreated: float, timeReceived: float=None, isEncrypted: bool=False, isSigned: bool=False):
         self.messageID = messageID
         self.content = content
         self.signature = signature
         self.circuitUsed = circuitUsed
         self.sender, self.receiver = sender, receiver
-        self.timeSent, self.timeReceived = timeSent, timeReceived
+        self.timeCreated, self.timeReceived = timeCreated, timeReceived
         self.isEncrypted, self.isSigned = isEncrypted, isSigned
 
     def encrypt(self): # When the sender is me, we encrypt the message with the receiver's Public Key.
@@ -100,13 +100,13 @@ class MessagesDB:
             x = f.read().replace('\n', '').split(";")
             if not msg.timeReceived: # Insert time received as NULL.
                 self.cursor.execute(x[1], (msg.messageID,
-                                        msg.sender.userID, msg.receiver.userID,
-                                        msg.timeSent, content))
+                                           msg.sender.userID, msg.receiver.userID,
+                                           msg.timeCreated, content))
             else:
                 self.cursor.execute(x[0], (msg.messageID,
-                                        msg.sender.userID, msg.receiver.userID,
-                                        msg.timeSent, msg.timeReceived,
-                                        content))
+                                           msg.sender.userID, msg.receiver.userID,
+                                           msg.timeCreated, msg.timeReceived,
+                                           content))
         self.dbConnection.commit()
         self.numberMessages = self.countMessages()
 
