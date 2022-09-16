@@ -1,11 +1,9 @@
-import Crypto.PublicKey.RSA
-
 from src.cryp.Imports import RSA
 from src.netw.Circuit import Circuit
 
 class PublicUser:
     def __init__(self, userID: int, userName: str,
-                 rsaPublicKeys: [Crypto.PublicKey.RSA.RsaKey, Crypto.PublicKey.RSA.RsaKey], throughCircuitID: str):
+                 rsaPublicKeys: [RSA.RsaKey, RSA.RsaKey], throughCircuitID: str):
         self.userID = userID
         self.userName = userName
         self.encryptionKey, self.verificationKey = rsaPublicKeys
