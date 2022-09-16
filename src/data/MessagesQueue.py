@@ -17,7 +17,7 @@ class Queue:
         self.size += 1
         self.lastAccessTime = int(time.time())
 
-    def getMessage(self):
+    def nextMessage(self) -> str:
         if self.size > 0:
             self.size -= 1
             self.lastAccessTime = int(time.time())

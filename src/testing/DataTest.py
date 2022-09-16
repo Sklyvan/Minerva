@@ -132,11 +132,11 @@ class TestQueue(unittest.TestCase):
         myQueue.addMessage(3)
         self.assertEqual(len(myQueue), 3, "Queue not adding.")
 
-        msg = myQueue.getMessage()
+        msg = myQueue.nextMessage()
         self.assertEqual(msg, 1, "Queue not returning correct message.")
-        msg = myQueue.getMessage()
+        msg = myQueue.nextMessage()
         self.assertEqual(msg, 2, "Queue not returning correct message.")
-        msg = myQueue.getMessage()
+        msg = myQueue.nextMessage()
         self.assertEqual(msg, 3, "Queue not returning correct message.")
 
 
