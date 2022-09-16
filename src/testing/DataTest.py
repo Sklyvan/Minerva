@@ -1,5 +1,6 @@
 import unittest
 from src.data.MessagesDB import *
+from src.data.MessagesQueue import *
 from src.main.User import *
 import glob, os
 
@@ -118,6 +119,44 @@ class MessageTest(unittest.TestCase):
         DB.deleteMessage(-1)
         for file in glob.glob("*.db"): os.remove(file)
         for file in glob.glob("*.pem"): os.remove(file)
+
+class TestQueue(unittest.TestCase):
+    def testQueueAddRemove(self):
+        myQueue = Queue()
+        self.assertEqual(len(myQueue), 0, "Queue not empty.")
+
+        myQueue.addMessage(1)
+        self.assertEqual(len(myQueue), 1, "Queue not adding.")
+        myQueue.addMessage(2)
+        self.assertEqual(len(myQueue), 2, "Queue not adding.")
+        myQueue.addMessage(3)
+        self.assertEqual(len(myQueue), 3, "Queue not adding.")
+
+        msg = myQueue.getMessage()
+        self.assertEqual(msg, 1, "Queue not returning correct message.")
+        msg = myQueue.getMessage()
+        self.assertEqual(msg, 2, "Queue not returning correct message.")
+        msg = myQueue.getMessage()
+        self.assertEqual(msg, 3, "Queue not returning correct message.")
+
+
+    def testQueueExport(self):
+        myQueue = Queue()
+        self.assertEqual(len(myQueue), 0, "Queue not empty.")
+
+        myQueue.addMessage(1)
+        self.assertEqual(len(myQueue), 1, "Queue not adding.")
+        myQueue.addMessage(2)
+        self.assertEqual(len(myQueue), 2, "Queue not adding.")
+        myQueue.addMessage(3)
+        self.assertEqual(len(myQueue), 3, "Queue not adding.")
+
+        myQueue.exportQueue("TestQueue.json")
+        myQueue_ = Queue()
+        myQueue_.importQueue("TestQueue.json")
+
+        self.assertEqual(myQueue, myQueue_, "Queue not exporting correctly.")
+        for file in glob.glob("*.json"): os.remove(file)
 
 
 if __name__ == '__main__':

@@ -35,8 +35,11 @@ class UserTest(unittest.TestCase):
         Friends.addContact(User1)
         Friends.addContact(User2)
 
+        MessagesQueue = Queue()
+        for i in range(10): MessagesQueue.addMessage(i)
+
         MyUser = User(1, "MyUser", [RSAKeys(fileName='../keys/EncKeys'), RSAKeys(fileName='../keys/SigKeys')], "127.0.0.1",
-                      forwardingTable=ExampleTable, contacts=Friends, messages=MessagesDB(dbPath='Messages.db'))
+                      forwardingTable=ExampleTable, messagesQueue=MessagesQueue, contacts=Friends, messages=MessagesDB(dbPath='Messages.db'))
         MyUser.exportUser('MyUser.json')
 
         MyUserCheck = User(None, None, [None, None], None)
