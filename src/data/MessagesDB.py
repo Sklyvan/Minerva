@@ -1,5 +1,4 @@
 from src.data.Imports import *
-from src.cryp import AES
 
 class Message:
     def __init__(self, messageID: int, content: bytes, signature: bytes, circuitUsed: Circuit,

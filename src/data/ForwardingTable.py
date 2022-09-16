@@ -1,5 +1,4 @@
-from src.netw.Circuit import *
-import json
+from src.data.Imports import *
 
 class ForwardingTable:
     def __init__(self):
