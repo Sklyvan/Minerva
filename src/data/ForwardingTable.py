@@ -1,5 +1,4 @@
-from src.SystemExceptions import *
-from src.main.Circuit import *
+from src.netw.Circuit import *
 import json
 
 class ForwardingTable:
