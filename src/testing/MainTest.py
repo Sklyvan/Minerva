@@ -28,8 +28,8 @@ class UserTest(unittest.TestCase):
         ExampleTable.addEntry("CIRCUIT3", N3)
         ExampleTable.addEntry("CIRCUIT4", N4)
 
-        User1 = PublicUser(1, "User1", [RSA.generate(2048).public_key(), RSA.generate(2048).public_key()], Circuit1)
-        User2 = PublicUser(2, "User2", [RSA.generate(2048).public_key(), RSA.generate(2048).public_key()], Circuit2)
+        User1 = PublicUser(1, "User1", [RSA.generate(2048).public_key(), RSA.generate(2048).public_key()], Circuit1.circuitID)
+        User2 = PublicUser(2, "User2", [RSA.generate(2048).public_key(), RSA.generate(2048).public_key()], Circuit2.circuitID)
 
         Friends = Contacts()
         Friends.addContact(User1)
