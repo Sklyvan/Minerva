@@ -630,8 +630,7 @@ fabric.properties
 
 # Android studio 3.1+ serialized cache file
 
-diagrams/
-oldUSB/
+toIgnore/
 
 *.db
 *.pem
