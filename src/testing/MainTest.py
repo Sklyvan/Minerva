@@ -28,8 +28,8 @@ class UserTest(unittest.TestCase):
         ExampleTable.addEntry("CIRCUIT3", N3)
         ExampleTable.addEntry("CIRCUIT4", N4)
 
-        User1 = PublicUser(1, "User1", [RSA.generate(2048).public_key(), RSA.generate(2048).public_key()], Circuit1.circuitID)
-        User2 = PublicUser(2, "User2", [RSA.generate(2048).public_key(), RSA.generate(2048).public_key()], Circuit2.circuitID)
+        User1 = PublicUser(1, "User1", [RSA.generate(2048).public_key(), RSA.generate(2048).public_key()], Circuit1)
+        User2 = PublicUser(2, "User2", [RSA.generate(2048).public_key(), RSA.generate(2048).public_key()], Circuit2)
 
         Friends = Contacts()
         Friends.addContact(User1)
@@ -49,7 +49,7 @@ class UserTest(unittest.TestCase):
 
         for file in glob.glob("../keys/*.pem"): os.remove(file)
         for file in glob.glob("*.db"): os.remove(file)
-        for file in glob.glob("*.json"): os.remove(file)
+        # for file in glob.glob("*.json"): os.remove(file)
 
     def testImportExportKeys(self):
         MyUser1 = User(1, 'User1', [RSAKeys(fileName='EncKeys'), RSAKeys(fileName='SigKeys')], "127.0.0.1")

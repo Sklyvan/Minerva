@@ -120,3 +120,12 @@ class Circuit:
             "Nodes": [node.asJSON() for node in self.nodes]
         }
         return asDict
+
+    def readCircuit(self, data: dict):
+        self.circuitID = data["ID"]
+        self.size = 0
+        for node in data["Nodes"]:
+            importedKey = DiffieHellmanKey()
+            importedKey.derivedKey = base64.b64decode(node["DiffieHellmanKey"])
+            self.nodes.append(Node(node["IP"], importedKey))
+            self.size += 1
