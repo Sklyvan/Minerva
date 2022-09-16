@@ -5,15 +5,11 @@ from src.netw.Circuit import Circuit
 
 class PublicUser:
     def __init__(self, userID: int, userName: str,
-                 rsaPublicKeys: [Crypto.PublicKey.RSA.RsaKey, Crypto.PublicKey.RSA.RsaKey], throughCircuit: Circuit):
+                 rsaPublicKeys: [Crypto.PublicKey.RSA.RsaKey, Crypto.PublicKey.RSA.RsaKey], throughCircuitID: str):
         self.userID = userID
         self.userName = userName
         self.encryptionKey, self.verificationKey = rsaPublicKeys
-        if type(throughCircuit) is Circuit: # Sometimes can be instantiated with a None, so we check for that.
-            self.throughCircuitID = throughCircuit.circuitID
-        else:
-            self.throughCircuitID = None
-
+        self.throughCircuitID = throughCircuitID
     def asJSON(self):
         return {
             "UserID": self.userID,
