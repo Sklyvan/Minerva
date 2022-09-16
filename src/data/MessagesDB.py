@@ -121,7 +121,7 @@ class MessagesDB:
         isDeleted = self.numberMessages < oldCount
         return isDeleted
 
-    def getMessage(self, messageID: int, justContent: bool=False) -> Message:
+    def getMessage(self, messageID: str, justContent: bool=False) -> Message:
         """
         This function uses the queries from GetMessage.sql
         If justContent is False, we read and execute the first line of the file.
@@ -173,7 +173,7 @@ class MessagesDB:
     def __len__(self):
         return self.numberMessages
 
-    def __getitem__(self, item: int):
+    def __getitem__(self, item: str):
         return self.getMessage(item)
 
     def __eq__(self, other: "MessagesDB"):
