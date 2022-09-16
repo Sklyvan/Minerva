@@ -43,7 +43,8 @@ class User:
             self.forwardingTable = ForwardingTable()
             self.forwardingTable.readTable(data["ForwardingTable"])
 
-            self.messagesQueue = None
+            self.messagesQueue = Queue()
+            self.messagesQueue.readQueue(data["MessagesQueue"])
 
             self.contacts = Contacts()
             self.contacts.readContacts(data["UserFriends"])
@@ -57,7 +58,7 @@ class User:
                 "SigningKeys": self.signingKeys.filename,
                 "IP": self.IP,
                 "ForwardingTable": self.forwardingTable.asJSON(),
-                "MessagesQueue": None, # TODO: Implement messages queue.
+                "MessagesQueue": self.messagesQueue.asJSON(),
                 "UserFriends": self.contacts.asJSON(),
                 "Messages": self.messages.dbPath}
 
