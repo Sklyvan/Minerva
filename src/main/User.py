@@ -30,13 +30,52 @@ class User:
         userReceiver, userSender = self.contacts[toUserName], self
         circuitUsed = userReceiver.throughCircuit
         timeCreated = int(time())
-        messageID = SHA256.new(f"{userSender.userName}{userReceiver.userName}{timeSent}{content}".encode()).hexdigest()
+        messageID = SHA256.new(f"{userSender.userName}{userReceiver.userName}{timeCreated}{content}".encode()).hexdigest()
         msg = Message(messageID, content.encode(), b'', circuitUsed, userSender, userReceiver, timeCreated)
         self.messages.addMessage(msg) # Store the message withouth encryption/signature
 
         msg.encrypt()
         msg.sign()
         return message
+
+    def computeMessageID(self, senderName, receiverName, timeCreated, content):
+        return SHA256.new(f"{senderName}{receiverName}{timeCreated}{content}".encode()).hexdigest()
+
+    def deleteMessage(self, messageID: str):
+        self.messages.deleteMessage(messageID)
+
+    def getMessage(self, messageID: str) -> Message:
+        return self.messages[messageID]
+
+    def numberOfMessages(self):
+        return len(self.messages)
+
+    def numberOfContacts(self):
+        return len(self.contacts)
+
+    def addToTable(self, circuitID: str, node: Node):
+        self.forwardingTable.addEntry(circuitID, node)
+
+    def forwardTo(self, circuitID: str) -> Node:
+        return self.forwardingTable[circuitID]
+
+    def addtoQueue(self, message: Message):
+        self.messagesQueue.addMessage(message.messageID)
+
+    def nextOnQueue(self) -> Message:
+        nextMessageID = self.messagesQueue.nextMessage()
+        return self.messages[nextMessageID]
+
+    def addContact(self, userID: int, userName: str, rsaPublicKeys: list, throughCircuit: Circuit):
+        newUser = PublicUser(userID, userName, rsaPublicKeys, throughCircuit)
+        self.contacts.addContact(newUser)
+
+    def removeContact(self, userName: str):
+        toRemove = self.contacts[userName]
+        self.contacts.removeContact(toRemove)
+
+    def updateTable(self, circuitID: str, node: Node):
+        self.forwardingTable.replaceEntry(circuitID, node)
 
     def exportKeys(self, encryptionPath: str, signingPath: str):
         self.encryptionKeys.exportKeys(encryptionPath)
