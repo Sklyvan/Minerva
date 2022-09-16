@@ -16,6 +16,28 @@ class User:
         self.encryptionKeys.updateKeys()
         self.signingKeys.updateKeys()
 
+    def createMessage(self, content: str, toUserName: str) -> Message:
+        """
+        This method receives the content of the message and the receiver's username,
+        then it extracts the sender/receiver as PublicUser objects, stores the creation time.
+        The message ID comes from a SHA-256 hash of the content, sender, receiver and creation time.
+        Once the message objects is created, we store it into the database without the RSA encryption,
+        then we encrypt it with the receiver Public Key and sign it with the sender Private Key.
+        :param content: String containing the message content, it's transformed into bytes.
+        :param toUserName: String containing the receiver's username.
+        :return: Message object already encrypted and signed.
+        """
+        userReceiver, userSender = self.contacts[toUserName], self
+        circuitUsed = userReceiver.throughCircuit
+        timeCreated = int(time())
+        messageID = SHA256.new(f"{userSender.userName}{userReceiver.userName}{timeSent}{content}".encode()).hexdigest()
+        msg = Message(messageID, content.encode(), b'', circuitUsed, userSender, userReceiver, timeCreated)
+        self.messages.addMessage(msg) # Store the message withouth encryption/signature
+
+        msg.encrypt()
+        msg.sign()
+        return message
+
     def exportKeys(self, encryptionPath: str, signingPath: str):
         self.encryptionKeys.exportKeys(encryptionPath)
         self.signingKeys.exportKeys(signingPath)
