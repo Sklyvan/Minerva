@@ -637,6 +637,7 @@ toIgnore/
 *.pkl
 *.json
 *.dh
+*.xcf
 
 src/testing/RSA
 src/cryp/RSA
