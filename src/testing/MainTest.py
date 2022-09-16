@@ -49,7 +49,7 @@ class UserTest(unittest.TestCase):
 
         for file in glob.glob("../keys/*.pem"): os.remove(file)
         for file in glob.glob("*.db"): os.remove(file)
-        # for file in glob.glob("*.json"): os.remove(file)
+        for file in glob.glob("*.json"): os.remove(file)
 
     def testImportExportKeys(self):
         MyUser1 = User(1, 'User1', [RSAKeys(fileName='EncKeys'), RSAKeys(fileName='SigKeys')], "127.0.0.1")
