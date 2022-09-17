@@ -10,8 +10,11 @@ class RSAKeys:
         :param toImport: If this is True, then we just import PEM files.
         """
         self.filename = fileName
-
-        if not toImport:
+        self.secretKey = None
+        self.publicKey = None
+        self.keySize = None
+        self.creationTime = None
+        if not toImport: # Create the RSA keys
             system(f'../cryp/RSA {keySize} {fileName}')
         self.importKeys(fileName)
 
