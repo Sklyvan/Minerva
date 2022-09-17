@@ -2,7 +2,7 @@ from src.data.MessagesDB import Message
 import pickle
 
 class NetworkMessage:
-    def __init__(self, encryptedContent: bytes = None, fromUser: "PublicUser" = None, toUser: "PublicUser" = None):
+    def __init__(self, encryptedContent: bytes = None, fromUser: "PublicUser" = None, toUser: "PublicUser" = None, timeCreated: int = None):
         """
         This class is used to define how the messages are sent over the network.
         The messages are stored as Message objects, then, are transformed to this
@@ -11,9 +11,11 @@ class NetworkMessage:
         :param encryptedContent: This is the content of the message encrypted with the toUser's RSA Public Key.
         :param fromUser: Sender of the message as a Public User.
         :param toUser: Receiver of the message as a Public User.
+        :param timeCreated: Time when the message was created in UNIX time.
         """
         self.encryptedContent = encryptedContent
         self.fromUser, self.toUser = fromUser, toUser
+        self.timeCreated = timeCreated
         self.fromEncrypted, self.toEncrypted = self.encryptUsers() # Usernames encrypted.
 
     def encryptUsers(self):
@@ -25,6 +27,7 @@ class NetworkMessage:
         asDict = {}
         asDict["encryptedContent"] = self.encryptedContent
         asDict["fromUser"], asDict["toUser"] = (self.fromEncrypted, self.toEncrypted)
+        asDict["timeCreated"] = self.timeCreated # This value is NOT encrypted.
         return [(k, v) for k, v in asDict.items()].__iter__()
 
     def __bytes__(self):
