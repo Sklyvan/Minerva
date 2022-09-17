@@ -23,7 +23,7 @@ class NetworkMessage:
 
     def encryptUsers(self):
         # Encrypt the usernames with the Public Key of the receiver.
-        fromUserName, toUserName = fromUser.userName.encode(), toUser.userName.encode()
+        fromUserName, toUserName = self.fromUser.userName.encode(), self.toUser.userName.encode()
         return self.toUser.encrypt(fromUserName), self.toUser.encrypt(toUserName)
 
     def __iter__(self):
