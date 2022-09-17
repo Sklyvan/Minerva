@@ -1,3 +1,4 @@
+from src.netw.NetworkMessage import *
 from src.SystemExceptions import *
 from src.main.PublicUser import *
 from src.netw.Circuit import *
