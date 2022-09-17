@@ -150,6 +150,9 @@ class MessageTest(unittest.TestCase):
         self.assertEqual(msgU1.receiver.userID, msgU2.receiver.userID, "Message receiver not being read.")
         self.assertEqual(msgU1.messageID, msgU2.messageID, "Message ID not being computed right.")
 
+        for file in glob.glob("*.db"): os.remove(file)
+        for file in glob.glob("*.pem"): os.remove(file)
+
 
 class TestQueue(unittest.TestCase):
     def testQueueAddRemove(self):
