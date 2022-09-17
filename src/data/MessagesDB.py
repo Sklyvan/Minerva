@@ -2,7 +2,7 @@ from src.data.Imports import *
 
 class Message:
     def __init__(self, messageID: str, content: bytes, signature: bytes, circuitUsed: Circuit,
-                 sender: "User", receiver: "User", timeCreated: float, timeReceived: float=None, isEncrypted: bool=False, isSigned: bool=False):
+                 sender: "User", receiver: "PublicUser", timeCreated: float, timeReceived: float=None, isEncrypted: bool=False, isSigned: bool=False):
         self.messageID = messageID
         self.content = content
         self.signature = signature
@@ -45,6 +45,20 @@ class Message:
             return self.receiver.signingKeys.verify(self.content, self.signature, senderPK)
         else:
             raise WrongUserError("The sender must be a PublicUser and the receiver a User.")
+
+    def toNetworkMessage(self) -> NetworkMessage:
+        if not self.isEncrypted: self.encrypt()
+
+        encPK = self.sender.encryptionKeys.publicKey
+        sigPK = self.sender.signingKeys.publicKey
+        publicSender = PublicUser(self.sender.userID,
+                                  self.sender.userName,
+                                  [encPK, sigPK],
+                                  self.circuitUsed)
+        publicReceiver = self.receiver
+
+        netMsg = NetworkMessage(self.content, publicSender, publicReceiver, self.timeCreated)
+        return netMsg
 
     def __str__(self):
         return f"Message {self.messageID} from {self.sender} to {self.receiver}."
