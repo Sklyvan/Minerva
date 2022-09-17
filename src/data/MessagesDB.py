@@ -11,6 +11,12 @@ class Message:
         self.timeCreated, self.timeReceived = timeCreated, timeReceived
         self.isEncrypted, self.isSigned = isEncrypted, isSigned
 
+    def updateMessageID(self):
+        senderName = self.sender.userName
+        receiverName = self.receiver.userName
+        self.messageID = SHA256.new(f"{senderName}{receiverName}{self.timeCreated}{self.content.decode()}".encode()).hexdigest()
+        return self.messageID
+
     def encrypt(self): # When the sender is me, we encrypt the message with the receiver's Public Key.
         # Sender: User, Receiver: PublicUser
         if type(self.sender) is not PublicUser and type(self.receiver) is PublicUser:
@@ -48,6 +54,7 @@ class Message:
 
     def toNetworkMessage(self) -> NetworkMessage:
         if not self.isEncrypted: self.encrypt()
+        if not self.isSigned: self.sign()
 
         encPK = self.sender.encryptionKeys.publicKey
         sigPK = self.sender.signingKeys.publicKey
