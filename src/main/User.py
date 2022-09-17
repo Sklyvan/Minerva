@@ -16,7 +16,7 @@ class User:
         self.encryptionKeys.updateKeys()
         self.signingKeys.updateKeys()
 
-    def createMessage(self, content: str, toUserName: str) -> Message:
+    def createMessageToSent(self, content: str, toUserName: str) -> Message:
         """
         This method receives the content of the message and the receiver's username,
         then it extracts the sender/receiver as PublicUser objects, stores the creation time.
@@ -37,6 +37,48 @@ class User:
         msg.encrypt()
         msg.sign()
         return message
+
+    def createMessageToReceive(self, msgData: dict, ignoreVerification=False) -> Message:
+        """
+        This method receives a dictionary generated after reading a NetworkMessage as bytes,
+        from this data we extract all the information to create a message.
+        :param msgData: Dictionary with the message content and sender/receiver encrypted.
+        :param ignoreVerification: Boolean to ignore the verification of the message.
+        :return: Message object with the content decrypted.
+        """
+        signature = msgData["signature"]
+        encryptedContent = msgData["encryptedContent"]
+        encryptedSenderName = msgData["fromUser"]
+        encryptedReceiverName = msgData["toUser"]
+        timeCreated = msgData["timeCreated"]
+        timeReceived = time()
+
+        senderName = self.encryptionKeys.decrypt(encryptedSenderName).decode()
+        receiverName = self.encryptionKeys.decrypt(encryptedReceiverName).decode()
+
+        try:
+            sender = self.contacts[senderName]
+        except KeyError:
+            raise Exception(f"Sender {senderName} not found in contacts.")
+
+        receiver = self if receiverName == self.userName else None
+        circuitUsed = sender.throughCircuit
+
+        if not receiver:
+            raise ValueError("The message is not for you.")
+        else:
+            msg = Message('tempID', encryptedContent, signature,
+                          circuitUsed, sender, receiver,
+                          timeCreated, timeReceived,
+                          isEncrypted=True, isSigned=True)
+            isVerified = msg.verify()
+            if not ignoreVerification and not isVerified:
+                raise Exception("Message signature verification failed.")
+            else:
+                msg.decrypt()
+                msg.updateMessageID()
+                return msg
+
 
     def computeMessageID(self, senderName, receiverName, timeCreated, content):
         return SHA256.new(f"{senderName}{receiverName}{timeCreated}{content}".encode()).hexdigest()
