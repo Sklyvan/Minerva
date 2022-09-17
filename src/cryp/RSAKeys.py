@@ -14,6 +14,8 @@ class RSAKeys:
         self.publicKey = None
         self.keySize = None
         self.creationTime = None
+        self.cipherDec = None
+        self.cipherSig = None
         if not toImport: # Create the RSA keys
             system(f'../cryp/RSA {keySize} {fileName}')
         self.importKeys(fileName)
