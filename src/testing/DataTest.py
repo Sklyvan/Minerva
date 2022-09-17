@@ -120,6 +120,37 @@ class MessageTest(unittest.TestCase):
         for file in glob.glob("*.db"): os.remove(file)
         for file in glob.glob("*.pem"): os.remove(file)
 
+    def testNetworkMessageConvertion(self):
+        for file in glob.glob("*.db"): os.remove(file)
+
+        User1 = User(1, "User1", [RSAKeys(fileName='TestKey'), RSAKeys(fileName='TestKey')],
+                     "127.0.0.1", ForwardingTable(), Queue(), Contacts(), MessagesDB())
+        User1Public = PublicUser(1, "User1", [User1.encryptionKeys.publicKey, User1.signingKeys.publicKey],
+                                 Circuit())
+        User2 = User(2, "User2", [RSAKeys(fileName='TestKey'), RSAKeys(fileName='TestKey')],
+                     "127.0.0.2", ForwardingTable(), Queue(), Contacts(), MessagesDB())
+        User2Public = PublicUser(2, "User2", [User2.encryptionKeys.publicKey, User2.signingKeys.publicKey],
+                                 Circuit())
+
+        User1.contacts.addContact(User2Public)
+        User2.contacts.addContact(User1Public)
+
+        msgU1 = Message('tempID', b"Hello World!", b"", Circuit(), User1, User2Public, int(time())) # User 1 creates the message to be sent to User 2.
+        msgU1.updateMessageID()
+        ntwMsgU1 = msgU1.toNetworkMessage() # Transforms the message to NetworkMessage.
+        asBytes = bytes(ntwMsgU1) # Transforms the NetworkMessage to bytes and sends this bytes to User 2.
+
+        ntwMsgU2 = loadNetworkMessage(asBytes) # The User 2 receives the bytes and reads them.
+
+        msgU2 = User2.createMessageToReceive(ntwMsgU2)
+
+        self.assertEqual(b"Hello World!", msgU2.content, "Message content not being decrypted.")
+        self.assertEqual(msgU1.timeCreated, msgU2.timeCreated, "Message time not being read.")
+        self.assertEqual(msgU1.sender.userID, msgU2.sender.userID, "Message sender not being read.")
+        self.assertEqual(msgU1.receiver.userID, msgU2.receiver.userID, "Message receiver not being read.")
+        self.assertEqual(msgU1.messageID, msgU2.messageID, "Message ID not being computed right.")
+
+
 class TestQueue(unittest.TestCase):
     def testQueueAddRemove(self):
         myQueue = Queue()
