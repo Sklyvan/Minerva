@@ -43,7 +43,7 @@ class Node:
 
 
 class Circuit:
-    def __init__(self, circuitID: str, nodes: [Node] = []):
+    def __init__(self, circuitID: str = '', nodes: [Node] = []):
         self.circuitID = circuitID
         self.nodes = nodes
         self.size = len(nodes)
