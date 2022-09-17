@@ -1,4 +1,3 @@
-from src.data.MessagesDB import Message
 import pickle
 
 class NetworkMessage:
