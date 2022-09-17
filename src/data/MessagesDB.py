@@ -57,7 +57,7 @@ class Message:
                                   self.circuitUsed)
         publicReceiver = self.receiver
 
-        netMsg = NetworkMessage(self.content, publicSender, publicReceiver, self.timeCreated)
+        netMsg = NetworkMessage(self.content, publicSender, publicReceiver, self.timeCreated, self.signature)
         return netMsg
 
     def __str__(self):

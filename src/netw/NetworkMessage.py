@@ -1,7 +1,9 @@
 import pickle
 
 class NetworkMessage:
-    def __init__(self, encryptedContent: bytes = None, fromUser: "PublicUser" = None, toUser: "PublicUser" = None, timeCreated: int = None):
+    def __init__(self, encryptedContent: bytes = None,
+                 fromUser: "PublicUser" = None, toUser: "PublicUser" = None,
+                 timeCreated: int = None, signature: bytes = None):
         """
         This class is used to define how the messages are sent over the network.
         The messages are stored as Message objects, then, are transformed to this
@@ -11,10 +13,12 @@ class NetworkMessage:
         :param fromUser: Sender of the message as a Public User.
         :param toUser: Receiver of the message as a Public User.
         :param timeCreated: Time when the message was created in UNIX time.
+        :param signature: Signature of the message created with the fromUser's RSA Private Key.
         """
         self.encryptedContent = encryptedContent
         self.fromUser, self.toUser = fromUser, toUser
         self.timeCreated = timeCreated
+        self.signature = signature
         self.fromEncrypted, self.toEncrypted = self.encryptUsers() # Usernames encrypted.
 
     def encryptUsers(self):
@@ -26,7 +30,8 @@ class NetworkMessage:
         asDict = {"encryptedContent": self.encryptedContent,
                   "fromUser": self.fromEncrypted,
                   "toUser": self.toEncrypted,
-                  "timeCreated": self.timeCreated}
+                  "timeCreated": self.timeCreated,
+                  "signature": self.signature}
         return [(k, v) for k, v in asDict.items()].__iter__()
 
     def __bytes__(self):
