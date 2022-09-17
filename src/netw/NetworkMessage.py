@@ -24,10 +24,10 @@ class NetworkMessage:
         return self.toUser.encrypt(fromUserName), self.toUser.encrypt(toUserName)
 
     def __iter__(self):
-        asDict = {}
-        asDict["encryptedContent"] = self.encryptedContent
-        asDict["fromUser"], asDict["toUser"] = (self.fromEncrypted, self.toEncrypted)
-        asDict["timeCreated"] = self.timeCreated # This value is NOT encrypted.
+        asDict = {"encryptedContent": self.encryptedContent,
+                  "fromUser": self.fromEncrypted,
+                  "toUser": self.toEncrypted,
+                  "timeCreated": self.timeCreated}
         return [(k, v) for k, v in asDict.items()].__iter__()
 
     def __bytes__(self):

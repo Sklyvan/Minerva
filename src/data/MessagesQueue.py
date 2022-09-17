@@ -26,11 +26,10 @@ class Queue:
             return None
 
     def asJSON(self):
-        asDict = {}
-        asDict["CreationTime"] = self.creationTime
-        asDict["LastAccessTime"] = self.lastAccessTime
-        asDict["Size"] = self.size
-        asDict["Queue"] = [msgID for msgID in self.queue]
+        asDict = {"CreationTime": self.creationTime,
+                  "LastAccessTime": self.lastAccessTime,
+                  "Size": self.size,
+                  "Queue": [msgID for msgID in self.queue]}
         return asDict
 
     def exportQueue(self, path: str):
