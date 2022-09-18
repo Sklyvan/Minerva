@@ -120,11 +120,11 @@ class MessagesDB:
         with open('../data/sqls/InsertMessage.sql', 'r') as f:
             x = f.read().replace('\n', '').split(";")
             if not msg.timeReceived: # Insert time received as NULL.
-                self.cursor.execute(x[1], (msg.messageID,
+                self.cursor.execute(x[1], (str(msg.messageID),
                                            msg.sender.userID, msg.receiver.userID,
                                            msg.timeCreated, content))
             else:
-                self.cursor.execute(x[0], (msg.messageID,
+                self.cursor.execute(x[0], (str(msg.messageID),
                                            msg.sender.userID, msg.receiver.userID,
                                            msg.timeCreated, msg.timeReceived,
                                            content))
@@ -151,16 +151,33 @@ class MessagesDB:
         with open('../data/sqls/GetMessage.sql', 'r') as f:
             x = f.read().replace('\n', '').split(";")
             if justContent:
-                msg = self.cursor.execute(x[1], (str(messageID),)).fetchone()
+                msg = self.cursor.execute(x[1], (str(messageID),)).fetchone()[0]
 
             else:
                 msg = self.cursor.execute(x[0], (str(messageID),)).fetchone()
         self.dbConnection.commit()
 
         if msg:
-            return msg[0]
+            return msg
         else:
             raise MessageNotFoundError(f"Message {messageID} not found at {self.dbPath} database.")
+
+    def updateTimeReceived(self, fromMessageID: str, withTime: int):
+        try:
+            x = "UPDATE Messages SET ReceivedDate = ? WHERE ID = ?"
+            self.cursor.execute(x, (withTime, fromMessageID))
+            self.dbConnection.commit()
+            return True
+        except sqlite3.Error as e:
+            print(e)
+            return False
+
+    def isMessage(self, withID: str):
+        try:
+            self.getMessage(withID)
+            return True
+        except MessageNotFoundError:
+            return False
 
     def encryptDatabase(self, key: str) -> (bytes, bytes):
         """
