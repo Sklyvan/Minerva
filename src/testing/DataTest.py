@@ -135,8 +135,7 @@ class MessageTest(unittest.TestCase):
         User1.contacts.addContact(User2Public)
         User2.contacts.addContact(User1Public)
 
-        msgU1 = Message('tempID', b"Hello World!", b"", Circuit(), User1, User2Public, int(time())) # User 1 creates the message to be sent to User 2.
-        msgU1.updateMessageID()
+        msgU1 = User1.createMessageToSent('Hello World!', User2.userName)
         ntwMsgU1 = msgU1.toNetworkMessage() # Transforms the message to NetworkMessage.
         asBytes = bytes(ntwMsgU1) # Transforms the NetworkMessage to bytes and sends this bytes to User 2.
 
