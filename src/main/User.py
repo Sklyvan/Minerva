@@ -36,7 +36,7 @@ class User:
 
         msg.encrypt()
         msg.sign()
-        return message
+        return msg
 
     def createMessageToReceive(self, msgData: dict, ignoreVerification=False) -> Message:
         """
@@ -51,7 +51,7 @@ class User:
         encryptedSenderName = msgData["fromUser"]
         encryptedReceiverName = msgData["toUser"]
         timeCreated = msgData["timeCreated"]
-        timeReceived = time()
+        timeReceived = int(time())
 
         senderName = self.encryptionKeys.decrypt(encryptedSenderName).decode()
         receiverName = self.encryptionKeys.decrypt(encryptedReceiverName).decode()
@@ -77,8 +77,12 @@ class User:
             else:
                 msg.decrypt()
                 msg.updateMessageID()
-                return msg
+                if self.messages.isMessage(msg.messageID):
+                    # If we already have the message its the updated message with the received date.
+                    messageID = self.messages.getMessage(msg.messageID)[0]
+                    self.messages.updateTimeReceived(messageID, timeReceived) # Update the time received.
 
+                return msg
 
     def computeMessageID(self, senderName, receiverName, timeCreated, content):
         return SHA256.new(f"{senderName}{receiverName}{timeCreated}{content}".encode()).hexdigest()
