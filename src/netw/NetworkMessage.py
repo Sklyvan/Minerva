@@ -1,4 +1,4 @@
-import pickle
+import pickle, base64
 
 class NetworkMessage:
     def __init__(self, encryptedContent: bytes = None,
@@ -25,6 +25,14 @@ class NetworkMessage:
         # Encrypt the usernames with the Public Key of the receiver.
         fromUserName, toUserName = self.fromUser.userName.encode(), self.toUser.userName.encode()
         return self.toUser.encrypt(fromUserName), self.toUser.encrypt(toUserName)
+
+    def toJavaScript(self):
+        asDict = {"encryptedContent": base64.b64encode(self.encryptedContent),
+                  "fromUser": base64.b64encode(self.fromEncrypted),
+                  "toUser": base64.b64encode(self.toEncrypted),
+                  "timeCreated": self.timeCreated,
+                  "signature": base64.b64encode(self.signature)}
+        return str(asDict)
 
     def __iter__(self):
         asDict = {"encryptedContent": self.encryptedContent,
