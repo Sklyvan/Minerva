@@ -84,7 +84,7 @@ class User:
 
                 return msg
 
-    def computeMessageID(self, senderName, receiverName, timeCreated, content):
+    def computeMessageID(self, senderName: str, receiverName: str, timeCreated: int, content: str):
         return SHA256.new(f"{senderName}{receiverName}{timeCreated}{content}".encode()).hexdigest()
 
     def deleteMessage(self, messageID: str):
