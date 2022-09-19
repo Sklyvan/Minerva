@@ -1,4 +1,4 @@
-// Start listening on the port 8080 and return the data
+const PORT = 8080;
 
 var net = require('net');
 var server = net.createServer(function(socket) {
@@ -14,20 +14,21 @@ var server = net.createServer(function(socket) {
         // Split the string by comma
         var asArray = asString.split(',');
         // Create a new array
-        var newArray = {};
+        var dictData = {};
         // Loop through the array
-        for (var i = 0; i < asArray.length; i++) {
+        for (var i = 0; i < asArray.length; i++) 
+        {
             // Split the array by colon
             var splitArray = asArray[i].split(':');
             // Add the split array to the new array
-            newArray[splitArray[0]] = splitArray[1];
+            dictData[splitArray[0]] = splitArray[1];
         }
 
-        // Transform the newArray['timeCreated'] to a int
-        var timeCreated = parseInt(newArray['timeCreated']);
-        newArray['timeCreated'] = timeCreated;
+        // Transform the dictData['timeCreated'] to a int
+        var timeCreated = parseInt(dictData['timeCreated']);
+        dictData['timeCreated'] = timeCreated;
 
-        console.log(newArray);
+        console.log(dictData);
     });
 });
-server.listen(8080);
+server.listen(PORT);
