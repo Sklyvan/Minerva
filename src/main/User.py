@@ -182,3 +182,14 @@ class User:
 
     def __str__(self):
         return f"User {self.userName} (ID: {self.userID}) with IP {self.IP} and keys {self.encryptionKeys} and {self.signingKeys}."
+
+def initializeUser(userName, IP):
+    userID = SHA256.new(userName.encode()).hexdigest().upper()
+    myUser = User(userID,
+                  userName,
+                  [RSAKeys(fileName='../keys/EncKeys'+userName), RSAKeys(fileName='../keys/SigKeys'+userName)],
+                  IP, forwardingTable=ForwardingTable(),
+                  messagesQueue=Queue(),
+                  contacts=Contacts(),
+                  messages=MessagesDB(dbPath=f'../data/Messages.db'))
+    return myUser
