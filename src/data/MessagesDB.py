@@ -63,8 +63,12 @@ class Message:
                                   [encPK, sigPK],
                                   self.circuitUsed)
         publicReceiver = self.receiver
+        throughCircuit = self.circuitUsed.circuitID
 
-        netMsg = NetworkMessage(self.content, publicSender, publicReceiver, self.timeCreated, self.signature)
+        netMsg = NetworkMessage(self.content,
+                                publicSender, publicReceiver,
+                                self.timeCreated, self.signature,
+                                throughCircuit)
         return netMsg
 
     def __str__(self):
