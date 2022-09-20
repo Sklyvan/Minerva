@@ -28,7 +28,7 @@ class SocketConnection:
             return False
 
     def send(self, data):
-        clientSocket.sendall(asBytes)
+        clientSocket.sendall(data)
 
     def __str__(self):
         return f"SocketConnection to {self.HOST}:{self.PORT}"
