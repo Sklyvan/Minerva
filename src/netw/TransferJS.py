@@ -12,10 +12,12 @@ class SocketConnection:
         self.HOST = toIP
         self.PORT = throughPort
         self.clientSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.isOpen = False
 
     def start(self):
         try:
             self.clientSocket.connect((self.HOST, self.PORT))
+            self.isOpen = True
             return True
         except:
             return False
@@ -23,12 +25,13 @@ class SocketConnection:
     def close(self):
         try:
             self.clientSocket.close()
+            self.isOpen = False
             return True
         except:
             return False
 
     def send(self, data):
-        clientSocket.sendall(data)
+        self.clientSocket.sendall(data)
 
     def __str__(self):
         return f"SocketConnection to {self.HOST}:{self.PORT}"
