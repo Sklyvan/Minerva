@@ -1,7 +1,6 @@
-import base64
-import os
-import xml.etree.ElementTree as ET
 from TransferJS import SocketConnection
+import xml.etree.ElementTree as ET
+import base64, os
 
 class Packet:
     def __init__(self, withData: bytes, fromIP: str, toIP: str, xmlConfig="SocketsInformation.xml"):
@@ -47,4 +46,3 @@ class Packet:
 
     def __iter__(self):
         return [("data", self.data), ("fromIP", self.fromIP), ("toIP", self.toIP)].__iter__()
-
