@@ -15,20 +15,12 @@ class SocketConnection:
         self.isOpen = False
 
     def start(self):
-        try:
-            self.clientSocket.connect((self.HOST, self.PORT))
-            self.isOpen = True
-            return True
-        except:
-            return False
+        self.clientSocket.connect((self.HOST, self.PORT))
+        self.isOpen = True
 
     def close(self):
-        try:
-            self.clientSocket.close()
-            self.isOpen = False
-            return True
-        except:
-            return False
+        self.clientSocket.close()
+        self.isOpen = False
 
     def send(self, data):
         self.clientSocket.sendall(data)
