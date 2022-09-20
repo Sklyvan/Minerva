@@ -48,6 +48,3 @@ class Packet:
     def __iter__(self):
         return [("data", self.data), ("fromIP", self.fromIP), ("toIP", self.toIP)].__iter__()
 
-
-myPacket = Packet(b"Hello World!", "127.0.0.1", "127.0.0.2")
-myPacket.toNetworkLayer()
