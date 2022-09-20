@@ -1,7 +1,8 @@
 {
   "name": "netw",
   "version": "1.0.0",
-  "dependencies": {
+  "dependencies":
+  {
     "wrtc": "0.4.7"
   }
 }
