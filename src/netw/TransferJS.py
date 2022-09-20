@@ -1,7 +1,7 @@
 import socket
 
 class SocketConnection:
-    def __init__(self, toIP='127.0.0.1', throughPort=8080):
+    def __init__(self, toIP='127.0.0.1', throughPort=6774):
         """
         This class is used to connect to a socket and transfer the data.
         The data should be in bytes, in case it is not, it will be converted to bytes.
