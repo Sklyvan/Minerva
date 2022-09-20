@@ -635,7 +635,6 @@ toIgnore/
 *.db
 *.pem
 *.pkl
-*.json
 *.dh
 *.xcf
 
