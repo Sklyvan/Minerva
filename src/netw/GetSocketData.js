@@ -1,6 +1,6 @@
-const PORT = 8080;
-
 var net = require('net');
+const PORT = 6774;
+
 var server = net.createServer(function(socket) {
     socket.on('data', function(data) {
         var asString = data.toString();
