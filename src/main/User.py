@@ -185,11 +185,17 @@ class User:
 
 def initializeUser(userName, IP):
     userID = SHA256.new(userName.encode()).hexdigest().upper()
-    myUser = User(userID,
-                  userName,
-                  [RSAKeys(fileName='../keys/EncKeys'+userName), RSAKeys(fileName='../keys/SigKeys'+userName)],
-                  IP, forwardingTable=ForwardingTable(),
-                  messagesQueue=Queue(),
-                  contacts=Contacts(),
-                  messages=MessagesDB(dbPath=f'../data/Messages.db'))
+    # Check if the file userID.json exists
+    if os.path.isfile(f"{userID}.json"):
+        # If it does, load the user from the file
+        myUser = User(None, None, [None, None], None)
+        myUser.importUser(f"{userID}.json")
+    else:
+        myUser = User(userID,
+                      userName,
+                      [RSAKeys(fileName='../keys/EncKeys'+userName), RSAKeys(fileName='../keys/SigKeys'+userName)],
+                      IP, forwardingTable=ForwardingTable(),
+                      messagesQueue=Queue(),
+                      contacts=Contacts(),
+                      messages=MessagesDB(dbPath=f'../data/Messages.db'))
     return myUser
