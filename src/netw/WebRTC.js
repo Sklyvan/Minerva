@@ -1,7 +1,13 @@
+// https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Connectivity
 var wrtc = require('wrtc');
 var fs = require('fs');
+const WebSocket = require('ws')
 
-// https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Connectivity
+var xml = fs.readFileSync('SocketsInformation.xml', 'utf8');
+var PORT = xml.match(/<port>(.*)<\/port>/)[1];
+
+const wss = new WebSocket.Server({ port: PORT })
+const socket = new WebSocket('ws://localhost:'+PORT);
 
 const stunServer = {iceServers: [{urls: "stun:stun.l.google.com:19302"}]};
 const offerFile = "Offer.json"; const answerFile = "Answer.json";
@@ -65,15 +71,19 @@ function sendMessage(message)
 
 function receiveMessage(event)
 {
-    console.log("Received Message: " + event.data);
+    console.log("$ " + event.data);
 }
 
+/*
 createCaller()
     .then(() => fs.writeFileSync(offerFile, JSON.stringify(caller.localDescription))) // The caller creates the offer and writes it.
     .then(() => createRecipient(JSON.parse(fs.readFileSync(offerFile)))) // The recipient reads the offer and creates the answer.
     .then(() => fs.writeFileSync(answerFile, JSON.stringify(recipient.localDescription))) // The recipient writes the answer to a JSON file.
     .then(() => caller.setRemoteDescription(JSON.parse(fs.readFileSync(answerFile)))) // The caller reads the answer and sets it as the remote description.
-    .then(console.log("Done!"))
+    .then(console.log("Connection Created"))
     .catch((error) => console.log(error))
 
-setTimeout(function() { sendMessage("Hello World!");},100);
+setTimeout(function() { sendMessage("Hello World!"); },100);
+ */
+
+socket.close();
