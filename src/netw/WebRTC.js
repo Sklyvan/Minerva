@@ -1,6 +1,8 @@
 var wrtc = require('wrtc');
 var fs = require('fs');
 
+// https://developer.mozilla.org/en-US/docs/Web/API/WebRTC_API/Connectivity
+
 const stunServer = {iceServers: [{urls: "stun:stun.l.google.com:19302"}]};
 const offerFile = "Offer.json"; const answerFile = "Answer.json";
 
