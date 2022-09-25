@@ -11,18 +11,20 @@ var PORT = xml.responseXML.getElementsByTagName('portJstoHTML')[0].childNodes[0]
 function socketOpenReadClose()
 {
     var ws = new WebSocket('ws://' + HOST + ':' + PORT);
+    let isOpened = false;
     ws.onopen = function (event)
     {
+        isOpened = true;
         ws.onmessage = function (event)
         {
             let data = JSON.parse(event.data);
             connectAndSend(data['toIP'], data['Data']);
         };
     };
-    setTimeout(function ()
+    if (!isOpened)
     {
-        ws.close();
-    }, 750);
+        setTimeout(() => socketOpenReadClose(), 750);
+    }
 }
 
 myPeer.on('open', peerID =>
