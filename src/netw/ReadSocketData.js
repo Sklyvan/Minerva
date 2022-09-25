@@ -1,11 +1,16 @@
 var net = require('net');
 var fs = require('fs');
+var crypto = require('crypto');
+var WebSocket = require('ws');
+var dataHistory = {}; // dataHistory[SHA-256(data)] = true;
 
 var xml = fs.readFileSync('SocketsInformation.xml', 'utf8');
-var HOST = xml.match(/<host>(.*)<\/host>/)[1];
-var PORT = xml.match(/<port>(.*)<\/port>/)[1];
+const listenPort = xml.match(/<portJstoPy>(.*)<\/portJstoPy>/)[1];
+const senderPort = xml.match(/<portJstoHTML>(.*)<\/portJstoHTML>/)[1];
+const wss = new WebSocket.Server({ port: senderPort })
 
-function readSocketData(port) {
+function readSocketData(port)
+{
     var server = net.createServer(function(socket) {
         socket.on('data', function(data) {
             var asString = data.toString();
@@ -30,9 +35,28 @@ function readSocketData(port) {
             }
             // Return the dictData without exiting the function
             console.log(dictData);
+            let dataHash = crypto
+                .createHash('sha256')
+                .update(JSON.stringify(dictData))
+                .digest('hex');
+            dataHistory[dataHash] = false; // The data has not been sent.
+            sendSocketData(senderPort, JSON.stringify(dictData));
         });
     });
     server.listen(port);
 }
 
-readSocketData(PORT);
+function sendSocketData(onPort, data)
+{
+    wss.on('connection', function connection(ws)
+    {
+        let dataHash = crypto.createHash('sha256').update(data).digest('hex');
+        if (!dataHistory[dataHash])
+        {
+            ws.send(data); // The SHA-256 is unique because the data contains the timestamp.
+            dataHistory[dataHash] = true; // The data has been sent.
+        }
+    });
+}
+
+readSocketData(listenPort);
