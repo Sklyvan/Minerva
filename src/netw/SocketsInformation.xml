@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <info>
-    <host>127.0.0.1</host>
-    <port>6774</port>
+    <hostJstoPy>127.0.0.1</hostJstoPy>
+    <portJstoPy>6774</portJstoPy>
+
+    <hostJstoHTML>127.0.0.1</hostJstoHTML>
+    <portJstoHTML>6775</portJstoHTML>
 </info>

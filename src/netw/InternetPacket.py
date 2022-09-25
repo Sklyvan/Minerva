@@ -23,8 +23,8 @@ class Packet:
     def readHostPort(self, xmlConfig):
         tree = ET.parse(xmlConfig)
         root = tree.getroot()
-        h = root.find("host").text
-        p = int(root.find("port").text)
+        h = root.find("hostJstoPy").text
+        p = int(root.find("portJstoPy").text)
         return h, p
 
     def toJSON(self):
