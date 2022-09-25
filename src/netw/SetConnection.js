@@ -2,13 +2,13 @@ const myPeer = new Peer('');
 var isReady = false;
 var p2pConnection = null;
 
-myPeer1.on('open', peerID =>
+myPeer.on('open', peerID =>
 {
     console.log('ID: ' + peerID);
     isReady = true;
 });
 
-myPeer1.on('connection', conn =>
+myPeer.on('connection', conn =>
 {
     conn.on('data', data =>
     {
