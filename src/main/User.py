@@ -11,6 +11,7 @@ class User:
         self.messagesQueue = messagesQueue
         self.contacts = contacts
         self.messages = messages
+        if not os.path.isfile("../data/User.json"): self.exportUser("../data/User.json")
 
     def regenerateKeys(self):
         self.encryptionKeys.updateKeys()
