@@ -8,6 +8,7 @@ var xml = fs.readFileSync('SocketsInformation.xml', 'utf8');
 const listenPort = xml.match(/<portPyToJS>(.*)<\/portPyToJS>/)[1];
 const senderPort = xml.match(/<portJStoHTML>(.*)<\/portJStoHTML>/)[1];
 const wss = new WebSocket.Server({ port: senderPort })
+wss.setMaxListeners(0);
 
 function readPythonData(port)
 {
@@ -55,6 +56,10 @@ function sendSocketData(onPort, data)
         {
             ws.send(data); // The SHA-256 is unique because the data contains the timestamp.
             dataHistory[dataHash] = true; // The data has been sent.
+        }
+        ws.onmessage = function (event)
+        {
+            console.log(event.data); // This is the data sent by the client.
         }
     });
 }
