@@ -5,8 +5,8 @@ var isReady = false;
 var xml = new XMLHttpRequest();
 xml.open('GET', 'SocketsInformation.xml', false);
 xml.send();
-var HOST = xml.responseXML.getElementsByTagName('hostJstoHTML')[0].childNodes[0].nodeValue;
-var PORT = xml.responseXML.getElementsByTagName('portJstoHTML')[0].childNodes[0].nodeValue;
+var HOST = xml.responseXML.getElementsByTagName('hostJStoHTML')[0].childNodes[0].nodeValue;
+var PORT = xml.responseXML.getElementsByTagName('portJStoHTML')[0].childNodes[0].nodeValue;
 
 function socketOpenReadClose()
 {

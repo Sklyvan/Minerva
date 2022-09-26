@@ -5,8 +5,8 @@ var WebSocket = require('ws');
 var dataHistory = {}; // dataHistory[SHA-256(data)] = true;
 
 var xml = fs.readFileSync('SocketsInformation.xml', 'utf8');
-const listenPort = xml.match(/<portJstoPy>(.*)<\/portJstoPy>/)[1];
-const senderPort = xml.match(/<portJstoHTML>(.*)<\/portJstoHTML>/)[1];
+const listenPort = xml.match(/<portPyToJS>(.*)<\/portPyToJS>/)[1];
+const senderPort = xml.match(/<portJStoHTML>(.*)<\/portJStoHTML>/)[1];
 const wss = new WebSocket.Server({ port: senderPort })
 
 function readPythonData(port)
