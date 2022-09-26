@@ -1,4 +1,4 @@
-const myPeer = new Peer('d8cd7bae-0b80-4a71-a7e5-22f728016311');
+const myPeer = new Peer('d8cd7bae-0b80-4a71-a7e5-22f728016311'); // TODO: Right now, everyone can impersonate anyone else. I have to implement the RSA signature verification.
 var p2pConnection = null;
 var isReady = false;
 
