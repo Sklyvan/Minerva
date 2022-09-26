@@ -7,6 +7,6 @@
     <hostJStoHTML>127.0.0.1</hostJStoHTML>
     <portJStoHTML>6775</portJStoHTML>
 
-    <hostJStoPy>127.0.0.1</hostJStoPy>
-    <portJStoPy>6776</portJStoPy>
+    <hostHTMLtoJS>127.0.0.1</hostHTMLtoJS>
+    <portHTMLtoJS>6776</portHTMLtoJS>
 </sockets>
