@@ -15,10 +15,11 @@ function socketOpenReadClose()
     ws.onopen = function (event)
     {
         isOpened = true;
-        ws.onmessage = function (event)
+        ws.onmessage = function (event) // This function just prints the messages sent by the server.
         {
             let data = JSON.parse(event.data);
             connectAndSend(data['toIP'], data['Data']);
+            ws.send("OK!");
         };
     };
     if (!isOpened)
