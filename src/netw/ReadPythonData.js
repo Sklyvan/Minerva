@@ -9,7 +9,7 @@ const listenPort = xml.match(/<portJstoPy>(.*)<\/portJstoPy>/)[1];
 const senderPort = xml.match(/<portJstoHTML>(.*)<\/portJstoHTML>/)[1];
 const wss = new WebSocket.Server({ port: senderPort })
 
-function readSocketData(port)
+function readPythonData(port)
 {
     var server = net.createServer(function(socket) {
         socket.on('data', function(data) {
@@ -59,4 +59,4 @@ function sendSocketData(onPort, data)
     });
 }
 
-readSocketData(listenPort);
+readPythonData(listenPort);
