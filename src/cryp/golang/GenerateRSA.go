@@ -13,6 +13,11 @@ import (
 	"time"
 )
 
+/*
+This methods are not used anymore, the encryption/decription is done in the Python
+scripts since they are faster due to the overhead of changing from Python to Go.
+*/
+
 type RSAKey struct {
 	KeySize      int
 	PublicKey    *rsa.PublicKey
@@ -29,7 +34,7 @@ func GenerateRSAKeyPair(keySize int) RSAKey {
 }
 
 func savePublicKeyToPEM(fName string, pubkey *rsa.PublicKey) {
-	//converts an RSA public key to PKCS#1, ASN.1 DER form.
+	// Converts an RSA public key to PKCS#1, ASN.1 DER form.
 	var pemkey = &pem.Block{
 		Type:  "RSA PUBLIC KEY",
 		Bytes: x509.MarshalPKCS1PublicKey(pubkey),
