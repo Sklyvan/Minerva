@@ -1,12 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 
 <sockets>
-    <hostPyToJS>127.0.0.1</hostPyToJS>
-    <portPyToJS>6774</portPyToJS>
-
-    <hostJStoHTML>127.0.0.1</hostJStoHTML>
-    <portJStoHTML>6775</portJStoHTML>
-
-    <hostJStoPython>127.0.0.1</hostJStoPython>
-    <portJStoPython>6776</portJStoPython>
+    <host>127.0.0.1</host>
+    <port>6774</port>
 </sockets>
