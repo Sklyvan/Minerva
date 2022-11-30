@@ -1,9 +1,0 @@
-{
-  "name": "netw",
-  "version": "1.0.0",
-  "type": "commonjs",
-  "dependencies": {
-    "peerjs": "^1.4.7",
-    "ws": "^8.8.1"
-  }
-}
