@@ -1,6 +1,6 @@
-from TransferJS import SocketConnection
+import base64
 import xml.etree.ElementTree as ET
-import base64, os
+from LocalSockets import WebSocketConnection, asyncio
 
 class Packet:
     def __init__(self, withData: bytes, fromIP: str, toIP: str, xmlConfig="SocketsInformation.xml"):
@@ -18,22 +18,20 @@ class Packet:
         self.fromIP = fromIP
         self.toIP = toIP
         self.host, self.port = self.readHostPort(xmlConfig)
-        self.socketConnection = SocketConnection(self.host, self.port)
+        self.webSocketConnection = WebSocketConnection(self.host, self.port)
 
     def readHostPort(self, xmlConfig):
         tree = ET.parse(xmlConfig)
         root = tree.getroot()
-        h = root.find("hostPyToJS").text
-        p = int(root.find("portPyToJS").text)
+        h = root.find("host").text
+        p = int(root.find("port").text)
         return h, p
 
     def toJSON(self):
         return str({"Data": base64.b64encode(self.data), "fromIP": self.fromIP, "toIP": self.toIP})
 
     def toNetworkLayer(self):
-        self.socketConnection.start()
-        self.socketConnection.send(self.toJSON().encode())
-        self.socketConnection.close()
+        self.webSocketConnection.startsend(self.toJSON())
 
     def __bytes__(self):
         return self.data
@@ -46,3 +44,26 @@ class Packet:
 
     def __iter__(self):
         return [("data", self.data), ("fromIP", self.fromIP), ("toIP", self.toIP)].__iter__()
+
+
+def cleanData(data):
+    data = data.replace('{', '')
+    data = data.replace('}', '')
+    data = data.replace('"', '')
+    data = data.replace("b'", '')
+    data = data.replace("'", '')
+    data = data.replace(' ', '')
+    asArray = data.split(',')
+    dictData = {}
+    for i in range(len(asArray)):
+        splitArray = asArray[i].split(':')
+        # If splitArray[1] is a number, convert it to int
+        try:
+            splitArray[1] = int(splitArray[1])
+        except ValueError:
+            # The splitArray[1] is a Base64 string, transform it to decoded bytes.
+            splitArray[1] = base64.b64decode(splitArray[1])
+
+        dictData[splitArray[0]] = splitArray[1]
+
+    return dictData
