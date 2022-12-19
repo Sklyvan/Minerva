@@ -2,8 +2,9 @@ from src.data.Imports import *
 
 class Message:
     def __init__(self, messageID: str, content: bytes, signature: bytes, circuitUsed: Circuit,
-                 sender: "User", receiver: "PublicUser", timeCreated: float, timeReceived: float=None, isEncrypted: bool=False, isSigned: bool=False):
-        self.messageID = messageID
+                 sender: "User", receiver: "PublicUser", timeCreated: float, timeReceived: float=None,
+                 isEncrypted: bool=False, isSigned: bool=False):
+        self.messageID = messageID # This is the SHA256 hash of the message.
         self.content = content
         self.signature = signature
         self.circuitUsed = circuitUsed
@@ -11,13 +12,15 @@ class Message:
         self.timeCreated, self.timeReceived = timeCreated, timeReceived
         self.isEncrypted, self.isSigned = isEncrypted, isSigned
 
-    def updateMessageID(self):
+    def updateMessageID(self) -> str:
         senderName = self.sender.userName
         receiverName = self.receiver.userName
-        self.messageID = SHA256.new(f"{senderName}{receiverName}{self.timeCreated}{self.content.decode()}".encode()).hexdigest()
+        self.messageID = SHA256.new(f"{senderName}{receiverName}{self.timeCreated}{self.content.decode()}"
+                                    .encode()).hexdigest()
+
         return self.messageID
 
-    def encrypt(self): # When the sender is me, we encrypt the message with the receiver's Public Key.
+    def encrypt(self): # When the sender is myself, we encrypt the message with the receiver's Public Key.
         # Sender: User, Receiver: PublicUser
         if type(self.sender) is not PublicUser and type(self.receiver) is PublicUser:
             receiverPK = self.receiver.encryptionKey # RSA Public Key of the receiver.
@@ -26,7 +29,7 @@ class Message:
         else:
             raise WrongUserError("The sender must be a User and the receiver a PublicUser.")
 
-    def decrypt(self): # When the receiver is me, we decrypt the message with our Private Key.
+    def decrypt(self): # When the receiver is myself, we decrypt the message with our Private Key.
         # Sender: PublicUser, Receiver: User
         if type(self.sender) is PublicUser and type(self.receiver) is not PublicUser:
             self.content = self.receiver.encryptionKeys.decrypt(self.content)
@@ -58,30 +61,25 @@ class Message:
 
         encPK = self.sender.encryptionKeys.publicKey
         sigPK = self.sender.signingKeys.publicKey
-        publicSender = PublicUser(self.sender.userID,
-                                  self.sender.userName,
-                                  [encPK, sigPK],
-                                  self.circuitUsed)
+        publicSender = PublicUser(self.sender.userID, self.sender.userName, [encPK, sigPK], self.circuitUsed)
         publicReceiver = self.receiver
 
-        netMsg = NetworkMessage(self.content,
-                                publicSender, publicReceiver,
-                                self.timeCreated, self.signature)
+        netMsg = NetworkMessage(self.content, publicSender, publicReceiver, self.timeCreated, self.signature)
         return netMsg
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Message {self.messageID} from {self.sender} to {self.receiver}."
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Message object with ID {self.messageID} from {self.sender} to {self.receiver}."
 
-    def __eq__(self, other: "Message"):
+    def __eq__(self, other: "Message") -> bool:
         return self.messageID == other.messageID
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.content)
 
-    def __getitem__(self, item:int):
+    def __getitem__(self, item:int) -> bytes:
         return self.content[item]
 
 class MessagesDB:
@@ -164,7 +162,7 @@ class MessagesDB:
         else:
             raise MessageNotFoundError(f"Message {messageID} not found at {self.dbPath} database.")
 
-    def updateTimeReceived(self, fromMessageID: str, withTime: int):
+    def updateTimeReceived(self, fromMessageID: str, withTime: int) -> bool:
         try:
             x = "UPDATE Messages SET ReceivedDate = ? WHERE ID = ?"
             self.cursor.execute(x, (withTime, fromMessageID))
@@ -174,7 +172,7 @@ class MessagesDB:
             print(e)
             return False
 
-    def isMessage(self, withID: str):
+    def isMessage(self, withID: str) -> bool:
         try:
             self.getMessage(withID)
             return True
@@ -210,14 +208,14 @@ class MessagesDB:
         decryptor = AES.new(keyBytes, nonce)
         return decryptor.decrypt(dbContent)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self.numberMessages
 
-    def __getitem__(self, item: str):
+    def __getitem__(self, item: str) -> Message:
         return self.getMessage(item)
 
-    def __eq__(self, other: "MessagesDB"):
+    def __eq__(self, other: "MessagesDB") -> bool:
         return self.dbPath == other.dbPath
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Messages database with {self.numberMessages} messages."

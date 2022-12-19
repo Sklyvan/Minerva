@@ -12,7 +12,7 @@ class Queue:
         self.creationTime = int(time.time()) # UNIX Timestamp
         self.lastAccessTime = int(time.time()) # UNIX Timestamp
 
-    def addMessage(self, messageID):
+    def addMessage(self, messageID: str):
         self.queue.append(messageID)
         self.size += 1
         self.lastAccessTime = int(time.time())
@@ -25,7 +25,7 @@ class Queue:
         else:
             return None
 
-    def asJSON(self):
+    def asJSON(self) -> dict:
         asDict = {"CreationTime": self.creationTime,
                   "LastAccessTime": self.lastAccessTime,
                   "Size": self.size,
@@ -50,18 +50,18 @@ class Queue:
         self.size = jsonContent["Size"]
         self.queue = jsonContent["Queue"]
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self.size
 
-    def __iter__(self):
+    def __iter__(self) -> iter:
         return iter(self.queue)
 
-    def __getitem__(self, index):
+    def __getitem__(self, index) -> str:
         # WARNING: This method does not remove the message from the queue
         return self.queue[index]
 
-    def __eq__(self, other: "Queue"):
+    def __eq__(self, other: "Queue") -> bool:
         return self.queue == other.queue
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.queue)

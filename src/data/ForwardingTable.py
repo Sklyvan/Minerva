@@ -13,7 +13,7 @@ class ForwardingTable:
     def replaceEntry(self, circuitID: str, node: Node):
         self.addEntry(circuit, node)
 
-    def asJSON(self):
+    def asJSON(self) -> dict:
         asDict = {}
         for circuitID, node in self.table.items():
             asDict[circuitID] = node.asJSON()
@@ -43,16 +43,16 @@ class ForwardingTable:
     def __contains__(self, circuitID: str) -> bool:
         return circuitID in self.table
 
-    def __str__(self):
+    def __str__(self) -> str:
         return str(self.table)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.table)
 
-    def __iter__(self):
+    def __iter__(self) -> iter:
         return iter(self.table)
 
-    def __eq__(self, other: "ForwardingTable"):
+    def __eq__(self, other: "ForwardingTable") -> bool:
         for circuitID, node in self.table.items():
             if self[circuitID] != other[circuitID]:
                 return False
