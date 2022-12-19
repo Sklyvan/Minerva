@@ -46,7 +46,7 @@ class PublicUser:
     def verify(self, content: bytes, signature: bytes) -> bool:
         return self.cipherVer.verify(content, signature)
 
-    def asJSON(self):
+    def asJSON(self) -> dict:
         return {
             "UserID": self.userID,
             "UserName": self.userName,
@@ -64,13 +64,13 @@ class PublicUser:
         self.throughCircuit = Circuit('')
         self.throughCircuit.readCircuit(data["ThroughCircuit"])
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"User {self.userName} (ID: {self.userID})"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"PublicUser object with user name {self.userName} and ID {self.userID}."
 
-    def __eq__(self, other: "PublicUser"):
+    def __eq__(self, other: "PublicUser") -> bool:
         idCheck = self.userID == other.userID
         nameCheck = self.userName == other.userName
         encryptionKeyCheck = self.encryptionKey == other.encryptionKey
@@ -87,7 +87,7 @@ class Contacts:
     def removeContact(self, contact: PublicUser):
         del self.contacts[contact.userName]
 
-    def asJSON(self):
+    def asJSON(self) -> list:
         return [contact.asJSON() for contact in self.contacts.values()]
 
     def readContacts(self, json: list):
@@ -96,20 +96,20 @@ class Contacts:
             user.readUser(contact)
             self.addContact(user)
 
-    def __getitem__(self, userName: str):
+    def __getitem__(self, userName: str) -> PublicUser:
         return self.contacts[userName]
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Contacts: {self.contacts}"
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Contacts object with {len(self.contacts)} contacts."
 
-    def __eq__(self, other: "Contacts"):
+    def __eq__(self, other: "Contacts") -> bool:
         for contact in self.contacts.values():
             if contact not in other.contacts.values():
                 return False
         return True
 
-    def __len__(self):
+    def __len__(self) -> int:
         return len(self.contacts)

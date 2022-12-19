@@ -2,7 +2,8 @@ from src.main.Imports import *
 
 class User:
     def __init__(self, userID: int, userName: str, rsaKeys: [RSAKeys, RSAKeys], IP: str,
-                 forwardingTable: ForwardingTable = None, messagesQueue: Queue = None, contacts: Contacts = None, messages: MessagesDB = None):
+                 forwardingTable: ForwardingTable = None, messagesQueue: Queue = None,
+                 contacts: Contacts = None, messages: MessagesDB = None):
         self.userID = userID
         self.userName = userName
         self.encryptionKeys, self.signingKeys = rsaKeys
@@ -31,7 +32,8 @@ class User:
         userReceiver, userSender = self.contacts[toUserName], self
         circuitUsed = userReceiver.throughCircuit
         timeCreated = int(time())
-        messageID = SHA256.new(f"{userSender.userName}{userReceiver.userName}{timeCreated}{content}".encode()).hexdigest()
+        messageID = SHA256.new(f"{userSender.userName}{userReceiver.userName}{timeCreated}{content}"
+                               .encode()).hexdigest()
         msg = Message(messageID, content.encode(), b'', circuitUsed, userSender, userReceiver, timeCreated)
         self.messages.addMessage(msg) # Store the message withouth encryption/signature
 
@@ -85,7 +87,7 @@ class User:
 
                 return msg
 
-    def computeMessageID(self, senderName: str, receiverName: str, timeCreated: int, content: str):
+    def computeMessageID(self, senderName: str, receiverName: str, timeCreated: int, content: str) -> str:
         return SHA256.new(f"{senderName}{receiverName}{timeCreated}{content}".encode()).hexdigest()
 
     def deleteMessage(self, messageID: str):
@@ -94,10 +96,10 @@ class User:
     def getMessage(self, messageID: str) -> Message:
         return self.messages[messageID]
 
-    def numberOfMessages(self):
+    def numberOfMessages(self) -> int:
         return len(self.messages)
 
-    def numberOfContacts(self):
+    def numberOfContacts(self) -> int:
         return len(self.contacts)
 
     def addToTable(self, circuitID: str, node: Node):
@@ -132,7 +134,7 @@ class User:
         self.encryptionKeys.importKeys(encryptionPath)
         self.signingKeys.importKeys(signingPath)
 
-    def checkKeys(self):
+    def checkKeys(self) -> bool:
         return self.encryptionKeys.checkKeys() and self.signingKeys.checkKeys()
 
     def exportUser(self, path: str):
@@ -170,7 +172,7 @@ class User:
                 "UserFriends": self.contacts.asJSON(),
                 "Messages": self.messages.dbPath}
 
-    def __eq__(self, other):
+    def __eq__(self, other) -> bool:
         return self.userID == other.userID \
                and self.userName == other.userName \
                and self.encryptionKeys == other.encryptionKeys \
@@ -181,10 +183,11 @@ class User:
                and self.contacts == other.contacts \
                and self.messages == other.messages
 
-    def __str__(self):
-        return f"User {self.userName} (ID: {self.userID}) with IP {self.IP} and keys {self.encryptionKeys} and {self.signingKeys}."
+    def __str__(self) -> str:
+        return f"User {self.userName} (ID: {self.userID}) " \
+               f"with IP {self.IP} and keys {self.encryptionKeys} and {self.signingKeys}."
 
-def initializeUser(userName, IP):
+def initializeUser(userName, IP) -> User:
     userID = SHA256.new(userName.encode()).hexdigest().upper()
     # Check if the file userID.json exists
     if os.path.isfile(f"{userID}.json"):
