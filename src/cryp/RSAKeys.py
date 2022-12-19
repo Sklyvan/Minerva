@@ -1,7 +1,7 @@
 from src.cryp.Imports import *
 
 class RSAKeys:
-    def __init__(self, keySize=2048, fileName='UserKeys', toImport=False):
+    def __init__(self, keySize:int = 2048, fileName:str = 'UserKeys', toImport:bool = False):
         """
         Creates the class to store a PK and SK of RSA keys,
         the generation is done by a GoLang script.
@@ -20,7 +20,7 @@ class RSAKeys:
             system(f'../cryp/RSA {keySize} {fileName}')
         self.importKeys(fileName)
 
-    def updateKeys(self, keySize=2048):
+    def updateKeys(self, keySize:int = 2048):
         system(f'../cryp/RSA {keySize} {fileName}')
         self.importKeys(self.filename)
 
@@ -70,7 +70,7 @@ class RSAKeys:
         chunkSize = keyBytes
         return [cipher[i:i+chunkSize] for i in range(0, len(cipher), chunkSize)]
 
-    def encrypt(self, text: bytes, withKey: RSA.RsaKey, ignoreWarning=False) -> bytes:
+    def encrypt(self, text: bytes, withKey: RSA.RsaKey, ignoreWarning:bool = False) -> bytes:
         """
         Encrypts a text using the given Public Key.
         :param text: Bytes to be encrypted.
@@ -91,7 +91,7 @@ class RSAKeys:
         cipherEnc = PKCS1_OAEP.new(withKey, hashAlgo=SHA256)
         return cipherEnc.encrypt(text)
 
-    def decrypt(self, cipher: bytes, ignoreWarning=False) -> bytes:
+    def decrypt(self, cipher: bytes, ignoreWarning:bool = False) -> bytes:
         """
         Decrypts a cipher using the stored Private Key.
         :param cipher: Bytes/Array of bytes to be decrypted.
@@ -114,7 +114,7 @@ class RSAKeys:
             raise WrongSecretKeyError("Wrong Secret Key. Please check if the Secret Key is correct.")
             return False
 
-    def decrypt_(self, cipher: bytes, ignoreWarning=False) -> bytes:
+    def decrypt_(self, cipher: bytes, ignoreWarning:bool = False) -> bytes:
         """
         Decrypts a cipher using the stored Private Key.
         :param cipher: Bytes/Array of bytes to be decrypted.
@@ -131,7 +131,7 @@ class RSAKeys:
             raise WrongSecretKeyError("Wrong Secret Key. Please check if the Secret Key is correct.")
             return False
 
-    def sign(self, text: bytes, ignoreWarning=False) -> bytes:
+    def sign(self, text: bytes, ignoreWarning:bool = False) -> bytes:
         """
         Signs a text using the stored Private Key.
         :param text: Bytes to be signed.
@@ -150,7 +150,7 @@ class RSAKeys:
             raise WrongSecretKeyError("Wrong Secret Key. Please check if the Secret Key is correct.")
             return False
 
-    def verify(self, text: bytes, signature: bytes, withKey: RSA.RsaKey, ignoreWarning=False) -> bool:
+    def verify(self, text: bytes, signature: bytes, withKey: RSA.RsaKey, ignoreWarning:bool = False) -> bool:
         """
         Verifies a signature using the given Public Key.
         :param text: Bytes to be verified.
@@ -208,23 +208,23 @@ class RSAKeys:
         except:
             return False
 
-    def checkKeys(self, testSize=200) -> bool:
-        m = urandom(testSize)
+    def checkKeys(self, testSize:int = 200) -> bool:
+        m = urandom(testSize) # Random bytes
         test1 = (self.decrypt(self.encrypt(m, self.publicKey)) == m)
         test2 = (self.verify(m, self.sign(m), self.publicKey))
         return test1 and test2
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"RSAKeys object with key size {self.keySize} and creation time {self.creationTime}."
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"RSAKeys({self.keySize})"
 
-    def __eq__(self, other):
+    def __eq__(self, other:'RSAKeys') -> bool:
         return self.publicKey == other.publicKey and self.secretKey == other.secretKey
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(self.publicKey) + hash(self.secretKey)
 
-    def __len__(self):
+    def __len__(self) -> int:
         return self.keySize
