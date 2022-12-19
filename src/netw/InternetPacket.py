@@ -3,7 +3,7 @@ import xml.etree.ElementTree as ET
 from LocalSockets import WebSocketConnection, asyncio
 
 class Packet:
-    def __init__(self, withData: bytes, fromIP: str, toIP: str, xmlConfig="SocketsInformation.xml"):
+    def __init__(self, withData: bytes, fromIP: str, toIP: str, xmlConfig:str = "SocketsInformation.xml"):
         """
         This class does not contain any methods to send the packet, since it
         is only used to create the packet from Python, use the result of the
@@ -20,33 +20,33 @@ class Packet:
         self.host, self.port = self.readHostPort(xmlConfig)
         self.webSocketConnection = WebSocketConnection(self.host, self.port)
 
-    def readHostPort(self, xmlConfig):
+    def readHostPort(self, xmlConfig: str) -> (str, int):
         tree = ET.parse(xmlConfig)
         root = tree.getroot()
         h = root.find("host").text
         p = int(root.find("port").text)
         return h, p
 
-    def toJSON(self):
+    def toJSON(self) -> str:
         return str({"Data": base64.b64encode(self.data), "fromIP": self.fromIP, "toIP": self.toIP})
 
     def toNetworkLayer(self):
         self.webSocketConnection.startsend(self.toJSON())
 
-    def __bytes__(self):
+    def __bytes__(self) -> bytes:
         return self.data
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Packet with data {self.data} from {self.fromIP} to {self.toIP}."
 
-    def __repr__(self):
+    def __repr__(self) -> str:
         return f"Packet with data {self.data} from {self.fromIP} to {self.toIP}."
 
-    def __iter__(self):
+    def __iter__(self) -> iter:
         return [("data", self.data), ("fromIP", self.fromIP), ("toIP", self.toIP)].__iter__()
 
 
-def cleanData(data):
+def cleanData(data: str) -> dict: # This function is used to clean the data received from the network layer (JS).
     data = data.replace('{', '')
     data = data.replace('}', '')
     data = data.replace('"', '')
