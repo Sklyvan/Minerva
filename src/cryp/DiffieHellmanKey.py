@@ -1,7 +1,8 @@
 from src.cryp.Imports import *
 
 class DiffieHellmanKey:
-    def __init__(self, curve=ec.SECP384R1, hashAlgorithm=hashes.SHA256(), salting=False, info='Handshake'):
+    def __init__(self, curve: ec.SECP384R1 = ec.SECP384R1, hashAlgorithm:hashes.SHA256 = hashes.SHA256(),
+                 salting=False, info='Handshake'):
         """
         This class is used to do all the key agreement and key derivation stuff. It's important to use the exact same
         parameters for both parties, otherwise the derived key will be different and the communication will fail.
@@ -20,12 +21,12 @@ class DiffieHellmanKey:
         self.sharedKey = None
         self.derivedKey = None
 
-    def generateSharedKey(self, otherPublicKey: ec.EllipticCurvePublicKey):
+    def generateSharedKey(self, otherPublicKey: ec.EllipticCurvePublicKey) -> bytes:
         self.sharedKey = self.privateKey.exchange(ec.ECDH(), otherPublicKey)
         self.computeDerivedKey()
         return self.sharedKey
 
-    def computeDerivedKey(self, length: int=None):
+    def computeDerivedKey(self, length: int=None) -> bytes:
         if self.sharedKey is None:
             raise Exception("Shared key not generated yet.")
         else:
@@ -42,18 +43,18 @@ class DiffieHellmanKey:
         with open(path, 'wb') as f:
             f.write(self.derivedKey)
 
-    def __eq__(self, other: "DiffieHellmanKey"):
+    def __eq__(self, other: "DiffieHellmanKey") -> bool:
         return self.derivedKey == other.derivedKey
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"DiffieHellmanKey object with derived key {self.derivedKey}"
 
-    def __repr__(self): # This function is used to store the object in a JSON file.
+    def __repr__(self) -> bytes: # This function is used to store the object in a JSON file.
         return b64encode(self.derivedKey).decode()
 
-    def __hash__(self):
+    def __hash__(self) -> int:
         return hash(self.derivedKey)
 
-def importDerivedKey(path: str):
+def importDerivedKey(path: str) -> bytes:
     with open(path, 'rb') as f:
         return f.read()
