@@ -21,12 +21,12 @@ class NetworkMessage:
         self.signature = signature
         self.fromEncrypted, self.toEncrypted = self.encryptUsers() # Usernames encrypted.
 
-    def encryptUsers(self):
+    def encryptUsers(self) -> (bytes, bytes):
         # Encrypt the usernames with the Public Key of the receiver.
         fromUserName, toUserName = self.fromUser.userName.encode(), self.toUser.userName.encode()
         return self.toUser.encrypt(fromUserName), self.toUser.encrypt(toUserName)
 
-    def asJSON(self):
+    def asJSON(self) -> str:
         asDict = {"encryptedContent": base64.b64encode(self.encryptedContent),
                   "fromUser": base64.b64encode(self.fromEncrypted),
                   "toUser": base64.b64encode(self.toEncrypted),
@@ -34,7 +34,7 @@ class NetworkMessage:
                   "signature": base64.b64encode(self.signature)}
         return str(asDict)
 
-    def __iter__(self):
+    def __iter__(self) -> iter:
         asDict = {"encryptedContent": self.encryptedContent,
                   "fromUser": self.fromEncrypted,
                   "toUser": self.toEncrypted,
@@ -42,12 +42,11 @@ class NetworkMessage:
                   "signature": self.signature}
         return [(k, v) for k, v in asDict.items()].__iter__()
 
-    def __bytes__(self):
+    def __bytes__(self) -> bytes:
         return pickle.dumps(dict(self))
 
-    def __str__(self):
+    def __str__(self) -> str:
         return f"Message with content {self.encryptedContent} from {self.fromUser} to {self.toUser}."
 
-def loadNetworkMessage(data: bytes):
-    asDict = pickle.loads(data)
-    return asDict
+def loadNetworkMessage(data: bytes) -> dict:
+    return pickle.loads(data) # This is the asJSON method of the NetworkMessage class.
