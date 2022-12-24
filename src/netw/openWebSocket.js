@@ -1,7 +1,10 @@
 const fs = require('fs');
 const WebSocket = require("ws");
+// Get the current path
+const currentPath = __dirname;
+const socketsFile = currentPath + '/SocketsInformation.xml';
 
-const xml = fs.readFileSync('SocketsInformation.xml', 'utf8');
+const xml = fs.readFileSync(socketsFile, 'utf8');
 const port = xml.match(/<port>(.*)<\/port>/)[1];
 const webSocketServer = new WebSocket.Server({ port: port })
 
@@ -19,7 +22,7 @@ webSocketServer.on('connection', (ws) =>
     ws.on('message', (message) =>
     {
         let msgString = message.toString();
-        if (messageType(msgString) == 'messageResponse') // Send to Python this data to be decrypted.
+        if (messageType(msgString) === 'messageResponse') // Send to Python this data to be decrypted.
         {
             webSocketServer.clients.forEach((client) =>
             {
