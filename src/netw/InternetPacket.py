@@ -1,6 +1,6 @@
 import base64
 import xml.etree.ElementTree as ET
-from LocalSockets import WebSocketConnection, asyncio
+from src.netw.LocalSockets import WebSocketConnection, asyncio
 
 class Packet:
     def __init__(self, withData: bytes, fromIP: str, toIP: str, xmlConfig:str = "SocketsInformation.xml"):
