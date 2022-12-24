@@ -1,5 +1,4 @@
-import sys, os, time
-from src.main.User import User
+from src.main.User import *
 
 def initializeUser(sysArgs: list) -> User:
     loadUser = False
@@ -35,7 +34,7 @@ def initializeUser(sysArgs: list) -> User:
         networkID = '-'.join(networkID)
         # TODO: This creation of the userID and networkID is temporary.
 
-        t0 = int(time.time())
+        t0 = int(time())
         myUser = User(userID, userName,
                       [RSAKeys(fileName=f'{userName}_EncKeys_{t0}'), RSAKeys(fileName=f'{userName}_SigKeys_{t0}')],
                       networkID, ForwardingTable(), Queue(), Contacts(), MessagesDB())
