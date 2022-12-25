@@ -1,8 +1,14 @@
 from src.cryp.Imports import *
 
+
 class DiffieHellmanKey:
-    def __init__(self, curve: ec.SECP384R1 = ec.SECP384R1, hashAlgorithm:hashes.SHA256 = hashes.SHA256(),
-                 salting=False, info='Handshake'):
+    def __init__(
+        self,
+        curve: ec.SECP384R1 = ec.SECP384R1,
+        hashAlgorithm: hashes.SHA256 = hashes.SHA256(),
+        salting=False,
+        info="Handshake",
+    ):
         """
         This class is used to do all the key agreement and key derivation stuff. It's important to use the exact same
         parameters for both parties, otherwise the derived key will be different and the communication will fail.
@@ -26,7 +32,7 @@ class DiffieHellmanKey:
         self.computeDerivedKey()
         return self.sharedKey
 
-    def computeDerivedKey(self, length: int=None) -> bytes:
+    def computeDerivedKey(self, length: int = None) -> bytes:
         if self.sharedKey is None:
             raise Exception("Shared key not generated yet.")
         else:
@@ -36,11 +42,12 @@ class DiffieHellmanKey:
                 algorithm=self.hashAlgorithm,
                 length=length,
                 salt=self.salt,
-                info=self.info).derive(self.sharedKey)
+                info=self.info,
+            ).derive(self.sharedKey)
             return self.derivedKey
 
     def exportDerivedKey(self, path: str):
-        with open(path, 'wb') as f:
+        with open(path, "wb") as f:
             f.write(self.derivedKey)
 
     def __eq__(self, other: "DiffieHellmanKey") -> bool:
@@ -49,12 +56,15 @@ class DiffieHellmanKey:
     def __str__(self) -> str:
         return f"DiffieHellmanKey object with derived key {self.derivedKey}"
 
-    def __repr__(self) -> bytes: # This function is used to store the object in a JSON file.
+    def __repr__(
+        self,
+    ) -> bytes:  # This function is used to store the object in a JSON file.
         return b64encode(self.derivedKey).decode()
 
     def __hash__(self) -> int:
         return hash(self.derivedKey)
 
+
 def importDerivedKey(path: str) -> bytes:
-    with open(path, 'rb') as f:
+    with open(path, "rb") as f:
         return f.read()

@@ -1,7 +1,10 @@
 from src.cryp.Imports import *
 
+
 class RSAKeys:
-    def __init__(self, keySize:int = 2048, fileName:str = 'UserKeys', toImport:bool = False):
+    def __init__(
+        self, keySize: int = 2048, fileName: str = "UserKeys", toImport: bool = False
+    ):
         """
         Creates the class to store a PK and SK of RSA keys,
         the generation is done by a GoLang script.
@@ -16,12 +19,12 @@ class RSAKeys:
         self.creationTime = None
         self.cipherDec = None
         self.cipherSig = None
-        if not toImport: # Create the RSA keys
-            system(f'../cryp/RSA {keySize} {fileName}')
+        if not toImport:  # Create the RSA keys
+            system(f"../cryp/RSA {keySize} {fileName}")
         self.importKeys(fileName)
 
-    def updateKeys(self, keySize:int = 2048):
-        system(f'../cryp/RSA {keySize} {fileName}')
+    def updateKeys(self, keySize: int = 2048):
+        system(f"../cryp/RSA {keySize} {fileName}")
         self.importKeys(self.filename)
 
     def canEncrypt(self, inputSize: int, keySize: int) -> bool:
@@ -57,7 +60,7 @@ class RSAKeys:
         """
         keyBytes = int(keySize / 8)
         chunkSize = keyBytes - 2 - 2 * SHA256.digest_size
-        return [message[i:i+chunkSize] for i in range(0, len(message), chunkSize)]
+        return [message[i : i + chunkSize] for i in range(0, len(message), chunkSize)]
 
     def splitCipher(self, cipher: bytes, keySize: int) -> [bytes]:
         """
@@ -68,9 +71,11 @@ class RSAKeys:
         """
         keyBytes = int(keySize / 8)
         chunkSize = keyBytes
-        return [cipher[i:i+chunkSize] for i in range(0, len(cipher), chunkSize)]
+        return [cipher[i : i + chunkSize] for i in range(0, len(cipher), chunkSize)]
 
-    def encrypt(self, text: bytes, withKey: RSA.RsaKey, ignoreWarning:bool = False) -> bytes:
+    def encrypt(
+        self, text: bytes, withKey: RSA.RsaKey, ignoreWarning: bool = False
+    ) -> bytes:
         """
         Encrypts a text using the given Public Key.
         :param text: Bytes to be encrypted.
@@ -91,7 +96,7 @@ class RSAKeys:
         cipherEnc = PKCS1_OAEP.new(withKey, hashAlgo=SHA256)
         return cipherEnc.encrypt(text)
 
-    def decrypt(self, cipher: bytes, ignoreWarning:bool = False) -> bytes:
+    def decrypt(self, cipher: bytes, ignoreWarning: bool = False) -> bytes:
         """
         Decrypts a cipher using the stored Private Key.
         :param cipher: Bytes/Array of bytes to be decrypted.
@@ -111,10 +116,12 @@ class RSAKeys:
         try:
             return self.cipherDec.decrypt(cipher)
         except ValueError:
-            raise WrongSecretKeyError("Wrong Secret Key. Please check if the Secret Key is correct.")
+            raise WrongSecretKeyError(
+                "Wrong Secret Key. Please check if the Secret Key is correct."
+            )
             return False
 
-    def decrypt_(self, cipher: bytes, ignoreWarning:bool = False) -> bytes:
+    def decrypt_(self, cipher: bytes, ignoreWarning: bool = False) -> bytes:
         """
         Decrypts a cipher using the stored Private Key.
         :param cipher: Bytes/Array of bytes to be decrypted.
@@ -128,10 +135,12 @@ class RSAKeys:
         try:
             return self.cipherDec.decrypt(cipher)
         except ValueError:
-            raise WrongSecretKeyError("Wrong Secret Key. Please check if the Secret Key is correct.")
+            raise WrongSecretKeyError(
+                "Wrong Secret Key. Please check if the Secret Key is correct."
+            )
             return False
 
-    def sign(self, text: bytes, ignoreWarning:bool = False) -> bytes:
+    def sign(self, text: bytes, ignoreWarning: bool = False) -> bytes:
         """
         Signs a text using the stored Private Key.
         :param text: Bytes to be signed.
@@ -147,10 +156,18 @@ class RSAKeys:
         try:
             return self.cipherSig.sign(hashedText)
         except ValueError:
-            raise WrongSecretKeyError("Wrong Secret Key. Please check if the Secret Key is correct.")
+            raise WrongSecretKeyError(
+                "Wrong Secret Key. Please check if the Secret Key is correct."
+            )
             return False
 
-    def verify(self, text: bytes, signature: bytes, withKey: RSA.RsaKey, ignoreWarning:bool = False) -> bool:
+    def verify(
+        self,
+        text: bytes,
+        signature: bytes,
+        withKey: RSA.RsaKey,
+        ignoreWarning: bool = False,
+    ) -> bool:
         """
         Verifies a signature using the given Public Key.
         :param text: Bytes to be verified.
@@ -170,7 +187,10 @@ class RSAKeys:
             return True
         except (ValueError, TypeError) as errorMessage:
             if not ignoreWarning:
-                print("WARNING: Could not verify the message,", str(errorMessage).lower()+'.')
+                print(
+                    "WARNING: Could not verify the message,",
+                    str(errorMessage).lower() + ".",
+                )
             return False
 
     def exportKeys(self, fileName: str) -> bool:
@@ -179,11 +199,11 @@ class RSAKeys:
         :param fileName: Name of the file to be exported to.
         """
         try:
-            with open(fileName+'-Publ.pem', 'wb') as file:
+            with open(fileName + "-Publ.pem", "wb") as file:
                 file.write(self.publicKey.exportKey())
-            with open(fileName+'-Priv.pem', 'wb') as file:
+            with open(fileName + "-Priv.pem", "wb") as file:
                 file.write(self.secretKey.exportKey())
-            with open(fileName+'-Info.pem', 'w') as file:
+            with open(fileName + "-Info.pem", "w") as file:
                 file.write(f"{self.keySize}\n{self.creationTime}")
             return True
         except:
@@ -195,11 +215,11 @@ class RSAKeys:
         :param fileName: Name of the file to be imported from.
         """
         try:
-            with open(fileName+'-Publ.pem', 'rb') as file:
+            with open(fileName + "-Publ.pem", "rb") as file:
                 self.publicKey = RSA.importKey(file.read())
-            with open(fileName+'-Priv.pem', 'rb') as file:
+            with open(fileName + "-Priv.pem", "rb") as file:
                 self.secretKey = RSA.importKey(file.read())
-            with open(fileName+'-Info.pem', 'r') as file:
+            with open(fileName + "-Info.pem", "r") as file:
                 self.keySize = int(file.readline())
                 self.creationTime = float(file.readline())
             self.cipherDec = PKCS1_OAEP.new(self.secretKey, hashAlgo=SHA256)
@@ -208,10 +228,10 @@ class RSAKeys:
         except:
             return False
 
-    def checkKeys(self, testSize:int = 200) -> bool:
-        m = urandom(testSize) # Random bytes
-        test1 = (self.decrypt(self.encrypt(m, self.publicKey)) == m)
-        test2 = (self.verify(m, self.sign(m), self.publicKey))
+    def checkKeys(self, testSize: int = 200) -> bool:
+        m = urandom(testSize)  # Random bytes
+        test1 = self.decrypt(self.encrypt(m, self.publicKey)) == m
+        test2 = self.verify(m, self.sign(m), self.publicKey)
         return test1 and test2
 
     def __str__(self) -> str:
@@ -220,7 +240,7 @@ class RSAKeys:
     def __repr__(self) -> str:
         return f"RSAKeys({self.keySize})"
 
-    def __eq__(self, other:'RSAKeys') -> bool:
+    def __eq__(self, other: "RSAKeys") -> bool:
         return self.publicKey == other.publicKey and self.secretKey == other.secretKey
 
     def __hash__(self) -> int:

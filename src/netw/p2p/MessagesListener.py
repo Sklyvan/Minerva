@@ -2,9 +2,10 @@ from src.netw.LocalSockets import WebSocketConnection
 from src.netw.InternetPacket import cleanData
 import threading, base64, subprocess
 
-def start(outputPipe:subprocess.Popen):
+
+def start(outputPipe: subprocess.Popen):
     inputPipe = subprocess.Popen(["cat"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-    receiver = WebSocketConnection() # In this WebSocket, we will receive the data.
+    receiver = WebSocketConnection()  # In this WebSocket, we will receive the data.
 
     threading.Thread(target=receiver.startreceive, args=(inputPipe,)).start()
 

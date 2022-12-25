@@ -1,5 +1,6 @@
 from src.netw.Imports import *
 
+
 class Node:
     def __init__(self, nodeIP: str, key: DiffieHellmanKey):
         self.nodeIP = nodeIP
@@ -35,15 +36,12 @@ class Node:
         return self.nodeIP == other.nodeIP and self.key == other.key
 
     def asJSON(self) -> dict:
-        asDict = {
-            "IP": str(self.nodeIP),
-            "DiffieHellmanKey": repr(self.key)
-        }
+        asDict = {"IP": str(self.nodeIP), "DiffieHellmanKey": repr(self.key)}
         return asDict
 
 
 class Circuit:
-    def __init__(self, circuitID:str = '', nodes:[Node] = []):
+    def __init__(self, circuitID: str = "", nodes: [Node] = []):
         self.circuitID = circuitID
         self.nodes = nodes
         self.size = len(nodes)
@@ -117,7 +115,7 @@ class Circuit:
     def asJSON(self) -> dict:
         asDict = {
             "ID": str(self.circuitID),
-            "Nodes": [node.asJSON() for node in self.nodes]
+            "Nodes": [node.asJSON() for node in self.nodes],
         }
         return asDict
 

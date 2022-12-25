@@ -1,5 +1,6 @@
 from src.cryp.Imports import *
 
+
 class KeyAES:
     def __init__(self, key: bytes, nonce: bytes):
         """
@@ -20,7 +21,7 @@ class KeyAES:
     def decrypt(self, data: bytes) -> bytes:
         return self.cipher.decrypt(data)
 
-    def __eq__(self, other: 'KeyAES') -> bool:
+    def __eq__(self, other: "KeyAES") -> bool:
         return self.key == other.key and self.nonce == other.nonce
 
     def __len__(self):

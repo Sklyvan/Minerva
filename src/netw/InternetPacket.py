@@ -2,8 +2,15 @@ import base64
 import xml.etree.ElementTree as ET
 from src.netw.LocalSockets import WebSocketConnection, asyncio
 
+
 class Packet:
-    def __init__(self, withData: bytes, fromIP: str, toIP: str, xmlConfig:str = "SocketsInformation.xml"):
+    def __init__(
+        self,
+        withData: bytes,
+        fromIP: str,
+        toIP: str,
+        xmlConfig: str = "SocketsInformation.xml",
+    ):
         """
         This class does not contain any methods to send the packet, since it
         is only used to create the packet from Python, use the result of the
@@ -28,7 +35,13 @@ class Packet:
         return h, p
 
     def toJSON(self) -> str:
-        return str({"Data": base64.b64encode(self.data), "fromIP": self.fromIP, "toIP": self.toIP})
+        return str(
+            {
+                "Data": base64.b64encode(self.data),
+                "fromIP": self.fromIP,
+                "toIP": self.toIP,
+            }
+        )
 
     def toNetworkLayer(self):
         self.webSocketConnection.startsend(self.toJSON())
@@ -43,20 +56,26 @@ class Packet:
         return f"Packet with data {self.data} from {self.fromIP} to {self.toIP}."
 
     def __iter__(self) -> iter:
-        return [("data", self.data), ("fromIP", self.fromIP), ("toIP", self.toIP)].__iter__()
+        return [
+            ("data", self.data),
+            ("fromIP", self.fromIP),
+            ("toIP", self.toIP),
+        ].__iter__()
 
 
-def cleanData(data: str) -> dict: # This function is used to clean the data received from the network layer (JS).
-    data = data.replace('{', '')
-    data = data.replace('}', '')
-    data = data.replace('"', '')
-    data = data.replace("b'", '')
-    data = data.replace("'", '')
-    data = data.replace(' ', '')
-    asArray = data.split(',')
+def cleanData(
+    data: str,
+) -> dict:  # This function is used to clean the data received from the network layer (JS).
+    data = data.replace("{", "")
+    data = data.replace("}", "")
+    data = data.replace('"', "")
+    data = data.replace("b'", "")
+    data = data.replace("'", "")
+    data = data.replace(" ", "")
+    asArray = data.split(",")
     dictData = {}
     for i in range(len(asArray)):
-        splitArray = asArray[i].split(':')
+        splitArray = asArray[i].split(":")
         # If splitArray[1] is a number, convert it to int
         try:
             splitArray[1] = int(splitArray[1])

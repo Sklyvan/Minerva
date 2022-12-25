@@ -1,5 +1,6 @@
 from src.data.Imports import *
 
+
 class Queue:
     def __init__(self):
         """
@@ -9,8 +10,8 @@ class Queue:
         exported as JSON, we don't export the messages content.
         """
         self.queue, self.size = [], 0
-        self.creationTime = int(time.time()) # UNIX Timestamp
-        self.lastAccessTime = int(time.time()) # UNIX Timestamp
+        self.creationTime = int(time.time())  # UNIX Timestamp
+        self.lastAccessTime = int(time.time())  # UNIX Timestamp
 
     def addMessage(self, messageID: str):
         self.queue.append(messageID)
@@ -26,10 +27,12 @@ class Queue:
             return None
 
     def asJSON(self) -> dict:
-        asDict = {"CreationTime": self.creationTime,
-                  "LastAccessTime": self.lastAccessTime,
-                  "Size": self.size,
-                  "Queue": [msgID for msgID in self.queue]}
+        asDict = {
+            "CreationTime": self.creationTime,
+            "LastAccessTime": self.lastAccessTime,
+            "Size": self.size,
+            "Queue": [msgID for msgID in self.queue],
+        }
         return asDict
 
     def exportQueue(self, path: str):

@@ -1,5 +1,6 @@
 from src.data.Imports import *
 
+
 class ForwardingTable:
     def __init__(self):
         self.table = {}

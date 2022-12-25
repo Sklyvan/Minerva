@@ -2,13 +2,14 @@ import socket
 import asyncio
 import websockets
 
+
 class WebSocketConnection:
-    def __init__(self, host:str = '127.0.0.1', port:int = 6774):
+    def __init__(self, host: str = "127.0.0.1", port: int = 6774):
         self.host = host
         self.port = port
         self.uri = f"ws://{self.host}:{self.port}"
 
-    def startsend(self, data:str):
+    def startsend(self, data: str):
         # This method starts the connection and sends the data.
         async def send(self, data):
             async with websockets.connect(self.uri) as websocket:
@@ -17,7 +18,7 @@ class WebSocketConnection:
 
         asyncio.run(send(self, data))
 
-    def startreceive(self, toPipe:'subprocess.Popen' = None):
+    def startreceive(self, toPipe: "subprocess.Popen" = None):
         # This method starts the connections and listens for data in an infinite loop.
         async def receive(self, toPipe):
             async with websockets.connect(self.uri) as websocket:

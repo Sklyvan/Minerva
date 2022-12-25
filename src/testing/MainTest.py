@@ -2,6 +2,7 @@ import unittest
 from src.main.User import *
 import glob, os
 
+
 class UserTest(unittest.TestCase):
     def testImportExportData(self):
         K1 = DiffieHellmanKey()
@@ -28,44 +29,88 @@ class UserTest(unittest.TestCase):
         ExampleTable.addEntry("CIRCUIT3", N3)
         ExampleTable.addEntry("CIRCUIT4", N4)
 
-        User1 = PublicUser(1, "User1", [RSA.generate(2048).public_key(), RSA.generate(2048).public_key()], Circuit1)
-        User2 = PublicUser(2, "User2", [RSA.generate(2048).public_key(), RSA.generate(2048).public_key()], Circuit2)
+        User1 = PublicUser(
+            1,
+            "User1",
+            [RSA.generate(2048).public_key(), RSA.generate(2048).public_key()],
+            Circuit1,
+        )
+        User2 = PublicUser(
+            2,
+            "User2",
+            [RSA.generate(2048).public_key(), RSA.generate(2048).public_key()],
+            Circuit2,
+        )
 
         Friends = Contacts()
         Friends.addContact(User1)
         Friends.addContact(User2)
 
         MessagesQueue = Queue()
-        for i in range(10): MessagesQueue.addMessage(i)
+        for i in range(10):
+            MessagesQueue.addMessage(i)
 
-        MyUser = User(1, "MyUser", [RSAKeys(fileName='../keys/EncKeys'), RSAKeys(fileName='../keys/SigKeys')], "127.0.0.1",
-                      forwardingTable=ExampleTable, messagesQueue=MessagesQueue, contacts=Friends, messages=MessagesDB(dbPath='Messages.db'))
-        MyUser.exportUser('MyUser.json')
+        MyUser = User(
+            1,
+            "MyUser",
+            [RSAKeys(fileName="../keys/EncKeys"), RSAKeys(fileName="../keys/SigKeys")],
+            "127.0.0.1",
+            forwardingTable=ExampleTable,
+            messagesQueue=MessagesQueue,
+            contacts=Friends,
+            messages=MessagesDB(dbPath="Messages.db"),
+        )
+        MyUser.exportUser("MyUser.json")
 
         MyUserCheck = User(None, None, [None, None], None)
-        MyUserCheck.importUser('MyUser.json')
+        MyUserCheck.importUser("MyUser.json")
 
         self.assertEqual(MyUser, MyUserCheck, "Users are not equal.")
 
-        for file in glob.glob("../keys/*.pem"): os.remove(file)
-        for file in glob.glob("*.db"): os.remove(file)
-        for file in glob.glob("*.json"): os.remove(file)
+        for file in glob.glob("../keys/*.pem"):
+            os.remove(file)
+        for file in glob.glob("*.db"):
+            os.remove(file)
+        for file in glob.glob("*.json"):
+            os.remove(file)
 
     def testImportExportKeys(self):
-        MyUser1 = User(1, 'User1', [RSAKeys(fileName='EncKeys'), RSAKeys(fileName='SigKeys')], "127.0.0.1")
-        MyUser1.exportKeys('EncKeys.pem', 'SigKeys.pem')
+        MyUser1 = User(
+            1,
+            "User1",
+            [RSAKeys(fileName="EncKeys"), RSAKeys(fileName="SigKeys")],
+            "127.0.0.1",
+        )
+        MyUser1.exportKeys("EncKeys.pem", "SigKeys.pem")
 
-        MyUser2 = User(2, 'User2', [RSAKeys(fileName='TempE', toImport=True), RSAKeys(fileName='TempS', toImport=True)], "127.0.0.2")
-        MyUser2.importKeys('EncKeys.pem', 'SigKeys.pem')
+        MyUser2 = User(
+            2,
+            "User2",
+            [
+                RSAKeys(fileName="TempE", toImport=True),
+                RSAKeys(fileName="TempS", toImport=True),
+            ],
+            "127.0.0.2",
+        )
+        MyUser2.importKeys("EncKeys.pem", "SigKeys.pem")
 
-        self.assertEqual(MyUser1.encryptionKeys, MyUser2.encryptionKeys, "Encryption keys are not equal.")
-        self.assertEqual(MyUser1.signingKeys, MyUser2.signingKeys, "Signing keys are not equal.")
+        self.assertEqual(
+            MyUser1.encryptionKeys,
+            MyUser2.encryptionKeys,
+            "Encryption keys are not equal.",
+        )
+        self.assertEqual(
+            MyUser1.signingKeys, MyUser2.signingKeys, "Signing keys are not equal."
+        )
         self.assertTrue(MyUser1.checkKeys(), "Keys 1 are not valid.")
         self.assertTrue(MyUser2.checkKeys(), "Keys 2 are not valid.")
 
-        for file in glob.glob("*.pem"): os.remove(file)
-        for file in glob.glob("*.db"): os.remove(file)
-        for file in glob.glob("*.json"): os.remove(file)
+        for file in glob.glob("*.pem"):
+            os.remove(file)
+        for file in glob.glob("*.db"):
+            os.remove(file)
+        for file in glob.glob("*.json"):
+            os.remove(file)
 
 
 class NodeTest(unittest.TestCase):
@@ -79,12 +124,13 @@ class NodeTest(unittest.TestCase):
         N1 = Node("127.0.0.1", K1)
         N2 = Node("127.0.0.2", K2)
 
-        N1.exportNode('Node.json')
-        N2.importNode('Node.json')
+        N1.exportNode("Node.json")
+        N2.importNode("Node.json")
 
         self.assertEqual(N1, N2)
 
-        for file in glob.glob("*.json"): os.remove(file)
+        for file in glob.glob("*.json"):
+            os.remove(file)
 
     def testNodeAsJSON(self):
         K1 = DiffieHellmanKey()
@@ -95,7 +141,8 @@ class NodeTest(unittest.TestCase):
 
         N1 = Node("127.0.0.1", K1)
 
-        self.assertEqual(N1.asJSON(), {'IP': '127.0.0.1', 'DiffieHellmanKey': repr(K1)})
+        self.assertEqual(N1.asJSON(), {"IP": "127.0.0.1", "DiffieHellmanKey": repr(K1)})
+
 
 class CircuitTest(unittest.TestCase):
     def testCircuitImportExport(self):
@@ -119,7 +166,8 @@ class CircuitTest(unittest.TestCase):
 
         self.assertEqual(MyCircuit1, MyCircuit2)
 
-        for file in glob.glob("*.json"): os.remove(file)
+        for file in glob.glob("*.json"):
+            os.remove(file)
 
     def testCircuitAsJSON(self):
         self.maxDiff = None
@@ -137,12 +185,12 @@ class CircuitTest(unittest.TestCase):
         MyCircuit.addNode(N1)
         MyCircuit.addNode(N2)
 
-        self.assertEqual(MyCircuit.asJSON(), {
-            "ID": "Circuit",
-            "Nodes": [N1.asJSON(), N2.asJSON()]
-        })
+        self.assertEqual(
+            MyCircuit.asJSON(), {"ID": "Circuit", "Nodes": [N1.asJSON(), N2.asJSON()]}
+        )
 
-        for file in glob.glob("*.json"): os.remove(file)
+        for file in glob.glob("*.json"):
+            os.remove(file)
 
     def testCircuitAddRemoveNode(self):
         K1 = DiffieHellmanKey()
@@ -164,6 +212,7 @@ class CircuitTest(unittest.TestCase):
         MyCircuit.removeNode(N1)
         MyCircuit.removeNode(N2)
         self.assertEqual(MyCircuit.nodes, [])
+
 
 class ForwardingTableTest(unittest.TestCase):
     def testForwardingTableImportExport(self):
@@ -187,7 +236,8 @@ class ForwardingTableTest(unittest.TestCase):
 
         self.assertEqual(ExampleTable, ExampleTable2)
 
-        for file in glob.glob("*.json"): os.remove(file)
+        for file in glob.glob("*.json"):
+            os.remove(file)
 
     def testForwardingTableAsJSON(self):
         K1 = DiffieHellmanKey()
@@ -203,11 +253,9 @@ class ForwardingTableTest(unittest.TestCase):
         ExampleTable.addEntry("CIRCUIT1", N1)
         ExampleTable.addEntry("CIRCUIT2", N2)
 
-        self.assertEqual(ExampleTable.asJSON(), {
-            "CIRCUIT1": N1.asJSON(),
-            "CIRCUIT2": N2.asJSON()
-        })
-
+        self.assertEqual(
+            ExampleTable.asJSON(), {"CIRCUIT1": N1.asJSON(), "CIRCUIT2": N2.asJSON()}
+        )
 
     def testForwardingTableAddRemoveEntry(self):
         K1 = DiffieHellmanKey()
@@ -223,10 +271,7 @@ class ForwardingTableTest(unittest.TestCase):
         ExampleTable.addEntry("CIRCUIT1", N1)
         ExampleTable.addEntry("CIRCUIT2", N2)
 
-        self.assertEqual(ExampleTable.table, {
-            "CIRCUIT1": N1,
-            "CIRCUIT2": N2
-        })
+        self.assertEqual(ExampleTable.table, {"CIRCUIT1": N1, "CIRCUIT2": N2})
 
         ExampleTable.removeEntry("CIRCUIT1")
         ExampleTable.removeEntry("CIRCUIT2")
@@ -250,5 +295,5 @@ class ForwardingTableTest(unittest.TestCase):
         self.assertEqual(ExampleTable["CIRCUIT2"], N2)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

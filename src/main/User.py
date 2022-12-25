@@ -1,9 +1,18 @@
 from src.main.Imports import *
 
+
 class User:
-    def __init__(self, userID: int, userName: str, rsaKeys: [RSAKeys, RSAKeys], IP: str,
-                 forwardingTable: ForwardingTable = None, messagesQueue: Queue = None,
-                 contacts: Contacts = None, messages: MessagesDB = None):
+    def __init__(
+        self,
+        userID: int,
+        userName: str,
+        rsaKeys: [RSAKeys, RSAKeys],
+        IP: str,
+        forwardingTable: ForwardingTable = None,
+        messagesQueue: Queue = None,
+        contacts: Contacts = None,
+        messages: MessagesDB = None,
+    ):
         self.userID = userID
         self.userName = userName
         self.encryptionKeys, self.signingKeys = rsaKeys
@@ -12,7 +21,8 @@ class User:
         self.messagesQueue = messagesQueue
         self.contacts = contacts
         self.messages = messages
-        if not os.path.isfile("../data/User.json"): self.exportUser("../data/User.json")
+        if not os.path.isfile("../data/User.json"):
+            self.exportUser("../data/User.json")
 
     def regenerateKeys(self):
         self.encryptionKeys.updateKeys()
@@ -32,16 +42,27 @@ class User:
         userReceiver, userSender = self.contacts[toUserName], self
         circuitUsed = userReceiver.throughCircuit
         timeCreated = int(time())
-        messageID = SHA256.new(f"{userSender.userName}{userReceiver.userName}{timeCreated}{content}"
-                               .encode()).hexdigest()
-        msg = Message(messageID, content.encode(), b'', circuitUsed, userSender, userReceiver, timeCreated)
-        self.messages.addMessage(msg) # Store the message withouth encryption/signature
+        messageID = SHA256.new(
+            f"{userSender.userName}{userReceiver.userName}{timeCreated}{content}".encode()
+        ).hexdigest()
+        msg = Message(
+            messageID,
+            content.encode(),
+            b"",
+            circuitUsed,
+            userSender,
+            userReceiver,
+            timeCreated,
+        )
+        self.messages.addMessage(msg)  # Store the message withouth encryption/signature
 
         msg.encrypt()
         msg.sign()
         return msg
 
-    def createMessageToReceive(self, msgData: dict, ignoreVerification=False) -> Message:
+    def createMessageToReceive(
+        self, msgData: dict, ignoreVerification=False
+    ) -> Message:
         """
         This method receives a dictionary generated after reading a NetworkMessage as bytes,
         from this data we extract all the information to create a message.
@@ -70,10 +91,18 @@ class User:
         if not receiver:
             raise ValueError("The message is not for you.")
         else:
-            msg = Message('tempID', encryptedContent, signature,
-                          circuitUsed, sender, receiver,
-                          timeCreated, timeReceived,
-                          isEncrypted=True, isSigned=True)
+            msg = Message(
+                "tempID",
+                encryptedContent,
+                signature,
+                circuitUsed,
+                sender,
+                receiver,
+                timeCreated,
+                timeReceived,
+                isEncrypted=True,
+                isSigned=True,
+            )
             isVerified = msg.verify()
             if not ignoreVerification and not isVerified:
                 raise Exception("Message signature verification failed.")
@@ -83,12 +112,18 @@ class User:
                 if self.messages.isMessage(msg.messageID):
                     # If we already have the message its the updated message with the received date.
                     messageID = self.messages.getMessage(msg.messageID)[0]
-                    self.messages.updateTimeReceived(messageID, timeReceived) # Update the time received.
+                    self.messages.updateTimeReceived(
+                        messageID, timeReceived
+                    )  # Update the time received.
 
                 return msg
 
-    def computeMessageID(self, senderName: str, receiverName: str, timeCreated: int, content: str) -> str:
-        return SHA256.new(f"{senderName}{receiverName}{timeCreated}{content}".encode()).hexdigest()
+    def computeMessageID(
+        self, senderName: str, receiverName: str, timeCreated: int, content: str
+    ) -> str:
+        return SHA256.new(
+            f"{senderName}{receiverName}{timeCreated}{content}".encode()
+        ).hexdigest()
 
     def deleteMessage(self, messageID: str):
         self.messages.deleteMessage(messageID)
@@ -115,7 +150,9 @@ class User:
         nextMessageID = self.messagesQueue.nextMessage()
         return self.messages[nextMessageID]
 
-    def addContact(self, userID: int, userName: str, rsaPublicKeys: list, throughCircuit: Circuit):
+    def addContact(
+        self, userID: int, userName: str, rsaPublicKeys: list, throughCircuit: Circuit
+    ):
         newUser = PublicUser(userID, userName, rsaPublicKeys, throughCircuit)
         self.contacts.addContact(newUser)
 
@@ -146,7 +183,9 @@ class User:
             data = json.loads(f.read())
             self.userID = data["UserID"]
             self.userName = data["UserName"]
-            self.encryptionKeys = RSAKeys(toImport=True, fileName=data["EncryptionKeys"])
+            self.encryptionKeys = RSAKeys(
+                toImport=True, fileName=data["EncryptionKeys"]
+            )
             self.signingKeys = RSAKeys(toImport=True, fileName=data["SigningKeys"])
             self.IP = data["IP"]
 
@@ -162,30 +201,37 @@ class User:
             self.messages = MessagesDB(dbPath=data["Messages"])
 
     def asJSON(self) -> dict:
-        return {"UserID": self.userID,
-                "UserName": self.userName,
-                "EncryptionKeys": self.encryptionKeys.filename,
-                "SigningKeys": self.signingKeys.filename,
-                "IP": self.IP,
-                "ForwardingTable": self.forwardingTable.asJSON(),
-                "MessagesQueue": self.messagesQueue.asJSON(),
-                "UserFriends": self.contacts.asJSON(),
-                "Messages": self.messages.dbPath}
+        return {
+            "UserID": self.userID,
+            "UserName": self.userName,
+            "EncryptionKeys": self.encryptionKeys.filename,
+            "SigningKeys": self.signingKeys.filename,
+            "IP": self.IP,
+            "ForwardingTable": self.forwardingTable.asJSON(),
+            "MessagesQueue": self.messagesQueue.asJSON(),
+            "UserFriends": self.contacts.asJSON(),
+            "Messages": self.messages.dbPath,
+        }
 
     def __eq__(self, other) -> bool:
-        return self.userID == other.userID \
-               and self.userName == other.userName \
-               and self.encryptionKeys == other.encryptionKeys \
-               and self.signingKeys == other.signingKeys \
-               and self.IP == other.IP \
-               and self.forwardingTable == other.forwardingTable \
-               and self.messagesQueue == other.messagesQueue \
-               and self.contacts == other.contacts \
-               and self.messages == other.messages
+        return (
+            self.userID == other.userID
+            and self.userName == other.userName
+            and self.encryptionKeys == other.encryptionKeys
+            and self.signingKeys == other.signingKeys
+            and self.IP == other.IP
+            and self.forwardingTable == other.forwardingTable
+            and self.messagesQueue == other.messagesQueue
+            and self.contacts == other.contacts
+            and self.messages == other.messages
+        )
 
     def __str__(self) -> str:
-        return f"User {self.userName} (ID: {self.userID}) " \
-               f"with IP {self.IP} and keys {self.encryptionKeys} and {self.signingKeys}."
+        return (
+            f"User {self.userName} (ID: {self.userID}) "
+            f"with IP {self.IP} and keys {self.encryptionKeys} and {self.signingKeys}."
+        )
+
 
 def initializeUser(userName, IP) -> User:
     userID = SHA256.new(userName.encode()).hexdigest().upper()
@@ -195,11 +241,17 @@ def initializeUser(userName, IP) -> User:
         myUser = User(None, None, [None, None], None)
         myUser.importUser(f"{userID}.json")
     else:
-        myUser = User(userID,
-                      userName,
-                      [RSAKeys(fileName='../keys/EncKeys'+userName), RSAKeys(fileName='../keys/SigKeys'+userName)],
-                      IP, forwardingTable=ForwardingTable(),
-                      messagesQueue=Queue(),
-                      contacts=Contacts(),
-                      messages=MessagesDB(dbPath=f'../data/Messages.db'))
+        myUser = User(
+            userID,
+            userName,
+            [
+                RSAKeys(fileName="../keys/EncKeys" + userName),
+                RSAKeys(fileName="../keys/SigKeys" + userName),
+            ],
+            IP,
+            forwardingTable=ForwardingTable(),
+            messagesQueue=Queue(),
+            contacts=Contacts(),
+            messages=MessagesDB(dbPath=f"../data/Messages.db"),
+        )
     return myUser
