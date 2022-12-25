@@ -1,17 +1,15 @@
 from src.netw.LocalSockets import WebSocketConnection
 from src.netw.InternetPacket import cleanData
-import threading, base64
+import threading, base64, subprocess
 
-def start(pipe):
-    readingQueue = []
+def start(outputPipe:subprocess.Popen):
+    inputPipe = subprocess.Popen(["cat"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     receiver = WebSocketConnection() # In this WebSocket, we will receive the data.
-    threading.Thread(target=receiver.startreceive, args=(readingQueue,)).start()
 
+    threading.Thread(target=receiver.startreceive, args=(inputPipe,)).start()
+
+    # Read the data from the inputPipe and send it to the outputPipe.
     while True:
-        if len(readingQueue) > 0:
-            # Base64 decode the data.
-            data = base64.b64decode(readingQueue.pop(0)).decode()
-            cleanData = cleanData(data) # This data can be used by the User.createMessageToReceive() method.
-
-            # Send the data to the pipe.
-            pipe.stdin.write(cleanData)
+        data = inputPipe.stdout.readline()
+        data = cleanData(data)
+        outputPipe.stdin.write(data)
