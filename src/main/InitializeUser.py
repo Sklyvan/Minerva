@@ -1,5 +1,11 @@
 from src.main.User import *
 
+"""
+This file is called with the arguments -l <filename> or -n <username>.
+If the argument -l is used, the user will be loaded from the file <filename>.
+If the argument -n is used, a new user will be created with the username <username>.
+"""
+
 
 def initializeUser(sysArgs: list) -> User:
     loadUser = False
