@@ -20,7 +20,10 @@
             {
               let nodeID = json.IP;
               document.getElementById("nodeID").value = nodeID;
-            });
+              console.log(nodeID);
+              window.nodeID = nodeID;
+            })
+            .catch((error) => console.error("Wrong Username"));
   };
 </script>
 
