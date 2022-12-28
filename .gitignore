@@ -638,5 +638,5 @@ toIgnore/
 *.dh
 *.xcf
 
-src/testing/RSA
-src/cryp/RSA
+src/testing/RSA.bin
+src/cryp/RSA.bin
