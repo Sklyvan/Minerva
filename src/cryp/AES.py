@@ -12,7 +12,7 @@ class KeyAES:
         :param key: Bytes object that are going to be used as key.
         :param nonce: Random bytes that are going to be used as nonce.
         """
-        self.key, self.nonce = key[:32], nonce[:15]
+        self.key, self.nonce = key[:AES_KEY_SIZE], nonce[:AES_NONCE_SIZE]
         self.cipher = AES.new(self.key, AES.MODE_CTR, nonce=self.nonce)
 
     def encrypt(self, data: bytes) -> bytes:

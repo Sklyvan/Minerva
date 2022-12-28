@@ -10,3 +10,8 @@ from os import urandom, path, system
 from src.SystemExceptions import *
 from base64 import b64encode
 from time import time
+
+from src.cryp.Constants import *
+
+DFH_CURVE = eval(f"ec.{DFH_CURVE}")
+DFH_HASH = eval(f"hashes.{DFH_HASH}()")

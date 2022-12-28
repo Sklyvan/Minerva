@@ -3,7 +3,10 @@ from src.cryp.Imports import *
 
 class RSAKeys:
     def __init__(
-        self, keySize: int = 2048, fileName: str = "UserKeys", toImport: bool = False
+        self,
+        keySize: int = RSA_KEY_SIZE,
+        fileName: str = RSA_KEYS_NAME,
+        toImport: bool = False,
     ):
         """
         Creates the class to store a PK and SK of RSA keys,
@@ -20,11 +23,11 @@ class RSAKeys:
         self.cipherDec = None
         self.cipherSig = None
         if not toImport:  # Create the RSA keys
-            system(f"../cryp/RSA {keySize} {fileName}")
+            system(f"{RSA_KEY_GEN} {keySize} {fileName}")
         self.importKeys(fileName)
 
-    def updateKeys(self, keySize: int = 2048):
-        system(f"../cryp/RSA {keySize} {fileName}")
+    def updateKeys(self, keySize: int = RSA_KEY_SIZE):
+        system(f"{RSA_KEY_GEN} {keySize} {fileName}")
         self.importKeys(self.filename)
 
     def canEncrypt(self, inputSize: int, keySize: int) -> bool:

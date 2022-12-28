@@ -4,23 +4,24 @@ from src.cryp.Imports import *
 class DiffieHellmanKey:
     def __init__(
         self,
-        curve: ec.SECP384R1 = ec.SECP384R1,
-        hashAlgorithm: hashes.SHA256 = hashes.SHA256(),
-        salting=False,
-        info="Handshake",
+        curve: "EllipticCurve" = DFH_CURVE,
+        hashAlgorithm: "HashAlgorithm" = DFH_HASH,
+        salting: bool = False,
+        info: str = "Handshake",
     ):
         """
         This class is used to do all the key agreement and key derivation stuff. It's important to use the exact same
         parameters for both parties, otherwise the derived key will be different and the communication will fail.
         :param curve: The curve to use for the Diffie-Hellman key exchange.
         :param curve: By default, we just support NIST curves. In a future version I will move to newer ones.
+        The default curve is SECP384R1 (NIST P-384). https://neuromancer.sk/std/secg/secp384r1
         :param hashAlgorithm: SHA256 is the default hash algorithm.
         :param salting: If this is True, we generate 32 random bytes.
-        :param info: A string to be used as info in the HKDF. Transformed to bytes.
+        :param info: A string to be used as info in the HKDF. It is transformed to bytes.
         """
         self.curve = curve
         self.hashAlgorithm = hashAlgorithm
-        self.salt = None if not salting else urandom(32)
+        self.salt = None if not salting else urandom(DFH_SALT_SIZE)
         self.info = info.encode()
         self.privateKey = ec.generate_private_key(self.curve)
         self.publicKey = self.privateKey.public_key()
