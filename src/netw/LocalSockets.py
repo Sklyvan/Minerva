@@ -28,6 +28,14 @@ class WebSocketConnection:
 
         asyncio.run(receive(self, toPipe))
 
+    def close(self):
+        # This method closes the connection.
+        async def _close(self):
+            async with websockets.connect(self.uri) as websocket:
+                await websocket._close()
+
+        asyncio.run(_close(self))
+
     def __str__(self) -> str:
         return f"WebSocket Connection to {self.uri}"
 
