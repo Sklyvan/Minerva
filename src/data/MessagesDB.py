@@ -118,19 +118,19 @@ class Message:
 
 
 class MessagesDB:
-    def __init__(self, dbPath: str = "Messages.db"):
+    def __init__(self, dbPath: str = DATABASE_NAME):
         firstTime = not (os.path.isfile(dbPath))
         self.dbPath = dbPath
         self.dbConnection = sqlite3.connect(self.dbPath)
         self.cursor = self.dbConnection.cursor()
 
-        with open("../data/sqls/TablesCreation.sql", "r") as f:
+        with open(TABLE_CREATION, "r") as f:
             x = f.read()  # Creation of the tables if they don't exist.
             self.cursor.executescript(x)
         self.dbConnection.commit()
 
         if firstTime:
-            with open("../data/sqls/InitializeMetadata.sql", "r") as f:
+            with open(INITIALIZE_METADATA, "r") as f:
                 x = f.read()
                 self.cursor.executescript(x)
             self.dbConnection.commit()
@@ -154,7 +154,7 @@ class MessagesDB:
         else:
             content = msg.content.decode("utf-8")
 
-        with open("../data/sqls/InsertMessage.sql", "r") as f:
+        with open(INSERT_MESSAGE, "r") as f:
             x = f.read().replace("\n", "").split(";")
             if not msg.timeReceived:  # Insert time received as NULL.
                 self.cursor.execute(
@@ -184,7 +184,7 @@ class MessagesDB:
 
     def deleteMessage(self, messageID: int) -> bool:
         isDeleted = False
-        with open("../data/sqls/DeleteMessage.sql", "r") as f:
+        with open(DELETE_MESSAGE, "r") as f:
             x = f.read()
             self.cursor.execute(x, (messageID,))
         self.dbConnection.commit()
@@ -199,7 +199,7 @@ class MessagesDB:
         If justContent is False, we read and execute the first line of the file.
         If justContent is True, we read and execute the second line of the file.
         """
-        with open("../data/sqls/GetMessage.sql", "r") as f:
+        with open(GET_MESSAGE, "r") as f:
             x = f.read().replace("\n", "").split(";")
             if justContent:
                 msg = self.cursor.execute(x[1], (str(messageID),)).fetchone()[0]
