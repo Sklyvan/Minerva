@@ -6,7 +6,24 @@
 </head>
 <body>
 
-<input type="text" id="nodeID" value="d8cd7bae-0b80-4a71-a7e5-22f728016311">
+<input type="text" id="username" placeholder="UserName">
+<button id="loadUser" onclick="loadUser()">Enter</button>
+
+<var id="nodeID"></var>
+<script >
+  function loadUser()
+  {
+    let filename = '../../main/User_'+document.getElementById('username').value+'.json';
+    fetch(filename)
+            .then((response) => response.json())
+            .then((json) =>
+            {
+              let nodeID = json.IP;
+              document.getElementById("nodeID").value = nodeID;
+            });
+  };
+</script>
+
 
 <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
 <script src="utils.js"></script>
