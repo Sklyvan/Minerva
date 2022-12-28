@@ -32,7 +32,7 @@ def initializeUser(sysArgs: list) -> User:
         myUser = User(None, None, [None, None], None)
         myUser.importUser(fileName)
     else:
-        userID = int(os.urandom(16).hex(), 16)
+        userID = int.from_bytes(userName.encode(), "big")
         networkID = [
             os.urandom(4).hex(),
             os.urandom(2).hex(),
