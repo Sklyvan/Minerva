@@ -12,7 +12,8 @@ comPipe = subprocess.Popen(["cat"], stdin=subprocess.PIPE, stdout=subprocess.PIP
 def readPipe():
     while True:
         inputPacket = comPipe.stdout.readline()
-        print(inputPacket)
+        if inputPacket != b"":
+            print(inputPacket)
 
 
 if __name__ == "__main__":
@@ -22,7 +23,7 @@ if __name__ == "__main__":
         print(f"[{emojiCross}] {e}")
         sys.exit(1)
     else:
-        print(f"[{emojiTick}] User Initialized")
+        print(f"[{emojiTick}] User Initialized: {myUser.userName} | {myUser.IP}")
 
     try:
         threading.Thread(target=messagesListener, args=(comPipe,)).start()
