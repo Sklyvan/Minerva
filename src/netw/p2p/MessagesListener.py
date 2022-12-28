@@ -3,7 +3,7 @@ from src.netw.InternetPacket import cleanData
 import threading, base64, subprocess
 
 
-def start(outputPipe: subprocess.Popen):
+def messagesListener(outputPipe: subprocess.Popen):
     inputPipe = subprocess.Popen(["cat"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
     receiver = WebSocketConnection()  # In this WebSocket, we will receive the data.
 
@@ -12,5 +12,6 @@ def start(outputPipe: subprocess.Popen):
     # Read the data from the inputPipe and send it to the outputPipe.
     while True:
         data = inputPipe.stdout.readline()
-        data = cleanData(data)
-        outputPipe.stdin.write(data)
+        if data != b"":  # Ignore empty lines.
+            data = cleanData(data)
+            outputPipe.stdin.write(data)
