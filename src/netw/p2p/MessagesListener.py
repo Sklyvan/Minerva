@@ -12,6 +12,5 @@ def messagesListener(outputPipe: subprocess.Popen):
     # Read the data from the inputPipe and send it to the outputPipe.
     while True:
         data = inputPipe.stdout.readline()
-        if data != b"":  # Ignore empty lines.
-            data = cleanData(data)
-            outputPipe.stdin.write(data)
+        data = cleanData(data)
+        outputPipe.stdin.write(data)
