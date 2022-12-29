@@ -1,5 +1,6 @@
 from src.netw.Imports import *
-from src.netw.LocalSockets import WebSocketConnection, asyncio
+import xml.etree.ElementTree as elementTree
+from src.netw.LocalSockets import WebSocketConnection
 
 
 class Packet:
@@ -27,7 +28,7 @@ class Packet:
         self.webSocketConnection = WebSocketConnection(self.host, self.port)
 
     def readHostPort(self, xmlConfig: str) -> (str, int):
-        tree = ET.parse(xmlConfig)
+        tree = elementTree.parse(xmlConfig)
         root = tree.getroot()
         h = root.find("host").text
         p = int(root.find("port").text)

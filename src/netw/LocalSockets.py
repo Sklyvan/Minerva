@@ -1,6 +1,11 @@
 from src.netw.Imports import *
 
 
+import socket
+import asyncio
+import websockets
+
+
 class WebSocketConnection:
     def __init__(self, host: str = HOST, port: int = PORT):
         self.host = host

@@ -1,4 +1,5 @@
 from src.netw.Imports import *
+import pickle
 
 
 class NetworkMessage:
