@@ -1,4 +1,5 @@
 from src.main.User import *
+import sys
 
 """
 This file is called with the arguments -l <filename> or -n <username>.
@@ -32,7 +33,6 @@ def initializeUser(sysArgs: list) -> User:
         myUser = User(None, None, [None, None], None)
         myUser.importUser(fileName)
     else:
-        userID = int.from_bytes(userName.encode(), "big")
         networkID = [
             os.urandom(4).hex(),
             os.urandom(2).hex(),
@@ -43,20 +43,7 @@ def initializeUser(sysArgs: list) -> User:
         networkID = "-".join(networkID)
         # TODO: This creation of the userID and networkID is temporary.
 
-        t0 = int(time())
-        myUser = User(
-            userID,
-            userName,
-            [
-                RSAKeys(fileName=f"{userName}_EncKeys_{t0}"),
-                RSAKeys(fileName=f"{userName}_SigKeys_{t0}"),
-            ],
-            networkID,
-            ForwardingTable(),
-            Queue(),
-            Contacts(),
-            MessagesDB(),
-        )
+        myUser = createUser(userName, networkID)
         myUser.exportUser(f"User_{userName}.json")
 
     return myUser

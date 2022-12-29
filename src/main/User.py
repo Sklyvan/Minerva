@@ -21,8 +21,6 @@ class User:
         self.messagesQueue = messagesQueue
         self.contacts = contacts
         self.messages = messages
-        if not os.path.isfile("../data/User.json"):
-            self.exportUser("../data/User.json")
 
     def regenerateKeys(self):
         self.encryptionKeys.updateKeys()
@@ -233,25 +231,19 @@ class User:
         )
 
 
-def initializeUser(userName, IP) -> User:
-    userID = SHA256.new(userName.encode()).hexdigest().upper()
-    # Check if the file userID.json exists
-    if os.path.isfile(f"{userID}.json"):
-        # If it does, load the user from the file
-        myUser = User(None, None, [None, None], None)
-        myUser.importUser(f"{userID}.json")
-    else:
-        myUser = User(
-            userID,
-            userName,
-            [
-                RSAKeys(fileName="../keys/EncKeys" + userName),
-                RSAKeys(fileName="../keys/SigKeys" + userName),
-            ],
-            IP,
-            forwardingTable=ForwardingTable(),
-            messagesQueue=Queue(),
-            contacts=Contacts(),
-            messages=MessagesDB(dbPath=f"../data/Messages.db"),
-        )
+def createUser(userName, IP) -> User:
+    userID = int.from_bytes(userName.encode(), "big")
+    myUser = User(
+        userID,
+        userName,
+        [
+            RSAKeys(fileName=KEYS_PATH + ENC_KEYS_NAME + userName),
+            RSAKeys(fileName=KEYS_PATH + SIG_KEYS_NAME + userName),
+        ],
+        IP,
+        forwardingTable=ForwardingTable(),
+        messagesQueue=Queue(),
+        contacts=Contacts(),
+        messages=MessagesDB(dbPath=DB_PATH + DB_NAME),
+    )
     return myUser
