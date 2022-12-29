@@ -1,4 +1,4 @@
-import pickle, base64
+from src.netw.Imports import *
 
 
 class NetworkMessage:

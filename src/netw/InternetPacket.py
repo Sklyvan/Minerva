@@ -1,5 +1,4 @@
-import base64
-import xml.etree.ElementTree as ET
+from src.netw.Imports import *
 from src.netw.LocalSockets import WebSocketConnection, asyncio
 
 
@@ -9,7 +8,7 @@ class Packet:
         withData: bytes,
         fromIP: str,
         toIP: str,
-        xmlConfig: str = "SocketsInformation.xml",
+        xmlConfig: str = XML_FILE_PATH,
     ):
         """
         This class does not contain any methods to send the packet, since it

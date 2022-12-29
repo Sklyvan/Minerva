@@ -1,10 +1,8 @@
-import socket
-import asyncio
-import websockets
+from src.netw.Imports import *
 
 
 class WebSocketConnection:
-    def __init__(self, host: str = "127.0.0.1", port: int = 6774):
+    def __init__(self, host: str = HOST, port: int = PORT):
         self.host = host
         self.port = port
         self.uri = f"ws://{self.host}:{self.port}"
