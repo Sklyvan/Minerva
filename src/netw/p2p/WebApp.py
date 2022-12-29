@@ -11,7 +11,3 @@ class MyHandler(http.server.SimpleHTTPRequestHandler):
 def run(port=8000):
     httpd = http.server.HTTPServer(("", port), MyHandler)
     httpd.serve_forever()
-
-
-if __name__ == "__main__":
-    run()
