@@ -1,5 +1,4 @@
 import sys
-
 from src.main.Imports import *
 from src.netw.p2p import WebApp
 from src.main.InitializeUser import initializeUser
