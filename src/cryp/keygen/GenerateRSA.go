@@ -83,15 +83,15 @@ func savePrivateKeyToPEM(fName string, key *rsa.PrivateKey) {
 	}
 }
 
-func exportToPEMFormat(keys RSAKey, fileName string) {
+func exportToPEMFormat(keys RSAKey, fileName string, fileExtension string) {
 	/*
 		This function exports the keys.PublicKey to the fileName-Publ.pem file
 		and the keys.PrivateKey to the fileName-Priv.pem file. It also exports
 		the key size and the creation time to the fileName-Info.pem file.
 	*/
-	savePublicKeyToPEM(fileName+"-Publ.pem", keys.PublicKey)
-	savePrivateKeyToPEM(fileName+"-Priv.pem", keys.PrivateKey)
-	infoFile, err := os.Create(fileName + "-Info.pem")
+	savePublicKeyToPEM(fileName+"-Publ."+fileExtension, keys.PublicKey)
+	savePrivateKeyToPEM(fileName+"-Priv."+fileExtension, keys.PrivateKey)
+	infoFile, err := os.Create(fileName + "-Info." + fileExtension)
 	if err != nil {
 		fmt.Println("Fatal error ", err.Error())
 		os.Exit(1)
@@ -143,7 +143,7 @@ func areEqual(keys1 RSAKey, keys2 RSAKey) bool { // Debugging function
 		keys1.PrivateKey.Primes[1].Cmp(keys2.PrivateKey.Primes[1]) == 0
 }
 
-func GenerateKeys(keySize int, fileName string) {
+func GenerateKeys(keySize int, fileName string, fileExtension string) {
 	keysPair := GenerateRSAKeyPair(keySize)
-	exportToPEMFormat(keysPair, fileName)
+	exportToPEMFormat(keysPair, fileName, fileExtension)
 }

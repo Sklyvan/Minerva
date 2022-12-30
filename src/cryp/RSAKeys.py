@@ -23,7 +23,7 @@ class RSAKeys:
         self.cipherDec = None
         self.cipherSig = None
         if not toImport:  # Create the RSA keys
-            system(f"{RSA_KEY_GEN} {keySize} {fileName}")
+            system(f"{RSA_KEY_GEN} {keySize} {fileName} {RSA_KEY_EXTENSION}")
         self.importKeys(fileName)
 
     def updateKeys(self, keySize: int = RSA_KEY_SIZE):
@@ -202,11 +202,11 @@ class RSAKeys:
         :param fileName: Name of the file to be exported to.
         """
         try:
-            with open(fileName + "-Publ.pem", "wb") as file:
+            with open(fileName + "-Publ." + RSA_KEY_EXTENSION, "wb") as file:
                 file.write(self.publicKey.exportKey())
-            with open(fileName + "-Priv.pem", "wb") as file:
+            with open(fileName + "-Priv." + RSA_KEY_EXTENSION, "wb") as file:
                 file.write(self.secretKey.exportKey())
-            with open(fileName + "-Info.pem", "w") as file:
+            with open(fileName + "-Info." + RSA_KEY_EXTENSION, "w") as file:
                 file.write(f"{self.keySize}\n{self.creationTime}")
             return True
         except:
@@ -218,11 +218,11 @@ class RSAKeys:
         :param fileName: Name of the file to be imported from.
         """
         try:
-            with open(fileName + "-Publ.pem", "rb") as file:
+            with open(fileName + "-Publ." + RSA_KEY_EXTENSION, "rb") as file:
                 self.publicKey = RSA.importKey(file.read())
-            with open(fileName + "-Priv.pem", "rb") as file:
+            with open(fileName + "-Priv." + RSA_KEY_EXTENSION, "rb") as file:
                 self.secretKey = RSA.importKey(file.read())
-            with open(fileName + "-Info.pem", "r") as file:
+            with open(fileName + "-Info." + RSA_KEY_EXTENSION, "r") as file:
                 self.keySize = int(file.readline())
                 self.creationTime = float(file.readline())
             self.cipherDec = PKCS1_OAEP.new(self.secretKey, hashAlgo=SHA256)

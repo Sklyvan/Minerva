@@ -11,3 +11,7 @@ RSA_KEY_SIZE = 2048
 RSA_KEYS_NAME = "RSAKeys"
 
 RSA_KEY_GEN = os.path.join(os.path.dirname(os.path.abspath(__file__)), "RSA.bin")
+
+RSA_KEY_EXTENSION = "pem"
+DFH_KEY_EXTENSION = "dfh"
+AES_KEY_EXTENSION = "aes"
