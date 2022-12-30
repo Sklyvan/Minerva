@@ -61,7 +61,10 @@ class UserTest(unittest.TestCase):
         MyUser = User(
             1,
             "MyUser",
-            [RSAKeys(fileName="../keys/EncKeys"), RSAKeys(fileName="../keys/SigKeys")],
+            [
+                RSAKeys(fileName="../userdata/keys/EncKeys"),
+                RSAKeys(fileName="../userdata/keys/SigKeys"),
+            ],
             "127.0.0.1",
             forwardingTable=ExampleTable,
             messagesQueue=MessagesQueue,
@@ -75,7 +78,7 @@ class UserTest(unittest.TestCase):
 
         self.assertEqual(MyUser, MyUserCheck, "Users are not equal.")
 
-        for file in glob.glob("../keys/*.pem"):
+        for file in glob.glob("../userdata/keys/*.pem"):
             os.remove(file)
         for file in glob.glob("*.db"):
             os.remove(file)
