@@ -15,6 +15,13 @@ def readPipe():
             print(inputPacket)
 
 
+def isUsed(port):
+    if not port:
+        return True
+    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
+        return s.connect_ex(("localhost", port)) == 0
+
+
 if __name__ == "__main__":
     try:
         t = threading.Thread(target=os.system, args=(openWebSocket,))
@@ -55,7 +62,9 @@ if __name__ == "__main__":
         print(f"[{emojiTick}] Pipe Reader Started")
 
     try:
-        atPort = 8008  # TODO: The port should be a command line argument or something random.
+        atPort = None
+        while isUsed(atPort):
+            atPort = random.randint(8000, 9000)
         t = threading.Thread(target=lambda: os.system(startServer(atPort)))
         t.start()
         threads.append(t)
