@@ -54,48 +54,48 @@ class UserTest(unittest.TestCase):
             1,
             "MyUser",
             [
-                RSAKeys(fileName="../userdata/keys/EncKeys"),
-                RSAKeys(fileName="../userdata/keys/SigKeys"),
+                RSAKeys(fileName="TestEncKeys"),
+                RSAKeys(fileName="TestSigKeys"),
             ],
             "127.0.0.1",
             forwardingTable=ExampleTable,
             messagesQueue=MessagesQueue,
             contacts=Friends,
-            messages=MessagesDB(dbPath="Messages.db"),
+            messages=MessagesDB(dbPath="TestMessages.db"),
         )
-        MyUser.exportUser("MyUser.json")
+        MyUser.exportUser("TestMyUser.json")
 
         MyUserCheck = User(None, None, [None, None], None)
-        MyUserCheck.importUser("MyUser.json")
+        MyUserCheck.importUser("TestMyUser.json")
 
         self.assertEqual(MyUser, MyUserCheck, "Users are not equal.")
 
-        for file in glob.glob("../userdata/keys/*.pem"):
+        for file in glob.glob("Test*.pem"):
             os.remove(file)
-        for file in glob.glob("*.db"):
+        for file in glob.glob("Test*.db"):
             os.remove(file)
-        for file in glob.glob("*.json"):
+        for file in glob.glob("Test*.json"):
             os.remove(file)
 
     def testImportExportKeys(self):
         MyUser1 = User(
             1,
             "User1",
-            [RSAKeys(fileName="EncKeys"), RSAKeys(fileName="SigKeys")],
+            [RSAKeys(fileName="TestEncKeys"), RSAKeys(fileName="TestSigKeys")],
             "127.0.0.1",
         )
-        MyUser1.exportKeys("EncKeys.pem", "SigKeys.pem")
+        MyUser1.exportKeys("TestEncKeys", "TestSigKeys")
 
         MyUser2 = User(
             2,
             "User2",
             [
-                RSAKeys(fileName="TempE", toImport=True),
-                RSAKeys(fileName="TempS", toImport=True),
+                RSAKeys(fileName="TestTempE", toImport=True),
+                RSAKeys(fileName="TestTempS", toImport=True),
             ],
             "127.0.0.2",
         )
-        MyUser2.importKeys("EncKeys.pem", "SigKeys.pem")
+        MyUser2.importKeys("TestEncKeys", "TestSigKeys")
 
         self.assertEqual(
             MyUser1.encryptionKeys,
@@ -108,11 +108,11 @@ class UserTest(unittest.TestCase):
         self.assertTrue(MyUser1.checkKeys(), "Keys 1 are not valid.")
         self.assertTrue(MyUser2.checkKeys(), "Keys 2 are not valid.")
 
-        for file in glob.glob("*.pem"):
+        for file in glob.glob("Test*.pem"):
             os.remove(file)
-        for file in glob.glob("*.db"):
+        for file in glob.glob("Test*.db"):
             os.remove(file)
-        for file in glob.glob("*.json"):
+        for file in glob.glob("Test*.json"):
             os.remove(file)
 
 
@@ -127,12 +127,12 @@ class NodeTest(unittest.TestCase):
         N1 = Node("127.0.0.1", K1)
         N2 = Node("127.0.0.2", K2)
 
-        N1.exportNode("Node.json")
-        N2.importNode("Node.json")
+        N1.exportNode("TestNode.json")
+        N2.importNode("TestNode.json")
 
         self.assertEqual(N1, N2)
 
-        for file in glob.glob("*.json"):
+        for file in glob.glob("Test*.json"):
             os.remove(file)
 
     def testNodeAsJSON(self):
@@ -164,12 +164,12 @@ class CircuitTest(unittest.TestCase):
         MyCircuit1.addNode(N1)
         MyCircuit1.addNode(N2)
 
-        MyCircuit1.exportCircuit("Circuit.json")
-        MyCircuit2.importCircuit("Circuit.json")
+        MyCircuit1.exportCircuit("TestCircuit.json")
+        MyCircuit2.importCircuit("TestCircuit.json")
 
         self.assertEqual(MyCircuit1, MyCircuit2)
 
-        for file in glob.glob("*.json"):
+        for file in glob.glob("Test*.json"):
             os.remove(file)
 
     def testCircuitAsJSON(self):
@@ -192,7 +192,7 @@ class CircuitTest(unittest.TestCase):
             MyCircuit.asJSON(), {"ID": "Circuit", "Nodes": [N1.asJSON(), N2.asJSON()]}
         )
 
-        for file in glob.glob("*.json"):
+        for file in glob.glob("Test*.json"):
             os.remove(file)
 
     def testCircuitAddRemoveNode(self):
@@ -232,14 +232,14 @@ class ForwardingTableTest(unittest.TestCase):
         ExampleTable.addEntry("CIRCUIT1", N1)
         ExampleTable.addEntry("CIRCUIT2", N2)
 
-        ExampleTable.exportTable("Test.json")
+        ExampleTable.exportTable("TestTable.json")
 
         ExampleTable2 = ForwardingTable()
-        ExampleTable2.importTable("Test.json")
+        ExampleTable2.importTable("TestTable.json")
 
         self.assertEqual(ExampleTable, ExampleTable2)
 
-        for file in glob.glob("*.json"):
+        for file in glob.glob("Test*.json"):
             os.remove(file)
 
     def testForwardingTableAsJSON(self):

@@ -15,7 +15,7 @@ class MessageTest(unittest.TestCase):
             ForwardingTable(),
             Queue(),
             Contacts(),
-            MessagesDB(),
+            MessagesDB("Test1.db"),
         )
         User1Public = PublicUser(
             1,
@@ -31,7 +31,7 @@ class MessageTest(unittest.TestCase):
             ForwardingTable(),
             Queue(),
             Contacts(),
-            MessagesDB(),
+            MessagesDB("Test2.db"),
         )
         User2Public = PublicUser(
             2,
@@ -64,14 +64,12 @@ class MessageTest(unittest.TestCase):
         )  # Verify the signature
         Message1U2.decrypt()  # Decrypt the message
         self.assertEqual(Message1U2.content, b"Hello World!", "Decryption failed.")
-        for file in glob.glob("*.db"):
+        for file in glob.glob("Test*.db"):
             os.remove(file)
-        for file in glob.glob("*.pem"):
+        for file in glob.glob("Test*.pem"):
             os.remove(file)
 
     def testMessageDBCounting(self):
-        for file in glob.glob("*.db"):
-            os.remove(file)
 
         User1 = User(
             1,
@@ -81,7 +79,7 @@ class MessageTest(unittest.TestCase):
             ForwardingTable(),
             Queue(),
             Contacts(),
-            MessagesDB(),
+            MessagesDB("Test1.db"),
         )
         User1Public = PublicUser(
             1,
@@ -97,7 +95,7 @@ class MessageTest(unittest.TestCase):
             ForwardingTable(),
             Queue(),
             Contacts(),
-            MessagesDB(),
+            MessagesDB("Test2.db"),
         )
         User2Public = PublicUser(
             2,
@@ -134,19 +132,17 @@ class MessageTest(unittest.TestCase):
         Message1U2.verify()
         Message1U2.decrypt()
 
-        DB = MessagesDB("Messages.db")
+        DB = MessagesDB("TestMessages.db")
         DB.addMessage(Message1U1)
         self.assertEqual(len(DB), 1, "Message 1 not being counted.")
         DB.addMessage(Message1U2)
         self.assertEqual(len(DB), 2, "Message 2 not being counted.")
-        for file in glob.glob("*.db"):
+        for file in glob.glob("Test*.db"):
             os.remove(file)
-        for file in glob.glob("*.pem"):
+        for file in glob.glob("Test*.pem"):
             os.remove(file)
 
     def testMessageDBInsert(self):
-        for file in glob.glob("*.db"):
-            os.remove(file)
 
         User1 = User(
             1,
@@ -156,7 +152,7 @@ class MessageTest(unittest.TestCase):
             ForwardingTable(),
             Queue(),
             Contacts(),
-            MessagesDB(),
+            MessagesDB("Test1.db"),
         )
         User1Public = PublicUser(
             1,
@@ -172,7 +168,7 @@ class MessageTest(unittest.TestCase):
             ForwardingTable(),
             Queue(),
             Contacts(),
-            MessagesDB(),
+            MessagesDB("Test2.db"),
         )
         User2Public = PublicUser(
             2,
@@ -202,7 +198,7 @@ class MessageTest(unittest.TestCase):
         Message1U2.verify()
         Message1U2.decrypt()
 
-        DB = MessagesDB("Messages.db")
+        DB = MessagesDB("TestMessages.db")
         DB.addMessage(Message1U1)
         DB.addMessage(Message1U2)
         self.assertEqual(
@@ -215,14 +211,12 @@ class MessageTest(unittest.TestCase):
             Message1U2.content.decode("utf-8"),
             "Message 2 not being inserted.",
         )
-        for file in glob.glob("*.db"):
+        for file in glob.glob("Test*.db"):
             os.remove(file)
-        for file in glob.glob("*.pem"):
+        for file in glob.glob("Test*.pem"):
             os.remove(file)
 
     def testMessageDBDelete(self):
-        for file in glob.glob("*.db"):
-            os.remove(file)
 
         User1 = User(
             1,
@@ -232,7 +226,7 @@ class MessageTest(unittest.TestCase):
             ForwardingTable(),
             Queue(),
             Contacts(),
-            MessagesDB(),
+            MessagesDB("Test1.db"),
         )
         User1Public = PublicUser(
             1,
@@ -248,7 +242,7 @@ class MessageTest(unittest.TestCase):
             ForwardingTable(),
             Queue(),
             Contacts(),
-            MessagesDB(),
+            MessagesDB("Test2.db"),
         )
         User2Public = PublicUser(
             2,
@@ -278,7 +272,7 @@ class MessageTest(unittest.TestCase):
         Message1U2.verify()
         Message1U2.decrypt()
 
-        DB = MessagesDB("Messages.db")
+        DB = MessagesDB("TestMessages.db")
         DB.addMessage(Message1U1)
         DB.addMessage(Message1U2)
 
@@ -288,14 +282,12 @@ class MessageTest(unittest.TestCase):
         DB.deleteMessage(Message1U2.messageID)
         self.assertEqual(len(DB), 0, "Message 2 not being deleted.")
         DB.deleteMessage(-1)
-        for file in glob.glob("*.db"):
+        for file in glob.glob("Test*.db"):
             os.remove(file)
-        for file in glob.glob("*.pem"):
+        for file in glob.glob("Test*.pem"):
             os.remove(file)
 
     def testNetworkMessageConvertion(self):
-        for file in glob.glob("*.db"):
-            os.remove(file)
 
         User1 = User(
             1,
@@ -305,7 +297,7 @@ class MessageTest(unittest.TestCase):
             ForwardingTable(),
             Queue(),
             Contacts(),
-            MessagesDB(),
+            MessagesDB("Test1.db"),
         )
         User1Public = PublicUser(
             1,
@@ -321,7 +313,7 @@ class MessageTest(unittest.TestCase):
             ForwardingTable(),
             Queue(),
             Contacts(),
-            MessagesDB(),
+            MessagesDB("Test2.db"),
         )
         User2Public = PublicUser(
             2,
@@ -363,9 +355,9 @@ class MessageTest(unittest.TestCase):
             msgU1.messageID, msgU2.messageID, "Message ID not being computed right."
         )
 
-        for file in glob.glob("*.db"):
+        for file in glob.glob("Test*.db"):
             os.remove(file)
-        for file in glob.glob("*.pem"):
+        for file in glob.glob("Test*.pem"):
             os.remove(file)
 
 
@@ -404,7 +396,7 @@ class TestQueue(unittest.TestCase):
         myQueue_.importQueue("TestQueue.json")
 
         self.assertEqual(myQueue, myQueue_, "Queue not exporting correctly.")
-        for file in glob.glob("*.json"):
+        for file in glob.glob("Test*.json"):
             os.remove(file)
 
 

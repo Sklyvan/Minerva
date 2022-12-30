@@ -14,7 +14,7 @@ class RSATesting(unittest.TestCase):
         self.assertEqual(
             keys.decrypt(cipher), text, "1024 Encryption/Decryption failed."
         )
-        for file in glob.glob("TestKey*"):
+        for file in glob.glob("Test*.pem"):
             os.remove(file)
 
     def testSigningVerification1024(self):
@@ -26,7 +26,7 @@ class RSATesting(unittest.TestCase):
             keys.verify(text, signature, keys.publicKey),
             "1024 Signing/Verification failed.",
         )
-        for file in glob.glob("TestKey*"):
+        for file in glob.glob("Test*.pem"):
             os.remove(file)
 
     def testEncryptionDecryption2048(self):
@@ -37,7 +37,7 @@ class RSATesting(unittest.TestCase):
         self.assertEqual(
             keys.decrypt(cipher), text, "2048 Encryption/Decryption failed."
         )
-        for file in glob.glob("TestKey*"):
+        for file in glob.glob("Test*.pem"):
             os.remove(file)
 
     def testSigningVerification2048(self):
@@ -49,7 +49,7 @@ class RSATesting(unittest.TestCase):
             keys.verify(text, signature, keys.publicKey),
             "2048 Signing/Verification failed.",
         )
-        for file in glob.glob("TestKey*"):
+        for file in glob.glob("Test*.pem"):
             os.remove(file)
 
     def testImportExport(self):
@@ -60,7 +60,7 @@ class RSATesting(unittest.TestCase):
         Keys2.importKeys("TestKey")
 
         self.assertTrue(Keys1 == Keys2, "Import/Export failed.")
-        for file in glob.glob("TestKey*"):
+        for file in glob.glob("Test*.pem"):
             os.remove(file)
 
 
@@ -79,7 +79,7 @@ class DiffieHellmanTesting(unittest.TestCase):
         importedKey = importDerivedKey("TestKey.dh")
         self.assertEqual(key.derivedKey, importedKey, "Import/Export failed.")
 
-        for file in glob.glob("*.dh"):
+        for file in glob.glob("Test*.dh"):
             os.remove(file)
 
 

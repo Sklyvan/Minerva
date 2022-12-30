@@ -62,48 +62,48 @@ class UserTest(unittest.TestCase):
             1,
             "MyUser",
             [
-                RSAKeys(fileName="../userdata/keys/EncKeys"),
-                RSAKeys(fileName="../userdata/keys/SigKeys"),
+                RSAKeys(fileName="TestEncKeys"),
+                RSAKeys(fileName="TestSigKeys"),
             ],
             "127.0.0.1",
             forwardingTable=ExampleTable,
             messagesQueue=MessagesQueue,
             contacts=Friends,
-            messages=MessagesDB(dbPath="Messages.db"),
+            messages=MessagesDB(dbPath="TestMessages.db"),
         )
-        MyUser.exportUser("MyUser.json")
+        MyUser.exportUser("TestMyUser.json")
 
         MyUserCheck = User(None, None, [None, None], None)
-        MyUserCheck.importUser("MyUser.json")
+        MyUserCheck.importUser("TestMyUser.json")
 
         self.assertEqual(MyUser, MyUserCheck, "Users are not equal.")
 
-        for file in glob.glob("../userdata/keys/*.pem"):
+        for file in glob.glob("Test*.pem"):
             os.remove(file)
-        for file in glob.glob("*.db"):
+        for file in glob.glob("Test*.db"):
             os.remove(file)
-        for file in glob.glob("*.json"):
+        for file in glob.glob("Test*.json"):
             os.remove(file)
 
     def testImportExportKeys(self):
         MyUser1 = User(
             1,
             "User1",
-            [RSAKeys(fileName="EncKeys"), RSAKeys(fileName="SigKeys")],
+            [RSAKeys(fileName="TestEncKeys"), RSAKeys(fileName="TestSigKeys")],
             "127.0.0.1",
         )
-        MyUser1.exportKeys("EncKeys.pem", "SigKeys.pem")
+        MyUser1.exportKeys("TestEncKeys", "TestSigKeys")
 
         MyUser2 = User(
             2,
             "User2",
             [
-                RSAKeys(fileName="TempE", toImport=True),
-                RSAKeys(fileName="TempS", toImport=True),
+                RSAKeys(fileName="TestTempE", toImport=True),
+                RSAKeys(fileName="TestTempS", toImport=True),
             ],
             "127.0.0.2",
         )
-        MyUser2.importKeys("EncKeys.pem", "SigKeys.pem")
+        MyUser2.importKeys("TestEncKeys", "TestSigKeys")
 
         self.assertEqual(
             MyUser1.encryptionKeys,
@@ -116,11 +116,11 @@ class UserTest(unittest.TestCase):
         self.assertTrue(MyUser1.checkKeys(), "Keys 1 are not valid.")
         self.assertTrue(MyUser2.checkKeys(), "Keys 2 are not valid.")
 
-        for file in glob.glob("*.pem"):
+        for file in glob.glob("Test*.pem"):
             os.remove(file)
-        for file in glob.glob("*.db"):
+        for file in glob.glob("Test*.db"):
             os.remove(file)
-        for file in glob.glob("*.json"):
+        for file in glob.glob("Test*.json"):
             os.remove(file)
 
 
@@ -135,12 +135,12 @@ class NodeTest(unittest.TestCase):
         N1 = Node("127.0.0.1", K1)
         N2 = Node("127.0.0.2", K2)
 
-        N1.exportNode("Node.json")
-        N2.importNode("Node.json")
+        N1.exportNode("TestNode.json")
+        N2.importNode("TestNode.json")
 
         self.assertEqual(N1, N2)
 
-        for file in glob.glob("*.json"):
+        for file in glob.glob("Test*.json"):
             os.remove(file)
 
     def testNodeAsJSON(self):
@@ -172,12 +172,12 @@ class CircuitTest(unittest.TestCase):
         MyCircuit1.addNode(N1)
         MyCircuit1.addNode(N2)
 
-        MyCircuit1.exportCircuit("Circuit.json")
-        MyCircuit2.importCircuit("Circuit.json")
+        MyCircuit1.exportCircuit("TestCircuit.json")
+        MyCircuit2.importCircuit("TestCircuit.json")
 
         self.assertEqual(MyCircuit1, MyCircuit2)
 
-        for file in glob.glob("*.json"):
+        for file in glob.glob("Test*.json"):
             os.remove(file)
 
     def testCircuitAsJSON(self):
@@ -200,7 +200,7 @@ class CircuitTest(unittest.TestCase):
             MyCircuit.asJSON(), {"ID": "Circuit", "Nodes": [N1.asJSON(), N2.asJSON()]}
         )
 
-        for file in glob.glob("*.json"):
+        for file in glob.glob("Test*.json"):
             os.remove(file)
 
     def testCircuitAddRemoveNode(self):
@@ -240,14 +240,14 @@ class ForwardingTableTest(unittest.TestCase):
         ExampleTable.addEntry("CIRCUIT1", N1)
         ExampleTable.addEntry("CIRCUIT2", N2)
 
-        ExampleTable.exportTable("Test.json")
+        ExampleTable.exportTable("TestTable.json")
 
         ExampleTable2 = ForwardingTable()
-        ExampleTable2.importTable("Test.json")
+        ExampleTable2.importTable("TestTable.json")
 
         self.assertEqual(ExampleTable, ExampleTable2)
 
-        for file in glob.glob("*.json"):
+        for file in glob.glob("Test*.json"):
             os.remove(file)
 
     def testForwardingTableAsJSON(self):
@@ -316,7 +316,7 @@ class MessageTest(unittest.TestCase):
             ForwardingTable(),
             Queue(),
             Contacts(),
-            MessagesDB(),
+            MessagesDB("Test1.db"),
         )
         User1Public = PublicUser(
             1,
@@ -332,7 +332,7 @@ class MessageTest(unittest.TestCase):
             ForwardingTable(),
             Queue(),
             Contacts(),
-            MessagesDB(),
+            MessagesDB("Test2.db"),
         )
         User2Public = PublicUser(
             2,
@@ -365,14 +365,12 @@ class MessageTest(unittest.TestCase):
         )  # Verify the signature
         Message1U2.decrypt()  # Decrypt the message
         self.assertEqual(Message1U2.content, b"Hello World!", "Decryption failed.")
-        for file in glob.glob("*.db"):
+        for file in glob.glob("Test*.db"):
             os.remove(file)
-        for file in glob.glob("*.pem"):
+        for file in glob.glob("Test*.pem"):
             os.remove(file)
 
     def testMessageDBCounting(self):
-        for file in glob.glob("*.db"):
-            os.remove(file)
 
         User1 = User(
             1,
@@ -382,7 +380,7 @@ class MessageTest(unittest.TestCase):
             ForwardingTable(),
             Queue(),
             Contacts(),
-            MessagesDB(),
+            MessagesDB("Test1.db"),
         )
         User1Public = PublicUser(
             1,
@@ -398,7 +396,7 @@ class MessageTest(unittest.TestCase):
             ForwardingTable(),
             Queue(),
             Contacts(),
-            MessagesDB(),
+            MessagesDB("Test2.db"),
         )
         User2Public = PublicUser(
             2,
@@ -435,19 +433,17 @@ class MessageTest(unittest.TestCase):
         Message1U2.verify()
         Message1U2.decrypt()
 
-        DB = MessagesDB("Messages.db")
+        DB = MessagesDB("TestMessages.db")
         DB.addMessage(Message1U1)
         self.assertEqual(len(DB), 1, "Message 1 not being counted.")
         DB.addMessage(Message1U2)
         self.assertEqual(len(DB), 2, "Message 2 not being counted.")
-        for file in glob.glob("*.db"):
+        for file in glob.glob("Test*.db"):
             os.remove(file)
-        for file in glob.glob("*.pem"):
+        for file in glob.glob("Test*.pem"):
             os.remove(file)
 
     def testMessageDBInsert(self):
-        for file in glob.glob("*.db"):
-            os.remove(file)
 
         User1 = User(
             1,
@@ -457,7 +453,7 @@ class MessageTest(unittest.TestCase):
             ForwardingTable(),
             Queue(),
             Contacts(),
-            MessagesDB(),
+            MessagesDB("Test1.db"),
         )
         User1Public = PublicUser(
             1,
@@ -473,7 +469,7 @@ class MessageTest(unittest.TestCase):
             ForwardingTable(),
             Queue(),
             Contacts(),
-            MessagesDB(),
+            MessagesDB("Test2.db"),
         )
         User2Public = PublicUser(
             2,
@@ -503,7 +499,7 @@ class MessageTest(unittest.TestCase):
         Message1U2.verify()
         Message1U2.decrypt()
 
-        DB = MessagesDB("Messages.db")
+        DB = MessagesDB("TestMessages.db")
         DB.addMessage(Message1U1)
         DB.addMessage(Message1U2)
         self.assertEqual(
@@ -516,14 +512,12 @@ class MessageTest(unittest.TestCase):
             Message1U2.content.decode("utf-8"),
             "Message 2 not being inserted.",
         )
-        for file in glob.glob("*.db"):
+        for file in glob.glob("Test*.db"):
             os.remove(file)
-        for file in glob.glob("*.pem"):
+        for file in glob.glob("Test*.pem"):
             os.remove(file)
 
     def testMessageDBDelete(self):
-        for file in glob.glob("*.db"):
-            os.remove(file)
 
         User1 = User(
             1,
@@ -533,7 +527,7 @@ class MessageTest(unittest.TestCase):
             ForwardingTable(),
             Queue(),
             Contacts(),
-            MessagesDB(),
+            MessagesDB("Test1.db"),
         )
         User1Public = PublicUser(
             1,
@@ -549,7 +543,7 @@ class MessageTest(unittest.TestCase):
             ForwardingTable(),
             Queue(),
             Contacts(),
-            MessagesDB(),
+            MessagesDB("Test2.db"),
         )
         User2Public = PublicUser(
             2,
@@ -579,7 +573,7 @@ class MessageTest(unittest.TestCase):
         Message1U2.verify()
         Message1U2.decrypt()
 
-        DB = MessagesDB("Messages.db")
+        DB = MessagesDB("TestMessages.db")
         DB.addMessage(Message1U1)
         DB.addMessage(Message1U2)
 
@@ -589,14 +583,12 @@ class MessageTest(unittest.TestCase):
         DB.deleteMessage(Message1U2.messageID)
         self.assertEqual(len(DB), 0, "Message 2 not being deleted.")
         DB.deleteMessage(-1)
-        for file in glob.glob("*.db"):
+        for file in glob.glob("Test*.db"):
             os.remove(file)
-        for file in glob.glob("*.pem"):
+        for file in glob.glob("Test*.pem"):
             os.remove(file)
 
     def testNetworkMessageConvertion(self):
-        for file in glob.glob("*.db"):
-            os.remove(file)
 
         User1 = User(
             1,
@@ -606,7 +598,7 @@ class MessageTest(unittest.TestCase):
             ForwardingTable(),
             Queue(),
             Contacts(),
-            MessagesDB(),
+            MessagesDB("Test1.db"),
         )
         User1Public = PublicUser(
             1,
@@ -622,7 +614,7 @@ class MessageTest(unittest.TestCase):
             ForwardingTable(),
             Queue(),
             Contacts(),
-            MessagesDB(),
+            MessagesDB("Test2.db"),
         )
         User2Public = PublicUser(
             2,
@@ -664,9 +656,9 @@ class MessageTest(unittest.TestCase):
             msgU1.messageID, msgU2.messageID, "Message ID not being computed right."
         )
 
-        for file in glob.glob("*.db"):
+        for file in glob.glob("Test*.db"):
             os.remove(file)
-        for file in glob.glob("*.pem"):
+        for file in glob.glob("Test*.pem"):
             os.remove(file)
 
 
@@ -705,7 +697,7 @@ class TestQueue(unittest.TestCase):
         myQueue_.importQueue("TestQueue.json")
 
         self.assertEqual(myQueue, myQueue_, "Queue not exporting correctly.")
-        for file in glob.glob("*.json"):
+        for file in glob.glob("Test*.json"):
             os.remove(file)
 
 
@@ -718,7 +710,7 @@ class RSATesting(unittest.TestCase):
         self.assertEqual(
             keys.decrypt(cipher), text, "1024 Encryption/Decryption failed."
         )
-        for file in glob.glob("TestKey*"):
+        for file in glob.glob("Test*.pem"):
             os.remove(file)
 
     def testSigningVerification1024(self):
@@ -730,7 +722,7 @@ class RSATesting(unittest.TestCase):
             keys.verify(text, signature, keys.publicKey),
             "1024 Signing/Verification failed.",
         )
-        for file in glob.glob("TestKey*"):
+        for file in glob.glob("Test*.pem"):
             os.remove(file)
 
     def testEncryptionDecryption2048(self):
@@ -741,7 +733,7 @@ class RSATesting(unittest.TestCase):
         self.assertEqual(
             keys.decrypt(cipher), text, "2048 Encryption/Decryption failed."
         )
-        for file in glob.glob("TestKey*"):
+        for file in glob.glob("Test*.pem"):
             os.remove(file)
 
     def testSigningVerification2048(self):
@@ -753,7 +745,7 @@ class RSATesting(unittest.TestCase):
             keys.verify(text, signature, keys.publicKey),
             "2048 Signing/Verification failed.",
         )
-        for file in glob.glob("TestKey*"):
+        for file in glob.glob("Test*.pem"):
             os.remove(file)
 
     def testImportExport(self):
@@ -764,7 +756,7 @@ class RSATesting(unittest.TestCase):
         Keys2.importKeys("TestKey")
 
         self.assertTrue(Keys1 == Keys2, "Import/Export failed.")
-        for file in glob.glob("TestKey*"):
+        for file in glob.glob("Test*.pem"):
             os.remove(file)
 
 
@@ -783,7 +775,7 @@ class DiffieHellmanTesting(unittest.TestCase):
         importedKey = importDerivedKey("TestKey.dh")
         self.assertEqual(key.derivedKey, importedKey, "Import/Export failed.")
 
-        for file in glob.glob("*.dh"):
+        for file in glob.glob("Test*.dh"):
             os.remove(file)
 
 
