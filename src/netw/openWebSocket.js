@@ -6,7 +6,21 @@ const socketsFile = currentPath + '/SocketsInformation.xml';
 
 const xml = fs.readFileSync(socketsFile, 'utf8');
 const port = xml.match(/<port>(.*)<\/port>/)[1];
-const webSocketServer = new WebSocket.Server({ port: port })
+const webSocketServer = new WebSocket.Server({ port: port });
+
+// If the error is EADDRINUSE, we ignore it.
+webSocketServer.on('error', function (error)
+{
+    if (error.code === 'EADDRINUSE')
+    {
+        console.log('The WebSocket was already open, ignore this message.');
+    }
+    else
+    {
+        console.log(error);
+    }
+});
+
 
 function messageType(message)
 {
