@@ -1,4 +1,4 @@
-import sys
+import sys, webbrowser
 from src.main.Imports import *
 from src.netw.p2p import WebApp
 from src.main.InitializeUser import initializeUser
@@ -17,7 +17,7 @@ def readPipe():
 
 if __name__ == "__main__":
     try:
-        t = threading.Thread(target=os.system, args=("node netw/openWebSocket.js",))
+        t = threading.Thread(target=os.system, args=(openWebSocket,))
         t.start()
         threads.append(t)
     except Exception as e:
@@ -54,7 +54,17 @@ if __name__ == "__main__":
     else:
         print(f"[{emojiTick}] Pipe Reader Started")
 
-    WebApp.run()
+    try:
+        atPort = 8008  # TODO: The port should be a command line argument or something random.
+        t = threading.Thread(target=lambda: os.system(startServer(atPort)))
+        t.start()
+        threads.append(t)
+    except Exception as e:
+        raise e
+        sys.exit(1)
+    else:
+        print(f"[{emojiTick}] Web Server Started")
+        webbrowser.open(openBrowser(atPort), new=2)
 
     # Wait for all the threads, if KeyboardInterrupt is pressed, then exit.
     try:
