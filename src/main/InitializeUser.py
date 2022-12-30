@@ -44,6 +44,6 @@ def initializeUser(sysArgs: list) -> User:
         # TODO: This creation of the userID and networkID is temporary.
 
         myUser = createUser(userName, networkID)
-        myUser.exportUser(f"User_{userName}.json")
+        myUser.exportUser(os.path.join(USER_PATH, f"User_{userName}.json"))
 
     return myUser

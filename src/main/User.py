@@ -237,13 +237,13 @@ def createUser(userName, IP) -> User:
         userID,
         userName,
         [
-            RSAKeys(fileName=KEYS_PATH + ENC_KEYS_NAME + userName),
-            RSAKeys(fileName=KEYS_PATH + SIG_KEYS_NAME + userName),
+            RSAKeys(fileName=os.path.join(KEYS_PATH, ENC_KEYS_NAME + userName)),
+            RSAKeys(fileName=os.path.join(KEYS_PATH, SIG_KEYS_NAME + userName)),
         ],
         IP,
         forwardingTable=ForwardingTable(),
         messagesQueue=Queue(),
         contacts=Contacts(),
-        messages=MessagesDB(dbPath=DB_PATH + DB_NAME),
+        messages=MessagesDB(dbPath=DB_PATH + (userName + DB_NAME)),
     )
     return myUser

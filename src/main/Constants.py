@@ -4,12 +4,12 @@ emojiTick, emojiCross = "\u2705", "\u274C"
 
 FILE_DIR = os.path.dirname(os.path.realpath(__file__))
 
-DB_PATH = os.path.dirname(FILE_DIR) + "/data/"
-KEYS_PATH = os.path.dirname(FILE_DIR) + "/keys/"
+DB_PATH = os.path.join(os.path.dirname(FILE_DIR), "userdata")
+KEYS_PATH = os.path.join(os.path.dirname(FILE_DIR), "userdata", "keys")
+USER_PATH = os.path.join(os.path.dirname(FILE_DIR), "userdata")
 
 DB_NAME = "Messages.db"
-ENC_KEYS_NAME = "EncKeys"
-SIG_KEYS_NAME = "SigKeys"
+ENC_KEYS_NAME, SIG_KEYS_NAME = "EncKeys", "SigKeys"
 
 openWebSocket = "node netw/openWebSocket.js"
 

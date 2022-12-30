@@ -13,7 +13,7 @@
 <script>
   function loadUser()
   {
-    let filename = '../../main/User_'+document.getElementById('username').value+'.json';
+    let filename = '../../userdata/User_'+document.getElementById('username').value+'.json';
     fetch(filename)
             .then((response) => response.json())
             .then((json) =>
