@@ -8,8 +8,9 @@ DB_PATH = os.path.join(os.path.dirname(FILE_DIR), "userdata")
 KEYS_PATH = os.path.join(os.path.dirname(FILE_DIR), "userdata", "keys")
 USER_PATH = os.path.join(os.path.dirname(FILE_DIR), "userdata")
 
-DB_NAME = "Messages.db"
+DB_NAME, DB_EXTENSION = "Messages", "db"
 ENC_KEYS_NAME, SIG_KEYS_NAME = "EncKeys", "SigKeys"
+USERFILE_NAME, USERFILE_EXTENSION = "User", "json"
 
 openWebSocket = "node netw/openWebSocket.js"
 
