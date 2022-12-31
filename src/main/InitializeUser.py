@@ -17,8 +17,8 @@ def initializeUser(sysArgs: list) -> User:
             if not os.path.exists(fileName):
                 print("File does not exist")
                 sys.exit(1)
-            if not fileName.endswith(".json"):
-                print("File must be a json file")
+            if not fileName.endswith(USERFILE_EXTENSION):
+                print(f"File must be a {USERFILE_EXTENSION.upper()} file")
                 sys.exit(1)
         elif sysArgs[1] == "-n":
             userName = sysArgs[2]
@@ -44,6 +44,7 @@ def initializeUser(sysArgs: list) -> User:
         # TODO: This creation of the userID and networkID is temporary.
 
         myUser = createUser(userName, networkID)
-        myUser.exportUser(os.path.join(USER_PATH, f"User_{userName}.json"))
+        exportName = USERFILE_NAME + userName + "." + USERFILE_EXTENSION
+        myUser.exportUser(os.path.join(USER_PATH, exportName))
 
     return myUser

@@ -244,6 +244,8 @@ def createUser(userName, IP) -> User:
         forwardingTable=ForwardingTable(),
         messagesQueue=Queue(),
         contacts=Contacts(),
-        messages=MessagesDB(dbPath=os.path.join(DB_PATH, (userName + DB_NAME))),
+        messages=MessagesDB(
+            dbPath=os.path.join(DB_PATH, (DB_NAME + userName + "." + DB_EXTENSION))
+        ),
     )
     return myUser
