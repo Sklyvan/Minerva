@@ -118,7 +118,7 @@ class Message:
 
 
 class MessagesDB:
-    def __init__(self, dbPath: str = DATABASE_NAME):
+    def __init__(self, dbPath: str):
         firstTime = not (os.path.isfile(dbPath))
         self.dbPath = dbPath
         self.dbConnection = sqlite3.connect(self.dbPath)

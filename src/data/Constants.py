@@ -24,5 +24,3 @@ INITIALIZE_METADATA = "InitializeMetadata.sql"
 INITIALIZE_METADATA = os.path.join(
     os.path.dirname(os.path.abspath(__file__)), "sqls", INITIALIZE_METADATA
 )
-
-DATABASE_NAME = "Messages.db"
