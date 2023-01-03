@@ -209,7 +209,8 @@ class RSAKeys:
             with open(fileName + "-Info." + RSA_KEY_EXTENSION, "w") as file:
                 file.write(f"{self.keySize}\n{self.creationTime}")
             return True
-        except:
+        except Exception as errorMessage:
+            print("ERROR: Could not export the keys, " + str(errorMessage) + ".")
             return False
 
     def importKeys(self, fileName: str) -> bool:
@@ -228,7 +229,8 @@ class RSAKeys:
             self.cipherDec = PKCS1_OAEP.new(self.secretKey, hashAlgo=SHA256)
             self.cipherSig = pkcs1_15.new(self.secretKey)
             return True
-        except:
+        except Exception as errorMessage:
+            print("ERROR: Could not import the keys, " + str(errorMessage) + ".")
             return False
 
     def checkKeys(self, testSize: int = 200) -> bool:
