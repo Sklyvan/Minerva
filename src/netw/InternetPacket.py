@@ -1,5 +1,5 @@
 from src.netw.Imports import *
-import xml.etree.ElementTree as elementTree
+import defusedxml.ElementTree as elementTree
 from src.netw.LocalSockets import WebSocketConnection
 
 
