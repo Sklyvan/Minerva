@@ -1,3 +1,5 @@
+import subprocess
+
 from src.main.Imports import *
 from src.netw.p2p import WebApp
 from src.main.InitializeUser import initializeUser
@@ -23,7 +25,9 @@ def isUsed(port):
 
 if __name__ == "__main__":
     try:
-        t = threading.Thread(target=os.system, args=(openWebSocket,))
+        t = threading.Thread(
+            target=subprocess.call, args=(openWebSocket,), kwargs={"shell": True}
+        )
         t.start()
         threads.append(t)
     except Exception as e:
