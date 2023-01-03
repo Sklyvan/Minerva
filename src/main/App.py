@@ -68,7 +68,9 @@ if __name__ == "__main__":
         atPort = None
         while isUsed(atPort):
             atPort = random.randint(8000, 9000)
-        t = threading.Thread(target=lambda: os.system(startServer(atPort)))
+        t = threading.Thread(
+            target=subprocess.call, args=(startServer(atPort),), kwargs={"shell": True}
+        )
         t.start()
         threads.append(t)
     except Exception as e:
