@@ -67,4 +67,14 @@ class NetworkMessage:
 
 
 def loadNetworkMessage(data: bytes) -> dict:
+    """
+    This function loads a NetworkMessage from bytes.
+    This method is detected by CodeFactor as an unsafe method because:
+        It's not secure against erroneous or maliciously constructed data.
+        It's recommended to never unpickle data received from an untrusted or unauthenticated source.
+        (B301) https://bandit.readthedocs.io/en/1.7.4/blacklists/blacklist_calls.html#b301-pickle
+    In our case, the messages are authenticated with RSA, so the method is safe.
+    :param data:
+    :return:
+    """
     return pickle.loads(data)  # This is the asJSON method of the NetworkMessage class.
