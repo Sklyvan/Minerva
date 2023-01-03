@@ -4,7 +4,9 @@ import threading, base64, subprocess
 
 
 def messagesListener(outputPipe: subprocess.Popen):
-    inputPipe = subprocess.Popen(["cat"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+    inputPipe = subprocess.Popen(
+        ["/bin/cat"], stdin=subprocess.PIPE, stdout=subprocess.PIPE
+    )
     receiver = WebSocketConnection()  # In this WebSocket, we will receive the data.
 
     threading.Thread(target=receiver.startreceive, args=(inputPipe,)).start()

@@ -3,7 +3,7 @@ from src.netw.p2p import WebApp
 from src.main.InitializeUser import initializeUser
 from src.netw.p2p.MessagesListener import messagesListener
 
-comPipe = subprocess.Popen(["cat"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
+comPipe = subprocess.Popen(["/bin/cat"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
 threads = []
 
 
