@@ -1,4 +1,4 @@
-import sys, os
+import sys, os  # This libraries are required to be able to import the other modules
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(ROOT)
@@ -8,22 +8,38 @@ from src.netw.p2p import WebApp
 from src.main.InitializeUser import initializeUser
 from src.netw.p2p.MessagesListener import messagesListener
 
-comPipe = subprocess.Popen(["/bin/cat"], stdin=subprocess.PIPE, stdout=subprocess.PIPE)
-threads = []
+COMMUNICATION_PIPE = subprocess.Popen(
+    ["/bin/cat"], stdin=subprocess.PIPE, stdout=subprocess.PIPE
+)
+THREADS = []
 
 
-def readPipe():
+def readPipe(readFrom, writeTo=None):
     while True:
-        inputPacket = comPipe.stdout.readline()
+        inputPacket = readFrom.stdout.readline()
         if inputPacket != b"":
-            print(inputPacket)
+            if writeTo:
+                writeTo.append(inputPacket)
+            else:
+                print(inputPacket)
 
 
-def isUsed(port):
-    if not port:
+def readPipeIterable(readFrom, writeTo=None):
+    while True:
+        inputPacket = readFrom.stdout.readline()
+        if inputPacket != b"":
+            if writeTo:
+                writeTo.append(inputPacket)
+                yield inputPacket
+            else:
+                yield inputPacket
+
+
+def isUsed(checkPort):
+    if not checkPort:
         return True
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        return s.connect_ex(("localhost", port)) == 0
+        return s.connect_ex(("localhost", checkPort)) == 0
 
 
 if __name__ == "__main__":
@@ -33,7 +49,7 @@ if __name__ == "__main__":
             target=subprocess.call, args=(openWebSocket,), kwargs={"shell": True}
         )
         t.start()
-        threads.append(t)
+        THREADS.append(t)
     except Exception as e:
         raise e
         sys.exit(1)
@@ -49,9 +65,9 @@ if __name__ == "__main__":
         print(f"[{emojiTick}] User Initialized: {myUser.userName} | {myUser.IP}")
 
     try:
-        t = threading.Thread(target=messagesListener, args=(comPipe,))
+        t = threading.Thread(target=messagesListener, args=(COMMUNICATION_PIPE,))
         t.start()
-        threads.append(t)
+        THREADS.append(t)
     except Exception as e:
         raise e
         sys.exit(1)
@@ -59,9 +75,9 @@ if __name__ == "__main__":
         print(f"[{emojiTick}] Messages Listener Started")
 
     try:
-        t = threading.Thread(target=readPipe)
+        t = threading.Thread(target=readPipe, args=(COMMUNICATION_PIPE,))
         t.start()
-        threads.append(t)
+        THREADS.append(t)
     except Exception as e:
         raise e
         sys.exit(1)
@@ -76,7 +92,7 @@ if __name__ == "__main__":
             target=subprocess.call, args=(startServer(atPort),), kwargs={"shell": True}
         )
         t.start()
-        threads.append(t)
+        THREADS.append(t)
     except Exception as e:
         raise e
         sys.exit(1)
@@ -86,9 +102,9 @@ if __name__ == "__main__":
 
     # Wait for all the threads, if KeyboardInterrupt is pressed, then exit.
     try:
-        for t in threads:
+        for t in THREADS:
             t.join()
     except KeyboardInterrupt:
-        for t in threads[::-1]:
+        for t in THREADS[::-1]:
             t.exit()
         sys.exit(0)
