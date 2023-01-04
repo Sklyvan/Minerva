@@ -12,8 +12,11 @@ DB_NAME, DB_EXTENSION = "Messages", "db"
 ENC_KEYS_NAME, SIG_KEYS_NAME = "EncKeys", "SigKeys"
 USERFILE_NAME, USERFILE_EXTENSION = "User", "json"
 
-nodeWebSocket = os.path.join((os.path.dirname(FILE_DIR)), "netw/openWebSocket.js")
-openWebSocket = f"/usr/bin/node {nodeWebSocket}"
+NODEJS_PATH = "/usr/bin/node"
+NODEJS_SERVER_PATH = "netw/openWebSocket.js"
+P2P_HTML_PATH = "/netw/p2p/p2pNode.html"
+nodeWebSocket = os.path.join((os.path.dirname(FILE_DIR)), NODEJS_SERVER_PATH)
+openWebSocket = f"{NODEJS_PATH} {nodeWebSocket}"
 
 
 def startServer(atPort: int):
@@ -21,4 +24,4 @@ def startServer(atPort: int):
 
 
 def openBrowser(atPort: int):
-    return f"http://localhost:{atPort}/netw/p2p/p2pNode.html"
+    return f"http://localhost:{atPort}{P2P_HTML_PATH}"
