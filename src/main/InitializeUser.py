@@ -25,7 +25,7 @@ def initializeUser(sysArgs: list) -> User:
         else:
             print("Invalid command line arguments")
             sys.exit(1)
-    elif len(sysArgs) != 1:
+    else:
         print("Invalid command line arguments")
         sys.exit(1)
 
