@@ -12,6 +12,7 @@ COMMUNICATION_PIPE = subprocess.Popen(
     ["/bin/cat"], stdin=subprocess.PIPE, stdout=subprocess.PIPE
 )
 THREADS = []
+PROCESS_POOL = multiprocessing.Pool(5)
 
 
 def readPipe(readFrom, writeTo=None):
@@ -42,14 +43,12 @@ def isUsed(checkPort):
         return s.connect_ex(("localhost", checkPort)) == 0
 
 
-if __name__ == "__main__":
+def main():
     print(f"ROOT = {ROOT}")
     try:
-        t = threading.Thread(
-            target=subprocess.call, args=(openWebSocket,), kwargs={"shell": True}
+        PROCESS_POOL.apply_async(
+            subprocess.call, args=(openWebSocket,), kwds={"shell": True}
         )
-        t.start()
-        THREADS.append(t)
     except Exception as e:
         raise e
         sys.exit(1)
@@ -65,9 +64,7 @@ if __name__ == "__main__":
         print(f"[{emojiTick}] User Initialized: {myUser.userName} | {myUser.IP}")
 
     try:
-        t = threading.Thread(target=messagesListener, args=(COMMUNICATION_PIPE,))
-        t.start()
-        THREADS.append(t)
+        PROCESS_POOL.apply_async(messagesListener, args=(COMMUNICATION_PIPE,))
     except Exception as e:
         raise e
         sys.exit(1)
@@ -75,9 +72,7 @@ if __name__ == "__main__":
         print(f"[{emojiTick}] Messages Listener Started")
 
     try:
-        t = threading.Thread(target=readPipe, args=(COMMUNICATION_PIPE,))
-        t.start()
-        THREADS.append(t)
+        PROCESS_POOL.apply_async(readPipe, args=(COMMUNICATION_PIPE,))
     except Exception as e:
         raise e
         sys.exit(1)
@@ -88,11 +83,9 @@ if __name__ == "__main__":
         atPort = DEFAULT_PORT
         while isUsed(atPort):
             atPort = random.randint(8000, 9000)
-        t = threading.Thread(
-            target=subprocess.call, args=(startServer(atPort),), kwargs={"shell": True}
+        PROCESS_POOL.apply_async(
+            subprocess.call, args=(startServer(atPort),), kwds={"shell": True}
         )
-        t.start()
-        THREADS.append(t)
     except Exception as e:
         raise e
         sys.exit(1)
@@ -102,9 +95,12 @@ if __name__ == "__main__":
 
     # Wait for all the threads, if KeyboardInterrupt is pressed, then exit.
     try:
-        for t in THREADS:
-            t.join()
+        while True:
+            continue
     except KeyboardInterrupt:
-        for t in THREADS[::-1]:
-            t.exit()
+        PROCESS_POOL.close()
         sys.exit(0)
+
+
+if __name__ == "__main__":
+    main()
