@@ -69,7 +69,7 @@ if __name__ == "__main__":
         print(f"[{emojiTick}] Pipe Reader Started")
 
     try:
-        atPort = None
+        atPort = DEFAULT_PORT
         while isUsed(atPort):
             atPort = random.randint(8000, 9000)
         t = threading.Thread(

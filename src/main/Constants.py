@@ -2,6 +2,8 @@ import os
 
 emojiTick, emojiCross = "\u2705", "\u274C"
 
+DEFAULT_PORT = 8000
+
 FILE_DIR = os.path.dirname(os.path.realpath(__file__))
 
 DB_PATH = os.path.join(os.path.dirname(FILE_DIR), "userdata")
