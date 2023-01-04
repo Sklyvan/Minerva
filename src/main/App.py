@@ -1,4 +1,7 @@
-import subprocess
+import sys, os
+
+ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
+sys.path.append(ROOT)
 
 from src.main.Imports import *
 from src.netw.p2p import WebApp
@@ -24,6 +27,7 @@ def isUsed(port):
 
 
 if __name__ == "__main__":
+    print(f"ROOT = {ROOT}")
     try:
         t = threading.Thread(
             target=subprocess.call, args=(openWebSocket,), kwargs={"shell": True}
