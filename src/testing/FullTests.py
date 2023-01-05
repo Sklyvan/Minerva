@@ -98,6 +98,7 @@ class UserTest(unittest.TestCase):
             2,
             "User2",
             [
+                # This display a text error because we are creating imaginary keys that do not really exist.
                 RSAKeys(fileName="TestTempE", toImport=True),
                 RSAKeys(fileName="TestTempS", toImport=True),
             ],
