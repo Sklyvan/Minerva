@@ -100,12 +100,6 @@ def main():
         print(f"[{emojiTick}] Web Server Started")
         webbrowser.open(openBrowser(atPort), new=2)
 
-    # Wait for all the threads, if KeyboardInterrupt is pressed, then exit.
-    try:
-        None
-    except KeyboardInterrupt:
-        sys.exit(0)
-
 
 if __name__ == "__main__":
     main()
