@@ -21,13 +21,16 @@ class WebSocketConnection:
 
         asyncio.run(send(self, data))
 
-    def startreceive(self, toPipe: "subprocess.Popen" = None):
+    def startreceive(self, toPipe: "multiprocessing.Pipe" = None):
         # This method starts the connections and listens for data in an infinite loop.
+
         async def receive(self, toPipe):
             async with websockets.connect(self.uri) as websocket:
                 while True:
                     data = await websocket.recv()
-                    toPipe.stdin.write(data)
+                    if type(data) is not bytes:
+                        data = data.encode()
+                    toPipe.send(data)
 
         asyncio.run(receive(self, toPipe))
 

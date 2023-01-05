@@ -8,32 +8,31 @@ from src.netw.p2p import WebApp
 from src.main.InitializeUser import initializeUser
 from src.netw.p2p.MessagesListener import messagesListener
 
-COMMUNICATION_PIPE = subprocess.Popen(
-    ["/bin/cat"], stdin=subprocess.PIPE, stdout=subprocess.PIPE
-)
+RECEIVED_MESSAGES = multiprocessing.Queue()
 THREADS = []
-PROCESS_POOL = multiprocessing.Pool(5)
 
 
-def readPipe(readFrom, writeTo=None):
+def readPipe(readFrom: multiprocessing.Queue, writeTo=None):
     while True:
-        inputPacket = readFrom.stdout.readline()
-        if inputPacket != b"":
-            if writeTo:
-                writeTo.append(inputPacket)
-            else:
-                print(inputPacket)
+        if not readFrom.empty():
+            data = readFrom.get()
+            if data != b"":
+                if writeTo:
+                    writeTo.append(data)
+                else:
+                    print(data)
 
 
-def readPipeIterable(readFrom, writeTo=None):
+def readPipeIterable(readFrom: multiprocessing.Queue, writeTo=None):
     while True:
-        inputPacket = readFrom.stdout.readline()
-        if inputPacket != b"":
-            if writeTo:
-                writeTo.append(inputPacket)
-                yield inputPacket
-            else:
-                yield inputPacket
+        if not readFrom.empty():
+            data = readFrom.get()
+            if data != b"":
+                if writeTo:
+                    writeTo.append(data)
+                else:
+                    print(data)
+                yield data
 
 
 def isUsed(checkPort):
@@ -46,9 +45,11 @@ def isUsed(checkPort):
 def main():
     print(f"ROOT = {ROOT}")
     try:
-        PROCESS_POOL.apply_async(
-            subprocess.call, args=(openWebSocket,), kwds={"shell": True}
+        t = threading.Thread(
+            target=subprocess.call, args=(openWebSocket,), kwargs={"shell": True}
         )
+        t.start()
+        THREADS.append(t)
     except Exception as e:
         raise e
         sys.exit(1)
@@ -64,7 +65,9 @@ def main():
         print(f"[{emojiTick}] User Initialized: {myUser.userName} | {myUser.IP}")
 
     try:
-        PROCESS_POOL.apply_async(messagesListener, args=(COMMUNICATION_PIPE,))
+        t = threading.Thread(target=messagesListener, args=(RECEIVED_MESSAGES,))
+        t.start()
+        THREADS.append(t)
     except Exception as e:
         raise e
         sys.exit(1)
@@ -72,7 +75,9 @@ def main():
         print(f"[{emojiTick}] Messages Listener Started")
 
     try:
-        PROCESS_POOL.apply_async(readPipe, args=(COMMUNICATION_PIPE,))
+        t = threading.Thread(target=readPipe, args=(RECEIVED_MESSAGES,))
+        t.start()
+        THREADS.append(t)
     except Exception as e:
         raise e
         sys.exit(1)
@@ -83,9 +88,11 @@ def main():
         atPort = DEFAULT_PORT
         while isUsed(atPort):
             atPort = random.randint(8000, 9000)
-        PROCESS_POOL.apply_async(
-            subprocess.call, args=(startServer(atPort),), kwds={"shell": True}
+        t = threading.Thread(
+            target=subprocess.call, args=(startServer(atPort),), kwargs={"shell": True}
         )
+        t.start()
+        THREADS.append(t)
     except Exception as e:
         raise e
         sys.exit(1)
@@ -95,10 +102,8 @@ def main():
 
     # Wait for all the threads, if KeyboardInterrupt is pressed, then exit.
     try:
-        while True:
-            continue
+        None
     except KeyboardInterrupt:
-        PROCESS_POOL.close()
         sys.exit(0)
 
 
