@@ -32,7 +32,14 @@ class WebSocketConnection:
                         data = data.encode()
                     toPipe.send(data)
 
-        asyncio.run(receive(self, toPipe))
+        isConnected = False
+        while not isConnected:
+            try:
+                asyncio.run(receive(self, toPipe))
+            except ConnectionRefusedError:
+                isConnected = False
+            else:
+                isConnected = True
 
     def close(self):
         # This method closes the connection.

@@ -23,16 +23,30 @@ class p2pNode
     }
 }
 
-let nodeID = document.getElementById('nodeID').value;
+function createSocket()
+{
+    socket = new WebSocket('ws://' + socketInfo[0] + ':' + socketInfo[1]);
+    socket.onerror = function(error)
+    {
+        console.warn('Could not connect to the Server WebSocket. Trying again in 1 second.');
+        setTimeout(createSocket, 1000);
+    };
+}
+
+const nodeID = document.getElementById('nodeID').value;
 const myNode = new p2pNode(nodeID);
 const socketInfo = readXML('../SocketsInformation.xml'); // This returns [Host, Port]
-let socket = new WebSocket("ws://" + socketInfo[0] + ":" + socketInfo[1]);
+let socket;
 
-socket.onmessage = function(event)
+createSocket();
+socket.onopen = () =>
 {
-    const data = cleanData(event);
-    let msgContent = data['Data'];
-    let fromIP = data['fromIP']; let toIP = data['toIP'];
-    if (fromIP == myNode.nodeKey)
-        myNode.send(msgContent, toIP);
+    socket.onmessage = function(event)
+    {
+        const data = cleanData(event);
+        let msgContent = data['Data'];
+        let fromIP = data['fromIP']; let toIP = data['toIP'];
+        if (fromIP == myNode.nodeKey)
+            myNode.send(msgContent, toIP);
+    };
 };
