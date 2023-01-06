@@ -22,7 +22,7 @@ openWebSocket = f"{NODEJS_PATH} {nodeWebSocket}"
 
 
 def startServer(atPort: int):
-    return f"python3 -m http.server {atPort}"
+    return f"python3 -m http.server {atPort} | cat > /dev/null"
 
 
 def openBrowser(atPort: int):
