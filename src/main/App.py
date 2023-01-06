@@ -9,7 +9,6 @@ from src.main.InitializeUser import initializeUser
 from src.netw.p2p.MessagesListener import messagesListener
 
 RECEIVED_MESSAGES = multiprocessing.Queue()
-THREADS = []
 
 
 def readPipe(readFrom: multiprocessing.Queue, writeTo=None):
@@ -42,19 +41,16 @@ def isUsed(checkPort):
         return s.connect_ex(("localhost", checkPort)) == 0
 
 
+def obtainPort():
+    atPort = DEFAULT_PORT
+    while isUsed(atPort):
+        atPort = random.randint(8000, 9000)
+    return atPort
+
+
 def main():
     print(f"ROOT = {ROOT}")
-    try:
-        t = threading.Thread(
-            target=subprocess.call, args=(openWebSocket,), kwargs={"shell": True}
-        )
-        t.start()
-        THREADS.append(t)
-    except Exception as e:
-        raise e
-        sys.exit(1)
-    else:
-        print(f"[{emojiTick}] WebSocket Server Started")
+    atPort = obtainPort()
 
     try:
         myUser = initializeUser(sys.argv)
@@ -65,9 +61,34 @@ def main():
         print(f"[{emojiTick}] User Initialized: {myUser.userName} | {myUser.IP}")
 
     try:
-        t = threading.Thread(target=messagesListener, args=(RECEIVED_MESSAGES,))
-        t.start()
-        THREADS.append(t)
+        toRun = lambda: subprocess.call(startServer(atPort), shell=True)
+        threading.Thread(target=toRun).start()
+    except Exception as e:
+        raise e
+        sys.exit(1)
+    else:
+        print(f"[{emojiTick}] Web Server Started")
+
+    try:
+        webbrowser.open(openBrowser(atPort), new=2)
+    except Exception as e:
+        raise e
+        sys.exit(1)
+    else:
+        print(f"[{emojiTick}] Browser Opened")
+
+    try:
+        toRun = lambda: subprocess.call(openWebSocket, shell=True)
+        threading.Thread(target=toRun).start()
+    except Exception as e:
+        raise e
+        sys.exit(1)
+    else:
+        print(f"[{emojiTick}] WebSocket Server Started")
+
+    try:
+        toRun = lambda: messagesListener(RECEIVED_MESSAGES)
+        threading.Thread(target=toRun).start()
     except Exception as e:
         raise e
         sys.exit(1)
@@ -75,30 +96,13 @@ def main():
         print(f"[{emojiTick}] Messages Listener Started")
 
     try:
-        t = threading.Thread(target=readPipe, args=(RECEIVED_MESSAGES,))
-        t.start()
-        THREADS.append(t)
+        toRun = lambda: readPipe(RECEIVED_MESSAGES)
+        threading.Thread(target=toRun).start()
     except Exception as e:
         raise e
         sys.exit(1)
     else:
         print(f"[{emojiTick}] Pipe Reader Started")
-
-    try:
-        atPort = DEFAULT_PORT
-        while isUsed(atPort):
-            atPort = random.randint(8000, 9000)
-        t = threading.Thread(
-            target=subprocess.call, args=(startServer(atPort),), kwargs={"shell": True}
-        )
-        t.start()
-        THREADS.append(t)
-    except Exception as e:
-        raise e
-        sys.exit(1)
-    else:
-        print(f"[{emojiTick}] Web Server Started")
-        webbrowser.open(openBrowser(atPort), new=2)
 
 
 if __name__ == "__main__":
