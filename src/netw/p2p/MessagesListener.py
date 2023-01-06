@@ -11,6 +11,6 @@ def messagesListener(receivedMessages: multiprocessing.Queue):
 
     # Read the data from the WebSocket Thread and put it in the queue.
     while True:
-        data = receiverPipe.recv()
+        data = receiverPipe.recv().decode()
         data = cleanData(data)
         receivedMessages.put(data)
