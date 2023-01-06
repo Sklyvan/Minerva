@@ -6,6 +6,7 @@ from src.data.MessagesDB import *
 from src.main.PublicUser import *
 from src.cryp.RSAKeys import *
 from src.cryp.AES import *
+from src.netw.InternetPacket import Packet, cleanData
 from time import time
 import json
 import subprocess
