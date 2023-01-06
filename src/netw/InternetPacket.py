@@ -81,7 +81,10 @@ def cleanData(
             splitArray[1] = int(splitArray[1])
         else:
             # The splitArray[1] is a Base64 string, transform it to decoded bytes.
-            splitArray[1] = base64.b64decode(splitArray[1])
+            try:
+                splitArray[1] = base64.b64decode(splitArray[1])
+            except binascii.Error:  # If the string is not Base64, it is a string.
+                splitArray[1] = str(splitArray[1])
 
         dictData[splitArray[0]] = splitArray[1]
 
