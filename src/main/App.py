@@ -17,7 +17,7 @@ def readPipe(readFrom: multiprocessing.Queue, writeTo=None):
         if not readFrom.empty():
             data = readFrom.get()
             if data != b"":
-                if writeTo:
+                if writeTo is not None:
                     writeTo.append(data)
                 else:
                     print(data)
