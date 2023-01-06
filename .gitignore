@@ -640,3 +640,4 @@ toIgnore/
 
 src/testing/RSA.bin
 src/cryp/RSA.bin
+*User*.json
