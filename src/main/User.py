@@ -231,10 +231,9 @@ class User:
         )
 
 
-def createUser(userName, IP) -> User:
-    userID = int.from_bytes(userName.encode(), "big")
+def createUser(userName, IP, ID) -> User:
     myUser = User(
-        userID,
+        ID,
         userName,
         [
             RSAKeys(fileName=os.path.join(KEYS_PATH, ENC_KEYS_NAME + userName)),

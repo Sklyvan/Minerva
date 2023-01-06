@@ -41,9 +41,11 @@ def initializeUser(sysArgs: list) -> User:
             os.urandom(6).hex(),
         ]
         networkID = "-".join(networkID)
+
+        userID = random.randint(0, 1000)
         # TODO: This creation of the userID and networkID is temporary.
 
-        myUser = createUser(userName, networkID)
+        myUser = createUser(userName, networkID, userID)
         exportName = USERFILE_NAME + userName + "." + USERFILE_EXTENSION
         myUser.exportUser(os.path.join(USER_PATH, exportName))
 
