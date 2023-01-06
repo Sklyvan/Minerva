@@ -77,9 +77,9 @@ def cleanData(
     for i in range(len(asArray)):
         splitArray = asArray[i].split(":")
         # If splitArray[1] is a number, convert it to int
-        try:
+        if splitArray[1].isnumeric():
             splitArray[1] = int(splitArray[1])
-        except ValueError:
+        else:
             # The splitArray[1] is a Base64 string, transform it to decoded bytes.
             splitArray[1] = base64.b64decode(splitArray[1])
 
