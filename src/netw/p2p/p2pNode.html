@@ -9,11 +9,9 @@
 <input type="text" id="username" placeholder="UserName">
 <button id="loadUser" onclick="loadUser()">Enter</button>
 
-<var id="nodeID"></var>
 <script>
   function loadUser()
   {
-    let filename = '../../userdata/User'+document.getElementById('username').value+'.json';
     fetch(filename)
             .then((response) => response.json())
             .then((json) =>
@@ -24,7 +22,7 @@
               window.nodeID = nodeID;
             })
             .catch((error) => console.error("Wrong Username"));
-  };
+  }
 </script>
 
 
