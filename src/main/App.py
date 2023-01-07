@@ -9,6 +9,7 @@ from src.main.InitializeUser import *
 from src.netw.p2p.MessagesListener import messagesListener
 
 RECEIVED_MESSAGES = multiprocessing.Queue()
+PROCESSES = []
 
 
 def readPipe(readFrom: multiprocessing.Queue, writeTo=None):
@@ -62,7 +63,8 @@ def main():
 
     try:
         toRun = lambda: subprocess.call(startServer(atPort), shell=True)
-        threading.Thread(target=toRun).start()
+        PROCESSES.append(multiprocessing.Process(target=toRun))
+        PROCESSES[-1].start()
     except Exception as e:
         raise e
         sys.exit(1)
@@ -79,7 +81,8 @@ def main():
 
     try:
         toRun = lambda: subprocess.call(openWebSocket, shell=True)
-        threading.Thread(target=toRun).start()
+        PROCESSES.append(multiprocessing.Process(target=toRun))
+        PROCESSES[-1].start()
     except Exception as e:
         raise e
         sys.exit(1)
@@ -88,7 +91,8 @@ def main():
 
     try:
         toRun = lambda: messagesListener(RECEIVED_MESSAGES)
-        threading.Thread(target=toRun).start()
+        PROCESSES.append(multiprocessing.Process(target=toRun))
+        PROCESSES[-1].start()
     except Exception as e:
         raise e
         sys.exit(1)
@@ -97,7 +101,8 @@ def main():
 
     try:
         toRun = lambda: readPipe(RECEIVED_MESSAGES)
-        threading.Thread(target=toRun).start()
+        PROCESSES.append(multiprocessing.Process(target=toRun))
+        PROCESSES[-1].start()
     except Exception as e:
         raise e
         sys.exit(1)
