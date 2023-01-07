@@ -5,7 +5,7 @@ sys.path.append(ROOT)
 
 from src.main.Imports import *
 from src.netw.p2p import WebApp
-from src.main.InitializeUser import initializeUser
+from src.main.InitializeUser import *
 from src.netw.p2p.MessagesListener import messagesListener
 
 RECEIVED_MESSAGES = multiprocessing.Queue()
@@ -53,7 +53,7 @@ def main():
     atPort = obtainPort()
 
     try:
-        myUser = initializeUser(sys.argv)
+        myUser, filePath = initializeUser(sys.argv)
     except Exception as e:
         raise e
         sys.exit(1)

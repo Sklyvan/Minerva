@@ -8,16 +8,24 @@ If the argument -n is used, a new user will be created with the username <userna
 """
 
 
-def initializeUser(sysArgs: list) -> User:
+def initializeUser(sysArgs: list) -> (User, str):
+    """
+    This file is called with the arguments -l <filename> or -n <username>.
+    If the argument -l is used, the user will be loaded from the file <filename>.
+    If the argument -n is used, a new user will be created with the username <username>.
+    :param sysArgs: This comes from the sys.argv list, which contains the arguments passed to the script.
+    :return: An instance of the User class, and the file path of the user file.
+    """
     loadUser = False
     if len(sysArgs) == 3:
         if sysArgs[1] == "-l":
             loadUser = True
             fileName = sysArgs[2]
-            if not os.path.exists(fileName):
+            filePath = os.path.join(USER_PATH, fileName)
+            if not os.path.exists(filePath):
                 print("File does not exist")
                 sys.exit(1)
-            if not fileName.endswith(USERFILE_EXTENSION):
+            if not filePath.endswith(USERFILE_EXTENSION):
                 print(f"File must be a {USERFILE_EXTENSION.upper()} file")
                 sys.exit(1)
         elif sysArgs[1] == "-n":
@@ -31,7 +39,7 @@ def initializeUser(sysArgs: list) -> User:
 
     if loadUser:
         myUser = User(None, None, [None, None], None)
-        myUser.importUser(fileName)
+        myUser.importUser(filePath)
     else:
         networkID = [
             os.urandom(4).hex(),
@@ -49,4 +57,4 @@ def initializeUser(sysArgs: list) -> User:
         exportName = USERFILE_NAME + userName + "." + USERFILE_EXTENSION
         myUser.exportUser(os.path.join(USER_PATH, exportName))
 
-    return myUser
+    return myUser, filePath
