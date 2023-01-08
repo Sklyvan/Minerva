@@ -26,7 +26,7 @@ class User:
         self.encryptionKeys.updateKeys()
         self.signingKeys.updateKeys()
 
-    def createMessageToSent(self, content: str, toUserName: str) -> Message:
+    def createMessageToSend(self, content: str, toUserName: str) -> Message:
         """
         This method receives the content of the message and the receiver's username,
         then it extracts the sender/receiver as PublicUser objects, stores the creation time.
