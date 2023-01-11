@@ -1,5 +1,6 @@
 from src.cryp.Imports import RSA, PKCS1_OAEP, pkcs1_15, SHA256
 from src.netw.Circuit import Circuit
+from src.SystemExceptions import *
 import json
 
 
@@ -116,7 +117,10 @@ class Contacts:
             self.addContact(user)
 
     def __getitem__(self, userName: str) -> PublicUser:
-        return self.contacts[userName]
+        try:
+            return self.contacts[userName]
+        except KeyError:
+            raise ContactNotFound(f"Contact {userName} not found.")
 
     def __str__(self) -> str:
         return f"Contacts: {self.contacts}"

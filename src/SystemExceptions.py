@@ -16,3 +16,7 @@ class WrongUserError(Exception):
 
 class MessageNotFoundError(Exception):
     None
+
+
+class ContactNotFound(Exception):
+    None
