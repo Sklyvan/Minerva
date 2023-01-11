@@ -1,8 +1,6 @@
 function cleanData(event)
 {
     let asString = event.toString();
-    // asString = asString.replace(/{/g, '');
-    // asString = asString.replace(/}/g, '');
     asString = asString.replace(/"/g, '');
     asString = asString.replace(/b'/g, '"');
     asString = asString.replace(/'/g, '"');
