@@ -66,6 +66,10 @@ class PublicUser:
         with open(path, "w") as f:
             f.write(json.dumps(self.asJSON()))
 
+    def importUser(self, path: str):
+        with open(path, "r") as f:
+            self.readUser(json.loads(f.read()))
+
     def readUser(self, data: dict):
         self.userID = data["UserID"]
         self.userName = data["UserName"]
