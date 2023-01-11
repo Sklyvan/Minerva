@@ -1,5 +1,6 @@
 from src.cryp.Imports import RSA, PKCS1_OAEP, pkcs1_15, SHA256
 from src.netw.Circuit import Circuit
+import json
 
 
 class PublicUser:
@@ -60,6 +61,10 @@ class PublicUser:
             "VerificationKey": self.verificationKey.export_key().decode("utf-8"),
             "ThroughCircuit": self.throughCircuit.asJSON(),
         }
+
+    def exportUser(self, path: str):
+        with open(path, "w") as f:
+            f.write(json.dumps(self.asJSON()))
 
     def readUser(self, data: dict):
         self.userID = data["UserID"]
