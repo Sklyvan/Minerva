@@ -103,14 +103,6 @@ def main():
         myUser, filePath = initializeUser(
             sys.argv
         )  # TODO: The file is initially encrypted with AES, so we should decrypt it, then read it.
-        myPublicUser = PublicUser(
-            myUser.userID,
-            myUser.userName,
-            [myUser.encryptionKeys.publicKey, myUser.signingKeys.publicKey],
-            Circuit(),
-        )
-        myUser.contacts.addContact(myPublicUser)
-        # myUser.exportUser(filePath)
 
         # Make a copy of the file at filePath but change the name from UserName.json to tempUserFile.inst
         tempFilePath = filePath.replace(
