@@ -13,7 +13,7 @@ class p2pNode
         {
             conn.on('data', (internetPacket) =>
             {
-                if (logData) console.log(internetPacket);
+                if (logData) console.log("Received: " + internetPacket);
                 /*
                 This data comes in the form of a InternetPacket, this date is sent by another node.
                 internetPacket = { fromNode: ..., toNode: ..., data: ... }
@@ -38,8 +38,8 @@ class p2pNode
         let conn = this.node.connect(internetPacket.toNode);
         conn.on('open', () =>
         {
-            conn.send(internetPacket.toString());
-            console.log("Sent: " + internetPacket.toString());
+            conn.send(internetPacket);
+            console.log("Sent: " + internetPacket);
         });
     }
 
