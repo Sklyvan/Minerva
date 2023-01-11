@@ -73,8 +73,11 @@ class PublicUser:
     def readUser(self, data: dict):
         self.userID = data["UserID"]
         self.userName = data["UserName"]
+
         self.encryptionKey = RSA.import_key(data["EncryptionKey"])
         self.verificationKey = RSA.import_key(data["VerificationKey"])
+        self.cipherEnc = PKCS1_OAEP.new(self.encryptionKey, hashAlgo=SHA256)
+        self.cipherVer = pkcs1_15.new(self.verificationKey)
 
         self.throughCircuit = Circuit("")
         self.throughCircuit.readCircuit(data["ThroughCircuit"])
