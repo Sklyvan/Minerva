@@ -39,7 +39,7 @@ def testSendReceiveMessage():
 
     # webbrowser.open(openBrowser(atPort), new=2)
 
-    MSG = User1.createMessageToSent("Hello World!", User2.userName)
+    MSG = User1.createMessageToSend("Hello World!", User2.userName)
     netMSG = MSG.toNetworkMessage().asJSON().encode()
 
     asPacket = Packet(netMSG, User1.IP, User2.IP)

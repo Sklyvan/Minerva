@@ -39,7 +39,7 @@ class User:
         """
         userReceiver, userSender = self.contacts[toUserName], self
         circuitUsed = userReceiver.throughCircuit
-        timeCreated = int(time())
+        timeCreated = int(getTime())
         messageID = SHA256.new(
             f"{userSender.userName}{userReceiver.userName}{timeCreated}{content}".encode()
         ).hexdigest()
@@ -73,7 +73,7 @@ class User:
         encryptedSenderName = msgData["fromUser"]
         encryptedReceiverName = msgData["toUser"]
         timeCreated = msgData["timeCreated"]
-        timeReceived = int(time())
+        timeReceived = int(getTime())
 
         senderName = self.encryptionKeys.decrypt(encryptedSenderName).decode()
         receiverName = self.encryptionKeys.decrypt(encryptedReceiverName).decode()

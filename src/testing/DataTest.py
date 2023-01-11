@@ -41,7 +41,7 @@ class MessageTest(unittest.TestCase):
         )
 
         Message1U1 = Message(
-            1, b"Hello World!", b"", Circuit(), User1, User2Public, int(time())
+            1, b"Hello World!", b"", Circuit(), User1, User2Public, int(getTime())
         )  # Create a sample message
         # Initially, the message is not encrypted or signed. We encrypt for User 2 and sign as User 1.
         Message1U1.encrypt()
@@ -55,7 +55,7 @@ class MessageTest(unittest.TestCase):
             User1Public,
             User2,
             Message1U1.timeCreated,
-            int(time()),
+            int(getTime()),
             True,
             True,
         )  # Simulate the message being sent to User 2
@@ -111,8 +111,8 @@ class MessageTest(unittest.TestCase):
             Circuit(),
             User1,
             User2Public,
-            int(time()),
-            int(time()),
+            int(getTime()),
+            int(getTime()),
         )
         Message1U1.encrypt()
         Message1U1.sign()
@@ -125,7 +125,7 @@ class MessageTest(unittest.TestCase):
             User1Public,
             User2,
             Message1U1.timeCreated,
-            int(time()),
+            int(getTime()),
             True,
             True,
         )
@@ -178,7 +178,7 @@ class MessageTest(unittest.TestCase):
         )
 
         Message1U1 = Message(
-            1, b"Hello World!", b"", Circuit(), User1, User2Public, int(time())
+            1, b"Hello World!", b"", Circuit(), User1, User2Public, int(getTime())
         )
         Message1U1.encrypt()
         Message1U1.sign()
@@ -191,7 +191,7 @@ class MessageTest(unittest.TestCase):
             User1Public,
             User2,
             Message1U1.timeCreated,
-            int(time()) + 10,
+            int(getTime()) + 10,
             True,
             True,
         )
@@ -252,7 +252,7 @@ class MessageTest(unittest.TestCase):
         )
 
         Message1U1 = Message(
-            1, b"Hello World!", b"", Circuit(), User1, User2Public, int(time())
+            1, b"Hello World!", b"", Circuit(), User1, User2Public, int(getTime())
         )
         Message1U1.encrypt()
         Message1U1.sign()
@@ -265,7 +265,7 @@ class MessageTest(unittest.TestCase):
             User1Public,
             User2,
             Message1U1.timeCreated,
-            int(time()) + 10,
+            int(getTime()) + 10,
             True,
             True,
         )
@@ -325,7 +325,7 @@ class MessageTest(unittest.TestCase):
         User1.contacts.addContact(User2Public)
         User2.contacts.addContact(User1Public)
 
-        msgU1 = User1.createMessageToSent("Hello World!", User2.userName)
+        msgU1 = User1.createMessageToSend("Hello World!", User2.userName)
         ntwMsgU1 = msgU1.toNetworkMessage()  # Transforms the message to NetworkMessage.
         asBytes = bytes(
             ntwMsgU1
