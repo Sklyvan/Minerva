@@ -2,11 +2,24 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>p2pNode</title>
+  <title>P2P Node</title>
 </head>
 <body>
+<!-- "660cce6b-9f7b-57cc-5a95-948c119778e5" -->
 
-<input type="text" id="nodeID" value="660cce6b-9f7b-57cc-5a95-948c119778e5">
+<input type="text" id="nodeID">
+
+<script>
+  let fileName = "tempUserFile.inst";
+  let filePath = '../../userdata/' + fileName;
+  fetch(filePath)
+          .then((response) => response.json())
+          .then((json) =>
+          {
+            let nodeID = json.IP;
+            document.getElementById("nodeID").value = nodeID;
+          });
+</script>
 
 <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
 <script src="utils.js"></script>

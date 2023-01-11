@@ -110,8 +110,12 @@ def main():
         myUser.contacts.addContact(myPublicUser)
         # myUser.exportUser(filePath)
 
-        # Make a copy of the file at filePath but change the .json to .inst
-        shutil.copyfile(filePath, filePath.replace(".json", ".inst"))
+        # Make a copy of the file at filePath but change the name from UserName.json to tempUserFile.inst
+        tempFilePath = filePath.replace(
+            USERFILE_NAME + myUser.userName + "." + USERFILE_EXTENSION,
+            "tempUserFile.inst",
+        )
+        shutil.copyfile(filePath, tempFilePath)
         # This file extension indicates the HTML that is going to be used to render the user's profile.
 
     except Exception as e:
