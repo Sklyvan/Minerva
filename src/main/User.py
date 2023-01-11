@@ -167,11 +167,8 @@ class User:
         nextMessageID = self.messagesQueue.nextMessage()
         return self.messages[nextMessageID]
 
-    def addContact(
-        self, userID: int, userName: str, rsaPublicKeys: list, throughCircuit: Circuit
-    ):
-        newUser = PublicUser(userID, userName, rsaPublicKeys, throughCircuit)
-        self.contacts.addContact(newUser)
+    def addContact(self, contact: PublicUser):
+        self.contacts.addContact(contact)
 
     def removeContact(self, userName: str):
         toRemove = self.contacts[userName]
