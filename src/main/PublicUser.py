@@ -13,9 +13,7 @@ class PublicUser:
         self.userID = userID
         self.userName = userName
         self.encryptionKey, self.verificationKey = rsaPublicKeys
-        self.cipherEnc = PKCS1_OAEP.new(
-            self.encryptionKey, hashAlgo=SHA256
-        )  # TODO: The HashAlgo should come from a constant.
+        self.cipherEnc = PKCS1_OAEP.new(self.encryptionKey, hashAlgo=SHA256)
         self.cipherVer = pkcs1_15.new(self.verificationKey)
         self.throughCircuit = throughCircuit
 
