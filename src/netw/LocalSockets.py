@@ -1,53 +1,41 @@
+import asyncio
+import websockets
+import multiprocessing
+
 from src.netw.Imports import *
 
 
-import socket
-import asyncio
-import websockets
-
-
 class WebSocketConnection:
-    def __init__(self, host: str = HOST, port: int = PORT):
-        self.host = host
-        self.port = port
+    def __init__(
+        self, dataQueue: "multiprocessing.Queue", host: str = HOST, port: int = PORT
+    ):
+        self.dataQueue = dataQueue
+        self.host, self.port = host, port
         self.uri = f"ws://{self.host}:{self.port}"
+        self.readData = True
 
-    def startsend(self, data: str):
-        # This method starts the connection and sends the data.
-        async def send(self, data):
+    def start(self):
+        self.readData = True
+        multiprocessing.Process(target=self.receive).start()
+
+    def stop(self):
+        self.readData = False
+
+    def receive(self):
+        async def receive():
+            async with websockets.connect(self.uri) as websocket:
+                while self.readData:
+                    data = await websocket.recv()
+                    self.dataQueue.put(data)
+
+        asyncio.run(receive())
+
+    def send(self, data):
+        async def send():
             async with websockets.connect(self.uri) as websocket:
                 await websocket.send(data)
-                await websocket.close()
 
-        asyncio.run(send(self, data))
-
-    def startreceive(self, toPipe: "multiprocessing.Pipe" = None):
-        # This method starts the connections and listens for data in an infinite loop.
-
-        async def receive(self, toPipe):
-            async with websockets.connect(self.uri) as websocket:
-                while True:
-                    data = await websocket.recv()
-                    if type(data) is not bytes:
-                        data = data.encode()
-                    toPipe.send(data)
-
-        isConnected = False
-        while not isConnected:
-            try:
-                asyncio.run(receive(self, toPipe))
-            except ConnectionRefusedError:
-                isConnected = False
-            else:
-                isConnected = True
-
-    def close(self):
-        # This method closes the connection.
-        async def _close(self):
-            async with websockets.connect(self.uri) as websocket:
-                await websocket._close()
-
-        asyncio.run(_close(self))
+        asyncio.run(send())
 
     def __str__(self) -> str:
         return f"WebSocket Connection to {self.uri}"

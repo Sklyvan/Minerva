@@ -1,52 +1,35 @@
-class p2pNode
+const [HOST, PORT] = socketInformation('../SocketsInformation.xml');
+const NODEID = document.getElementById('nodeID').value;
+
+const SOCKET = createSocket(HOST, PORT);
+const NODE = new p2pNode(NODEID, SOCKET);
+
+SOCKET.onopen = () =>
 {
-    constructor(nodeKey)
+    NODE.start(true);
+    NODE.node.on('open', function (id) // Do not use the NODE until is ready.
     {
-        this.nodeKey = nodeKey;
-        this.node = new Peer(nodeKey);
-        this.node.on('connection', (conn) =>
+        SOCKET.onmessage = function(event)
         {
-            conn.on('data', (data) =>
+            /*
+            When the Front-End Socket receives a message, it is because the Back-End sent a message.
+            This message is a pyPacket, so we are going to send it to the p2pNode.
+            The p2pNode is going to transform this packet into an InternetPacket and send it to the other node.
+             */
+            let pyPacket = cleanData(event.data);
+            console.log("P2P Node: Received Message by Socket");
+            if (pyPacket.toSend)
             {
-                console.log(data);
-                socket.send(data);
-            });
-        });
-    }
-    send(data, peerKey)
-    {
-        let conn = this.node.connect(peerKey);
-        conn.on('open', () =>
-        {
-            conn.send(data);
-        });
-    }
+                NODE.send(pyPacket);
+                // let confirmationPacket = {toSend: false, toReceive: true, confirmation: true, ID: pyPacket.ID};
+                // SOCKET.send(JSON.stringify(confirmationPacket));
+            }
+        }
+    });
 }
 
-function createSocket()
+function closeWebSocketServer()
 {
-    socket = new WebSocket('ws://' + socketInfo[0] + ':' + socketInfo[1]);
-    socket.onerror = function(error)
-    {
-        console.warn('Could not connect to the Server WebSocket. Trying again in 1 second.');
-        setTimeout(createSocket, 1000);
-    };
+    SOCKET.send(JSON.stringify({'close': true}));
+    SOCKET.close();
 }
-
-const nodeID = document.getElementById('nodeID').value;
-const myNode = new p2pNode(nodeID);
-const socketInfo = readXML('../SocketsInformation.xml'); // This returns [Host, Port]
-let socket;
-
-createSocket();
-socket.onopen = () =>
-{
-    socket.onmessage = function(event)
-    {
-        const data = cleanData(event);
-        let msgContent = data['Data'];
-        let fromIP = data['fromIP']; let toIP = data['toIP'];
-        if (fromIP == myNode.nodeKey)
-            myNode.send(msgContent, toIP);
-    };
-};

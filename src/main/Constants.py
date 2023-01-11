@@ -15,7 +15,7 @@ ENC_KEYS_NAME, SIG_KEYS_NAME = "EncKeys", "SigKeys"
 USERFILE_NAME, USERFILE_EXTENSION = "User", "json"
 
 NODEJS_PATH = "/usr/bin/node"
-NODEJS_SERVER_PATH = "netw/openWebSocket.js"
+NODEJS_SERVER_PATH = "netw/Communicator.js"
 P2P_HTML_PATH = "/netw/p2p/p2pNode.html"
 nodeWebSocket = os.path.join((os.path.dirname(FILE_DIR)), NODEJS_SERVER_PATH)
 openWebSocket = f"{NODEJS_PATH} {nodeWebSocket}"
