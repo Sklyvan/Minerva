@@ -17,7 +17,6 @@ SOCKET.onopen = () =>
             The p2pNode is going to transform this packet into an InternetPacket and send it to the other node.
              */
             let pyPacket = cleanData(event.data);
-            console.log("P2P Node: Received Message by Socket");
             if (pyPacket.toSend)
             {
                 NODE.send(pyPacket);
