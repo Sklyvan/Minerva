@@ -76,18 +76,45 @@ class Communicator
         }
     }
 
+    isJSONParseable(str)
+    {
+        try
+        {
+            JSON.parse(str);
+        }
+        catch (e)
+        {
+            return false;
+        }
+        return true;
+    }
+
     identifyPacketType(message)
     {
-        if (message.includes("'toSend': 'true'"))
-            return 'MessageRequest'; // This is a message sent by our user, should be sent to JS Front-End.
-        else if (message.includes("'toReceive': 'true'"))
-            return 'MessageResponse'; // This is a received message, should be sent to Python Back-End.
-        else if (message.includes("'alive': 'true'"))
-            return 'AliveMessage';
-        else if (JSON.parse(message)['close'])
-            return 'CloseRequest'; // Close the WebSocket.
+        if (this.isJSONParseable(message)) // Some packets are not parseable.
+        {
+            let msg = JSON.parse(message);
+            if (msg.toSend)
+                return 'MessageRequest';
+            else if (msg.toReceive)
+                return 'MessageResponse';
+            else if (msg.alive)
+                return 'AliveMessage';
+            else if (msg.close)
+                return 'CloseRequest';
+        }
         else
-            return undefined;
+        {
+            if (message.includes("'toSend': 'true'"))
+                return 'MessageRequest'; // This is a message sent by our user, should be sent to JS Front-End.
+            else if (message.includes("'toReceive': 'true'"))
+                return 'MessageResponse'; // This is a received message, should be sent to Python Back-End.
+            else if (message.includes("'alive': 'true'"))
+                return 'AliveMessage';
+            else if (message.includes("'close': 'true'"))
+                return 'CloseRequest'; // Close the WebSocket.
+        }
+        return undefined;
     }
 
     sendAliveMessage()
