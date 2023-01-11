@@ -116,10 +116,29 @@ class User:
 
                 return msg
 
+    def toPublicUser(self) -> PublicUser:
+        """
+        This method is used to create your own public information so other users can add it.
+        The Circuit is created empty because this depends on both users.
+        :return: The user as a Public User with the public information.
+        """
+        rsaPublicKeys = [self.encryptionKeys.publicKey, self.signingKeys.publicKey]
+        return PublicUser(self.userID, self.userName, rsaPublicKeys, Circuit())
+
     def computeMessageID(
         self, senderName: str, receiverName: str, timeCreated: int, content: str
     ) -> str:
-        return SHA256.new(
+        """
+        This method is used to compute the message ID from the message content.
+        The message ID is a unique identifier of a message sent between two users in a certain moment.
+        This ID is created by the sender of the message.
+        :param senderName: String username of the sender.
+        :param receiverName: String username of the receiver.
+        :param timeCreated: UNIX Timestamp of the creation time.
+        :param content: The content as a string.
+        :return: The message ID as a string.
+        """
+        return SHA256.new(  # The input is converted to bytes because the SHA256 requires bytes.
             f"{senderName}{receiverName}{timeCreated}{content}".encode()
         ).hexdigest()
 
