@@ -100,7 +100,9 @@ def main():
         print(f"[{emojiTick}] WebSocket Server Started")
 
     try:
-        myUser, filePath = initializeUser(sys.argv)
+        myUser, filePath = initializeUser(
+            sys.argv
+        )  # TODO: The file is initially encrypted with AES, so we should decrypt it, then read it.
         myPublicUser = PublicUser(
             myUser.userID,
             myUser.userName,
