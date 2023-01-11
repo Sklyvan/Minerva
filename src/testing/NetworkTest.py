@@ -1,5 +1,7 @@
 from src.main.App import *
 
+# This test may not continue working with the newcomunication branch.
+
 
 def testSendReceiveMessage():
     threading.Thread(
