@@ -174,6 +174,9 @@ class User:
         toRemove = self.contacts[userName]
         self.contacts.removeContact(toRemove)
 
+    def getContact(self, userName: str) -> PublicUser:
+        return self.contacts[userName]
+
     def updateTable(self, circuitID: str, node: Node):
         self.forwardingTable.replaceEntry(circuitID, node)
 
