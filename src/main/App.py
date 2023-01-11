@@ -73,13 +73,15 @@ def isUsed(checkPort):
     if not checkPort:
         return True
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        return s.connect_ex(("localhost", checkPort)) == 0
+        return s.connect_ex((HOSTNAME, checkPort)) == 0
 
 
 def obtainPort():
     atPort = DEFAULT_PORT
     while isUsed(atPort):
-        atPort = random.randint(8000, 9000)
+        atPort = random.randint(
+            ALTERNATIVE_PORTS_RANGE.start, ALTERNATIVE_PORTS_RANGE.stop
+        )
     return atPort
 
 
@@ -91,7 +93,7 @@ def main():
         toRun = lambda: subprocess.call(openWebSocket, shell=True)
         PROCESSES.append(multiprocessing.Process(target=toRun))
         PROCESSES[-1].start()
-        while not isUsed(6774):  # TODO: Do not use hardcoded port
+        while not isUsed(PORT):
             None
     except Exception as e:
         raise e
@@ -107,7 +109,7 @@ def main():
         # Make a copy of the file at filePath but change the name from UserName.json to tempUserFile.inst
         tempFilePath = filePath.replace(
             USERFILE_NAME + myUser.userName + "." + USERFILE_EXTENSION,
-            "tempUserFile.inst",
+            TEMPUSERFILE_NAME + "." + TEMPUSERFILE_EXTENSION,
         )
         shutil.copyfile(filePath, tempFilePath)
         # This file extension indicates the HTML that is going to be used to render the user's profile.
@@ -138,10 +140,6 @@ def main():
         sys.exit(1)
     else:
         print(f"[{emojiTick}] Browser Opened")
-
-    time.sleep(3)
-    sendMessage("Hello World!", myUser, myPublicUser, myUser.IP)
-    receiveMessages()
 
 
 if __name__ == "__main__":

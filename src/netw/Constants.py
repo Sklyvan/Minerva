@@ -5,3 +5,4 @@ XML_FILE_PATH = os.path.join(
 )
 
 HOST, PORT = "127.0.0.1", 6774
+HOSTNAME = "localhost"
