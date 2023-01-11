@@ -6,28 +6,11 @@
 </head>
 <body>
 
-<input type="text" id="username" placeholder="UserName">
-<button id="loadUser" onclick="loadUser()">Enter</button>
-
-<script>
-  function loadUser()
-  {
-    fetch(filename)
-            .then((response) => response.json())
-            .then((json) =>
-            {
-              let nodeID = json.IP;
-              document.getElementById("nodeID").value = nodeID;
-              console.log(nodeID);
-              window.nodeID = nodeID;
-            })
-            .catch((error) => console.error("Wrong Username"));
-  }
-</script>
-
+<input type="text" id="nodeID" value="660cce6b-9f7b-57cc-5a95-948c119778e5">
 
 <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
 <script src="utils.js"></script>
+<script src="p2pNode.js"></script>
 <script type="module" src="initializeNode.js"></script>
 
 </body>
