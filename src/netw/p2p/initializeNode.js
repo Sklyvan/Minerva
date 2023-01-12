@@ -3,6 +3,7 @@ const NODEID = document.getElementById('nodeID').value;
 
 const SOCKET = createSocket(HOST, PORT);
 const NODE = new p2pNode(NODEID, SOCKET);
+window.NODE = NODE;
 
 SOCKET.onopen = () =>
 {
