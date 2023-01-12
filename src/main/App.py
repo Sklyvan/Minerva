@@ -27,22 +27,22 @@ def createNetworkMessage(fromMsg: Message) -> NetworkMessage:
 def buildInternetPacket(networkMessage: str, fromNode: str, toNode: str) -> str:
     # This packet is the one that is going to be sent through internet.
     internetPacket = {
-        "Data": base64.b64encode(networkMessage),
+        "Data": base64.b64encode(networkMessage).decode(),
         "fromNode": fromNode,
         "toNode": toNode,
     }
-    return str(internetPacket)
+    return json.dumps(internetPacket)
 
 
 def buildFrontEndPacket(internetPacket: str, packetID: int) -> str:
     # This packet is sent to the Front-End.
     frontPacket = {
-        "ID": str(packetID),
+        "ID": packetID,
         "toSend": "true",
         "toReceive": "false",
         "data": internetPacket,
     }
-    return str(frontPacket)
+    return json.dumps(frontPacket)
 
 
 def sendMessage(
@@ -140,6 +140,8 @@ def main():
         sys.exit(1)
     else:
         print(f"[{emojiTick}] Browser Opened")
+
+    return myUser
 
 
 if __name__ == "__main__":

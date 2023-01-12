@@ -1,11 +1,7 @@
 function cleanData(event)
 {
     let asString = event.toString();
-    asString = asString.replace(/"/g, '');
-    asString = asString.replace(/b'/g, '"');
-    asString = asString.replace(/'/g, '"');
-    asString = asString.replace(/ /g, '');
-    return JSON.parse(asString.toString());
+    return JSON.parse(asString);
 }
 
 function openXMLFile(filePath, withEncoding='utf8')
