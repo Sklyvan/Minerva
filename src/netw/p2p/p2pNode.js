@@ -6,7 +6,6 @@ class p2pNode
         this.node = new Peer(nodeID);
         this.socket = socket; // Received messages are sent to the WebSocket Server, then are sent to the Back-End.
     }
-
     start(logData=false)
     {
         this.node.on('connection', (conn) =>
@@ -34,12 +33,15 @@ class p2pNode
         In this case, we want to send the data to another node, so we are going to create a new InternetPacket
          */
 
-        let internetPacket = pyPacket.data;
-        let conn = this.node.connect(internetPacket.toNode);
-        conn.on('open', () =>
+        cleanData(pyPacket.data).then((internetPacket) =>
         {
-            conn.send(internetPacket);
-            console.log("Sent: " + internetPacket);
+            let conn = this.node.connect(internetPacket.toNode);
+            conn.on('open', () =>
+            {
+                let x = JSON.stringify(internetPacket);
+                conn.send(x);
+                console.log("Sent: " + x);
+            });
         });
     }
 

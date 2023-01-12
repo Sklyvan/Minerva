@@ -1,8 +1,20 @@
 function cleanData(event)
 {
-    let asString = event.toString();
-    return JSON.parse(asString);
+    return new Promise((resolve, reject) =>
+    {
+        try
+        {
+            let asString = event.toString();
+            let asJSON = JSON.parse(asString);
+            resolve(asJSON);
+        }
+        catch (err)
+        {
+            reject(err);
+        }
+    });
 }
+
 
 function openXMLFile(filePath, withEncoding='utf8')
 {

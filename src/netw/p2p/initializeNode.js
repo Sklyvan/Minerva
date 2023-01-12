@@ -1,5 +1,21 @@
 const [HOST, PORT] = socketInformation('../SocketsInformation.xml');
-const NODEID = document.getElementById('nodeID').value;
+
+async function obtainNodeID()
+{
+    // The function waits until the nodeID is obtained from the INST file.
+    return new Promise((resolve, reject) =>
+    {
+        let interval = setInterval(() =>
+        {
+            if (document.getElementById('nodeID').value !== "")
+            {
+                clearInterval(interval);
+                resolve(document.getElementById('nodeID').value);
+            }
+        }, 100);
+    });
+}
+const NODEID = await obtainNodeID();
 
 const SOCKET = createSocket(HOST, PORT);
 const NODE = new p2pNode(NODEID, SOCKET);
@@ -17,13 +33,15 @@ SOCKET.onopen = () =>
             This message is a pyPacket, so we are going to send it to the p2pNode.
             The p2pNode is going to transform this packet into an InternetPacket and send it to the other node.
              */
-            let pyPacket = cleanData(event.data);
-            if (pyPacket.toSend)
+            cleanData(event.data).then((pyPacket) =>
             {
-                NODE.send(pyPacket);
-                // let confirmationPacket = {toSend: false, toReceive: true, confirmation: true, ID: pyPacket.ID};
-                // SOCKET.send(JSON.stringify(confirmationPacket));
-            }
+                if (pyPacket.toSend)
+                {
+                    NODE.send(pyPacket);
+                    // let confirmationPacket = {toSend: false, toReceive: true, confirmation: true, ID: pyPacket.ID};
+                    // SOCKET.send(JSON.stringify(confirmationPacket));
+                }
+            });
         }
     });
 }
