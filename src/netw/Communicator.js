@@ -66,6 +66,10 @@ class Communicator
                 {
                     this.closeServer();
                 }
+                else
+                {
+                    console.warn("Unidentified Message Type");
+                }
             });
         });
 
