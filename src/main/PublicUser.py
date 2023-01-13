@@ -1,5 +1,7 @@
 from src.cryp.Imports import RSA, PKCS1_OAEP, pkcs1_15, SHA256
 from src.netw.Circuit import Circuit
+from src.SystemExceptions import *
+import json
 
 
 class PublicUser:
@@ -13,9 +15,7 @@ class PublicUser:
         self.userID = userID
         self.userName = userName
         self.encryptionKey, self.verificationKey = rsaPublicKeys
-        self.cipherEnc = PKCS1_OAEP.new(
-            self.encryptionKey, hashAlgo=SHA256
-        )  # TODO: The HashAlgo should come from a constant.
+        self.cipherEnc = PKCS1_OAEP.new(self.encryptionKey, hashAlgo=SHA256)
         self.cipherVer = pkcs1_15.new(self.verificationKey)
         self.throughCircuit = throughCircuit
 
@@ -63,11 +63,22 @@ class PublicUser:
             "ThroughCircuit": self.throughCircuit.asJSON(),
         }
 
+    def exportUser(self, path: str):
+        with open(path, "w") as f:
+            f.write(json.dumps(self.asJSON()))
+
+    def importUser(self, path: str):
+        with open(path, "r") as f:
+            self.readUser(json.loads(f.read()))
+
     def readUser(self, data: dict):
         self.userID = data["UserID"]
         self.userName = data["UserName"]
+
         self.encryptionKey = RSA.import_key(data["EncryptionKey"])
         self.verificationKey = RSA.import_key(data["VerificationKey"])
+        self.cipherEnc = PKCS1_OAEP.new(self.encryptionKey, hashAlgo=SHA256)
+        self.cipherVer = pkcs1_15.new(self.verificationKey)
 
         self.throughCircuit = Circuit("")
         self.throughCircuit.readCircuit(data["ThroughCircuit"])
@@ -106,7 +117,10 @@ class Contacts:
             self.addContact(user)
 
     def __getitem__(self, userName: str) -> PublicUser:
-        return self.contacts[userName]
+        try:
+            return self.contacts[userName]
+        except KeyError:
+            raise ContactNotFound(f"Contact {userName} not found.")
 
     def __str__(self) -> str:
         return f"Contacts: {self.contacts}"

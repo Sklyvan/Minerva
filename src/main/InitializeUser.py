@@ -1,12 +1,6 @@
 from src.main.User import *
 import sys
 
-"""
-This file is called with the arguments -l <filename> or -n <username>.
-If the argument -l is used, the user will be loaded from the file <filename>.
-If the argument -n is used, a new user will be created with the username <username>.
-"""
-
 
 def createUserID():
     return random.randint(0, 1000)
@@ -22,6 +16,18 @@ def createNetworkID():
     ]
     networkID = "-".join(networkID)
     return networkID
+
+
+def decryptFileContentAES(fileContent: str, encKey: str, nonce: str) -> str:
+    userKey = KeyAES(encKey.encode(), nonce.encode())
+    decryptedContent = userKey.decrypt(fileContent)
+    return decryptedContent.decode()
+
+
+def encryptFileContentAES(fileContent: str, encKey: str, nonce: str) -> str:
+    userKey = KeyAES(encKey.encode(), nonce.encode())
+    encryptedContent = userKey.encrypt(fileContent)
+    return encryptedContent.decode()
 
 
 def initializeUser(sysArgs: list) -> (User, str):

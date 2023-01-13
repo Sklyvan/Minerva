@@ -2,32 +2,27 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>p2pNode</title>
+  <title>P2P Node</title>
 </head>
 <body>
 
-<input type="text" id="username" placeholder="UserName">
-<button id="loadUser" onclick="loadUser()">Enter</button>
+<input type="text" id="nodeID">
 
 <script>
-  function loadUser()
-  {
-    fetch(filename)
-            .then((response) => response.json())
-            .then((json) =>
-            {
-              let nodeID = json.IP;
-              document.getElementById("nodeID").value = nodeID;
-              console.log(nodeID);
-              window.nodeID = nodeID;
-            })
-            .catch((error) => console.error("Wrong Username"));
-  }
+  let fileName = "tempUserFile.inst";
+  let filePath = '../../userdata/' + fileName;
+  fetch(filePath)
+          .then((response) => response.json())
+          .then((json) =>
+          {
+            let nodeID = json.IP;
+            document.getElementById("nodeID").value = nodeID;
+          });
 </script>
-
 
 <script src="https://unpkg.com/peerjs@1.4.7/dist/peerjs.min.js"></script>
 <script src="utils.js"></script>
+<script src="p2pNode.js"></script>
 <script type="module" src="initializeNode.js"></script>
 
 </body>

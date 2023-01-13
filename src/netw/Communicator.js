@@ -27,10 +27,11 @@ function socketInformation(fromFile)
 
 class Communicator
 {
-    constructor(atHost, onPort)
+    constructor(atHost, onPort, aliveMessageInterval=0)
     {
         this.connectionInfo = {host: atHost, port: onPort};
         this.webSocketServer = new WebSocket.Server(this.connectionInfo);
+        this.aliveMessageInterval = aliveMessageInterval;
         this.isConnectionOpen = false;
 
         this.webSocketServer.on('error', function (error)
@@ -56,32 +57,68 @@ class Communicator
                     this.webSocketServer.clients.forEach((client) =>
                     {
                         if (client.readyState === 1)
+                        {
                             client.send(message.toString());
+                        }
                     });
                 }
                 else if (msgType === 'CloseRequest')
                 {
                     this.closeServer();
                 }
+                else
+                {
+                    console.warn("Unidentified Message Type");
+                }
             });
         });
 
-        // Every one second, send an alive message to the Front-End and Back-End.
-        setInterval(() => {if (this.isConnectionOpen) this.sendAliveMessage()}, 1000);
+        // Periodically, send an alive message to the Front-End and Back-End.
+        if (this.aliveMessageInterval > 0)
+        {
+            setInterval(() => {if (this.isConnectionOpen) this.sendAliveMessage()}, this.aliveMessageInterval);
+        }
+    }
+
+    isJSONParseable(str)
+    {
+        try
+        {
+            JSON.parse(str);
+        }
+        catch (e)
+        {
+            return false;
+        }
+        return true;
     }
 
     identifyPacketType(message)
     {
-        if (JSON.parse(message).toSend)
-            return 'MessageRequest'; // This is a message sent by our user, should be sent to JS Front-End.
-        else if (JSON.parse(message).toReceive)
-            return 'MessageResponse'; // This is a received message, should be sent to Python Back-End.
-        else if (JSON.parse(message).alive)
-            return 'AliveMessage';
-        else if (JSON.parse(message).close)
-            return 'CloseRequest'; // Close the WebSocket.
+        if (this.isJSONParseable(message)) // Some packets are not parseable.
+        {
+            let msg = JSON.parse(message);
+            if (msg.toSend)
+                return 'MessageRequest';
+            else if (msg.toReceive)
+                return 'MessageResponse';
+            else if (msg.alive)
+                return 'AliveMessage';
+            else if (msg.close)
+                return 'CloseRequest';
+        }
         else
-            return undefined;
+        {
+            if (message.includes("'toSend': 'true'"))
+                return 'MessageRequest'; // This is a message sent by our user, should be sent to JS Front-End.
+            else if (message.includes("'toReceive': 'true'"))
+                return 'MessageResponse'; // This is a received message, should be sent to Python Back-End.
+            else if (message.includes("'alive': 'true'"))
+                return 'AliveMessage';
+            else if (message.includes("'close': 'true'"))
+                return 'CloseRequest'; // Close the WebSocket.
+        }
+        return undefined;
     }
 
     sendAliveMessage()
@@ -99,8 +136,9 @@ class Communicator
     {
         this.webSocketServer.close();
         this.isConnectionOpen = false;
+        process.exit(0);
     }
 }
 
 [HOST, PORT] = socketInformation(socketsFile);
-const COMMUNICATOR = new Communicator(HOST, PORT); // Once the communicator is created, it starts automatically.
+new Communicator(HOST, PORT); // Once the communicator is created, it starts automatically.

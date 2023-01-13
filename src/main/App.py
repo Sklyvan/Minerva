@@ -5,47 +5,92 @@ sys.path.append(ROOT)
 
 from src.main.Imports import *
 from src.netw.p2p import WebApp
+from src.netw.LocalSockets import WebSocketConnection
 from src.main.InitializeUser import *
 from src.netw.p2p.MessagesListener import messagesListener
 
 RECEIVED_MESSAGES = multiprocessing.Queue()
+SOCKET = WebSocketConnection(RECEIVED_MESSAGES)
 PROCESSES = []
 
 
-def readPipe(readFrom: multiprocessing.Queue, writeTo=None):
-    while True:
-        if not readFrom.empty():
-            data = readFrom.get()
-            if data != b"":
-                if writeTo is not None:
-                    writeTo.append(data)
-                else:
-                    print(data)
+def createNetworkMessage(fromMsg: Message) -> NetworkMessage:
+    # networkMessage = {encyptedContent:..., signature:..., ...}
+    networkMessage = fromMsg.toNetworkMessage()
+
+    networkMessage = networkMessage.asJSON()  # Convert to a JSON string.
+    networkMessage = networkMessage.encode()  # Encode to send the JSON string as bytes.
+
+    return networkMessage
 
 
-def readPipeIterable(readFrom: multiprocessing.Queue, writeTo=None):
+def buildInternetPacket(networkMessage: str, fromNode: str, toNode: str) -> str:
+    # This packet is the one that is going to be sent through internet.
+    internetPacket = {
+        "Data": base64.b64encode(networkMessage).decode(),
+        "fromNode": fromNode,
+        "toNode": toNode,
+    }
+    return json.dumps(internetPacket)
+
+
+def buildFrontEndPacket(internetPacket: str, packetID: int) -> str:
+    # This packet is sent to the Front-End.
+    frontPacket = {
+        "ID": packetID,
+        "toSend": True,
+        "toReceive": False,
+        "data": internetPacket,
+    }
+    return json.dumps(frontPacket)
+
+
+def sendMessage(
+    messageContent: str,
+    messageSender: User,
+    messageReceiver: PublicUser,
+    receiverIP: str,  # TODO: This should be not used because Blind Onion Routing avoids knowing the other's IP.
+):
+    msg = messageSender.createMessageToSend(messageContent, messageReceiver.userName)
+    networkMessage = createNetworkMessage(msg)
+    internetPacket = buildInternetPacket(networkMessage, messageSender.IP, receiverIP)
+    frontEndPacket = buildFrontEndPacket(internetPacket, msg.messageID)
+
+    SOCKET.send(frontEndPacket)
+    # TODO: Here, we should wait for a confirmation of the P2P Node, then return True or False.
+
+    return None
+
+
+def receiveMessages(forUser: User):
+    threading.Thread(target=SOCKET.receive).start()
     while True:
-        if not readFrom.empty():
-            data = readFrom.get()
-            if data != b"":
-                if writeTo:
-                    writeTo.append(data)
-                else:
-                    print(data)
-                yield data
+        if not RECEIVED_MESSAGES.empty():
+            message = RECEIVED_MESSAGES.get()
+            parsedMessage = json.loads(message)
+            if parsedMessage["toReceive"]:
+                parsedData = json.loads(parsedMessage["data"])
+                if parsedData["toNode"] == forUser.IP:
+                    # print(f"Received: {parsedData}")
+                    msg = forUser.createMessageToReceive(
+                        loadStringNetworkMessage(parsedData["Data"])
+                    )
+                    yield msg
 
 
 def isUsed(checkPort):
     if not checkPort:
         return True
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        return s.connect_ex(("localhost", checkPort)) == 0
+        return s.connect_ex((HOSTNAME, checkPort)) == 0
 
 
 def obtainPort():
     atPort = DEFAULT_PORT
     while isUsed(atPort):
-        atPort = random.randint(8000, 9000)
+        atPort = random.randint(
+            ALTERNATIVE_PORTS_RANGE.start, ALTERNATIVE_PORTS_RANGE.stop
+        )
     return atPort
 
 
@@ -54,7 +99,30 @@ def main():
     atPort = obtainPort()
 
     try:
-        myUser, filePath = initializeUser(sys.argv)
+        toRun = lambda: subprocess.call(openWebSocket, shell=True)
+        PROCESSES.append(multiprocessing.Process(target=toRun))
+        PROCESSES[-1].start()
+        while not isUsed(PORT):
+            None
+    except Exception as e:
+        raise e
+        sys.exit(1)
+    else:
+        print(f"[{emojiTick}] WebSocket Server Started")
+
+    try:
+        myUser, filePath = initializeUser(
+            sys.argv
+        )  # TODO: The file is initially encrypted with AES, so we should decrypt it, then read it.
+
+        # Make a copy of the file at filePath but change the name from UserName.json to tempUserFile.inst
+        tempFilePath = filePath.replace(
+            USERFILE_NAME + myUser.userName + "." + USERFILE_EXTENSION,
+            TEMPUSERFILE_NAME + "." + TEMPUSERFILE_EXTENSION,
+        )
+        shutil.copyfile(filePath, tempFilePath)
+        # This file extension indicates the HTML that is going to be used to render the user's profile.
+
     except Exception as e:
         raise e
         sys.exit(1)
@@ -65,6 +133,8 @@ def main():
         toRun = lambda: subprocess.call(startServer(atPort), shell=True)
         PROCESSES.append(multiprocessing.Process(target=toRun))
         PROCESSES[-1].start()
+        while not isUsed(atPort):
+            None
     except Exception as e:
         raise e
         sys.exit(1)
@@ -73,41 +143,14 @@ def main():
 
     try:
         webbrowser.open(openBrowser(atPort), new=2)
+        None
     except Exception as e:
         raise e
         sys.exit(1)
     else:
         print(f"[{emojiTick}] Browser Opened")
 
-    try:
-        toRun = lambda: subprocess.call(openWebSocket, shell=True)
-        PROCESSES.append(multiprocessing.Process(target=toRun))
-        PROCESSES[-1].start()
-    except Exception as e:
-        raise e
-        sys.exit(1)
-    else:
-        print(f"[{emojiTick}] WebSocket Server Started")
-
-    try:
-        toRun = lambda: messagesListener(RECEIVED_MESSAGES)
-        PROCESSES.append(multiprocessing.Process(target=toRun))
-        PROCESSES[-1].start()
-    except Exception as e:
-        raise e
-        sys.exit(1)
-    else:
-        print(f"[{emojiTick}] Messages Listener Started")
-
-    try:
-        toRun = lambda: readPipe(RECEIVED_MESSAGES)
-        PROCESSES.append(multiprocessing.Process(target=toRun))
-        PROCESSES[-1].start()
-    except Exception as e:
-        raise e
-        sys.exit(1)
-    else:
-        print(f"[{emojiTick}] Pipe Reader Started")
+    return myUser
 
 
 if __name__ == "__main__":

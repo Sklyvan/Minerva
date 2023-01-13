@@ -26,7 +26,7 @@ class User:
         self.encryptionKeys.updateKeys()
         self.signingKeys.updateKeys()
 
-    def createMessageToSent(self, content: str, toUserName: str) -> Message:
+    def createMessageToSend(self, content: str, toUserName: str) -> Message:
         """
         This method receives the content of the message and the receiver's username,
         then it extracts the sender/receiver as PublicUser objects, stores the creation time.
@@ -39,7 +39,7 @@ class User:
         """
         userReceiver, userSender = self.contacts[toUserName], self
         circuitUsed = userReceiver.throughCircuit
-        timeCreated = int(time())
+        timeCreated = int(getTime())
         messageID = SHA256.new(
             f"{userSender.userName}{userReceiver.userName}{timeCreated}{content}".encode()
         ).hexdigest()
@@ -73,7 +73,7 @@ class User:
         encryptedSenderName = msgData["fromUser"]
         encryptedReceiverName = msgData["toUser"]
         timeCreated = msgData["timeCreated"]
-        timeReceived = int(time())
+        timeReceived = int(getTime())
 
         senderName = self.encryptionKeys.decrypt(encryptedSenderName).decode()
         receiverName = self.encryptionKeys.decrypt(encryptedReceiverName).decode()
@@ -116,10 +116,29 @@ class User:
 
                 return msg
 
+    def toPublicUser(self) -> PublicUser:
+        """
+        This method is used to create your own public information so other users can add it.
+        The Circuit is created empty because this depends on both users.
+        :return: The user as a Public User with the public information.
+        """
+        rsaPublicKeys = [self.encryptionKeys.publicKey, self.signingKeys.publicKey]
+        return PublicUser(self.userID, self.userName, rsaPublicKeys, Circuit())
+
     def computeMessageID(
         self, senderName: str, receiverName: str, timeCreated: int, content: str
     ) -> str:
-        return SHA256.new(
+        """
+        This method is used to compute the message ID from the message content.
+        The message ID is a unique identifier of a message sent between two users in a certain moment.
+        This ID is created by the sender of the message.
+        :param senderName: String username of the sender.
+        :param receiverName: String username of the receiver.
+        :param timeCreated: UNIX Timestamp of the creation time.
+        :param content: The content as a string.
+        :return: The message ID as a string.
+        """
+        return SHA256.new(  # The input is converted to bytes because the SHA256 requires bytes.
             f"{senderName}{receiverName}{timeCreated}{content}".encode()
         ).hexdigest()
 
@@ -148,15 +167,15 @@ class User:
         nextMessageID = self.messagesQueue.nextMessage()
         return self.messages[nextMessageID]
 
-    def addContact(
-        self, userID: int, userName: str, rsaPublicKeys: list, throughCircuit: Circuit
-    ):
-        newUser = PublicUser(userID, userName, rsaPublicKeys, throughCircuit)
-        self.contacts.addContact(newUser)
+    def addContact(self, contact: PublicUser):
+        self.contacts.addContact(contact)
 
     def removeContact(self, userName: str):
         toRemove = self.contacts[userName]
         self.contacts.removeContact(toRemove)
+
+    def getContact(self, userName: str) -> PublicUser:
+        return self.contacts[userName]
 
     def updateTable(self, circuitID: str, node: Node):
         self.forwardingTable.replaceEntry(circuitID, node)

@@ -1,5 +1,6 @@
 from src.netw.Imports import *
 import pickle
+from src.netw.InternetPacket import cleanData
 
 
 class NetworkMessage:
@@ -78,3 +79,13 @@ def loadNetworkMessage(data: bytes) -> dict:
     :return:
     """
     return pickle.loads(data)  # This is the asJSON method of the NetworkMessage class.
+
+
+def loadStringNetworkMessage(data: str) -> dict:
+    """
+    This function loads a NetworkMessage from a string.
+    :param data:
+    :return:
+    """
+    decodedData = base64.b64decode(data).decode()
+    return cleanData(decodedData)
