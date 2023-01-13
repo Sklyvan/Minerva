@@ -143,7 +143,6 @@ def main():
 
     try:
         webbrowser.open(openBrowser(atPort), new=2)
-        None
     except Exception as e:
         raise e
         sys.exit(1)
