@@ -38,8 +38,8 @@ def buildFrontEndPacket(internetPacket: str, packetID: int) -> str:
     # This packet is sent to the Front-End.
     frontPacket = {
         "ID": packetID,
-        "toSend": "true",
-        "toReceive": "false",
+        "toSend": True,
+        "toReceive": False,
         "data": internetPacket,
     }
     return json.dumps(frontPacket)
@@ -62,11 +62,20 @@ def sendMessage(
     return None
 
 
-def receiveMessages():
+def receiveMessages(forUser: User):
+    threading.Thread(target=SOCKET.receive).start()
     while True:
         if not RECEIVED_MESSAGES.empty():
             message = RECEIVED_MESSAGES.get()
-            print(message)
+            parsedMessage = json.loads(message)
+            if parsedMessage["toReceive"]:
+                parsedData = json.loads(parsedMessage["data"])
+                if parsedData["toNode"] == forUser.IP:
+                    # print(f"Received: {parsedData}")
+                    msg = forUser.createMessageToReceive(
+                        loadStringNetworkMessage(parsedData["Data"])
+                    )
+                    yield msg
 
 
 def isUsed(checkPort):
