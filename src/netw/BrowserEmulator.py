@@ -6,7 +6,7 @@ from webdriver_manager.firefox import GeckoDriverManager
 SUPPORTED_BROWSERS = ["Firefox"]
 
 
-class BrowserEmulation:
+class BrowserEmulator:
     def __init__(self, withBrowser: str, onFile: str, runHeadless: bool = True):
         """
         This class is used to emulate a Web Browser, with the purpose of opening a file in the browser but
