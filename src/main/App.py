@@ -143,7 +143,7 @@ def main():
         print(f"[{emojiTick}] Web Server Started")
 
     try:
-        browserEmulator = BrowserEmulator("Firefox", openBrowser(atPort))
+        browserEmulator = BrowserEmulator(USE_WEB_BROWSER, openBrowser(atPort))
         browserEmulator.startDriver()
     except Exception as e:
         raise e

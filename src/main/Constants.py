@@ -23,6 +23,8 @@ P2P_HTML_PATH = "/netw/p2p/p2pNode.html"
 nodeWebSocket = os.path.join((os.path.dirname(FILE_DIR)), NODEJS_SERVER_PATH)
 openWebSocket = f"{NODEJS_PATH} {nodeWebSocket}"
 
+USE_WEB_BROWSER = "Firefox"
+
 
 def startServer(atPort: int):
     return f"python3 -m http.server {atPort} | cat > /dev/null"
