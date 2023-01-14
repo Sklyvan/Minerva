@@ -93,7 +93,7 @@ def obtainPort():
     return atPort
 
 
-def main():
+def main(userName: str, userKey: str, loadUser: bool = False, createUser: bool = False):
     print(f"ROOT = {ROOT}")
     atPort = obtainPort()
 
@@ -110,9 +110,7 @@ def main():
         print(f"[{emojiTick}] WebSocket Server Started")
 
     try:
-        myUser, filePath = initializeUser(
-            sys.argv
-        )  # TODO: The file is initially encrypted with AES, so we should decrypt it, then read it.
+        myUser, filePath = initializeUser(userName, loadUser, createUser)
 
         # Make a copy of the file at filePath but change the name from UserName.json to tempUserFile.inst
         tempFilePath = filePath.replace(

@@ -18,45 +18,49 @@ def createNetworkID():
     return networkID
 
 
-def initializeUser(sysArgs: list) -> (User, str):
+def initializeUser(
+    userName: str, loadUser: bool = False, createUser: bool = False, userKey: str = None
+) -> (User, str):
     """
-    This file is called with the arguments -l <filename> or -n <username>.
-    If the argument -l is used, the user will be loaded from the file <filename>.
-    If the argument -n is used, a new user will be created with the username <username>.
-    :param sysArgs: This comes from the sys.argv list, which contains the arguments passed to the script.
-    :return: An instance of the User class, and the file path of the user file.
+    Initialize a user, depending on the case, we load a JSON file or we create a user from scratch.
+    After creating the user, we save it to a JSON file.
+    :param userName: Username of the user, from the name, we can get the file path.
+    :param loadUser: Boolean that indicates if we are loading a user.
+    :param createUser: Boolean that indicates if we are creating a new user.
+    :return: The user and the file path of the user.
     """
-    loadUser = False
-    if len(sysArgs) == 3:
-        if sysArgs[1] == "-l":  # We want to load a user from a JSON file.
-            loadUser = True
-            fileName = sysArgs[2]
-            filePath = os.path.join(USER_PATH, fileName)
-            if not os.path.exists(filePath):
-                print("File does not exist")
-                sys.exit(1)
-            if not filePath.endswith(USERFILE_EXTENSION):
-                print(f"File must be a {USERFILE_EXTENSION.upper()} file")
-                sys.exit(1)
-        elif sysArgs[1] == "-n":  # We want to create a new user.
-            userName = sysArgs[2]
-        else:
-            print("Invalid command line arguments")
-            sys.exit(1)
-    else:
-        print("Invalid command line arguments")
-        sys.exit(1)
+    fileName = (
+        USERFILE_NAME + userName + "." + USERFILE_EXTENSION
+    )  # This is the name of the JSON file.
+    filePath = os.path.join(USER_PATH, fileName)  # This is the path of the JSON file.
+
+    if loadUser and createUser:
+        raise Exception("Cannot load and create a new user at the same time.")
+    if not loadUser and not createUser:
+        raise Exception("Must load or create a new user.")
 
     if loadUser:
+        if not os.path.exists(filePath):
+            raise FileNotFoundError(f"The file {filePath} does not exist.")
+        if not filePath.endswith(USERFILE_EXTENSION):
+            raise Exception(f"File must be a {USERFILE_EXTENSION.upper()} file")
         myUser = User(None, None, [None, None], None)
-        myUser.importUser(filePath)
-    else:
+        if not userKey:
+            myUser.importUser(filePath)
+        else:
+            myUser.importEncryptedUser(filePath, userKey)
+
+        return myUser, filePath
+
+    if createUser:
         userID, networkID = (
             createUserID(),
             createNetworkID(),
         )  # TODO: This creations of the ID are temporary.
         myUser = createUser(userName, networkID, userID)
-        exportName = USERFILE_NAME + userName + "." + USERFILE_EXTENSION
-        myUser.exportUser(os.path.join(USER_PATH, exportName))
+        if not userKey:
+            myUser.exportUser(filePath)
+        else:
+            myUser.exportEncryptedUser(filePath, userKey)
 
-    return myUser, filePath
+        return myUser, filePath
