@@ -77,6 +77,80 @@ class UserTest(unittest.TestCase):
         for file in glob.glob("Test*.json"):
             os.remove(file)
 
+    def testEncryptedImportExport(self):
+        K1 = DiffieHellmanKey()
+        K2 = DiffieHellmanKey()
+        K3 = DiffieHellmanKey()
+        K4 = DiffieHellmanKey()
+
+        K1.generateSharedKey(K2.publicKey)
+        K2.generateSharedKey(K1.publicKey)
+        K3.generateSharedKey(K4.publicKey)
+        K4.generateSharedKey(K3.publicKey)
+
+        N1 = Node("127.0.0.1", K1)
+        N2 = Node("127.0.0.2", K2)
+        N3 = Node("127.0.0.3", K3)
+        N4 = Node("127.0.0.4", K4)
+
+        Circuit1 = Circuit("CIRCUIT1", [N1, N2])
+        Circuit2 = Circuit("CIRCUIT1", [N3, N4])
+
+        ExampleTable = ForwardingTable()
+        ExampleTable.addEntry("CIRCUIT1", N1)
+        ExampleTable.addEntry("CIRCUIT2", N2)
+        ExampleTable.addEntry("CIRCUIT3", N3)
+        ExampleTable.addEntry("CIRCUIT4", N4)
+
+        User1 = PublicUser(
+            1,
+            "User1",
+            [RSA.generate(2048).public_key(), RSA.generate(2048).public_key()],
+            Circuit1,
+        )
+        User2 = PublicUser(
+            2,
+            "User2",
+            [RSA.generate(2048).public_key(), RSA.generate(2048).public_key()],
+            Circuit2,
+        )
+
+        Friends = Contacts()
+        Friends.addContact(User1)
+        Friends.addContact(User2)
+
+        MessagesQueue = Queue()
+        for i in range(10):
+            MessagesQueue.addMessage(i)
+
+        MyUser = User(
+            1,
+            "MyUser",
+            [
+                RSAKeys(fileName="TestEncKeys"),
+                RSAKeys(fileName="TestSigKeys"),
+            ],
+            "127.0.0.1",
+            forwardingTable=ExampleTable,
+            messagesQueue=MessagesQueue,
+            contacts=Friends,
+            messages=MessagesDB(dbPath="TestMessages.db"),
+        )
+        exportKey = "".join([chr(random.randint(32, 126)) for _ in range(100)])
+        MyUser.exportEncryptedUser("TestMyUser.json", exportKey)
+
+        MyUserCheck = User(None, None, [None, None], None)
+        MyUserCheck.importEncryptedUser("TestMyUser.json", exportKey)
+
+        self.assertEqual(MyUser, MyUserCheck, "Users are not equal.")
+
+        for file in glob.glob("Test*.pem"):
+            os.remove(file)
+        for file in glob.glob("Test*.db"):
+            os.remove(file)
+        for file in glob.glob("Test*.json"):
+            os.remove(file)
+
     def testImportExportKeys(self):
         MyUser1 = User(
             1,
