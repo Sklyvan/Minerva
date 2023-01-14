@@ -58,7 +58,6 @@ def sendMessage(
     frontEndPacket = buildFrontEndPacket(internetPacket, msg.messageID)
 
     SOCKET.send(frontEndPacket)
-    # TODO: Here, we should wait for a confirmation of the P2P Node, then return True or False.
 
     return None
 
