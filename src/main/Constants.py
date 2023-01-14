@@ -15,6 +15,7 @@ USER_PATH = os.path.join(os.path.dirname(FILE_DIR), "userdata")
 DB_NAME, DB_EXTENSION = "Messages", "db"
 ENC_KEYS_NAME, SIG_KEYS_NAME = "EncKeys", "SigKeys"
 USERFILE_NAME, USERFILE_EXTENSION = "User", "json"
+PUBLICUSERFILE_NAME, PUBLICUSERFILE_EXTENSION = "PublicUser", "json"
 TEMPUSERFILE_NAME, TEMPUSERFILE_EXTENSION = "tempUserFile", "inst"
 
 NODEJS_PATH = "/usr/bin/node"

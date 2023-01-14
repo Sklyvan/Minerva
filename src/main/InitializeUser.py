@@ -19,20 +19,22 @@ def createNetworkID():
 
 
 def initializeUser(
-    userName: str, loadUser: bool = False, newUser: bool = False, userKey: str = None
+    userName: str, userKey: str = None, loadUser: bool = False, newUser: bool = False
 ) -> (User, str):
     """
     Initialize a user, depending on the case, we load a JSON file or we create a user from scratch.
     After creating the user, we save it to a JSON file.
     :param userName: Username of the user, from the name, we can get the file path.
+    :param userKey: Password of the user, if not specified, the user does not have a password.
     :param loadUser: Boolean that indicates if we are loading a user.
     :param newUser: Boolean that indicates if we are creating a new user.
     :return: The user and the file path of the user.
     """
-    fileName = (
-        USERFILE_NAME + userName + "." + USERFILE_EXTENSION
-    )  # This is the name of the JSON file.
-    filePath = os.path.join(USER_PATH, fileName)  # This is the path of the JSON file.
+    fileName = USERFILE_NAME + userName + "." + USERFILE_EXTENSION
+    publicUserFileName = PUBLICUSERFILE_NAME + userName + "." + PUBLICUSERFILE_EXTENSION
+
+    filePath = os.path.join(USER_PATH, fileName)
+    publicUserFilePath = os.path.join(USER_PATH, publicUserFileName)
 
     if loadUser and newUser:
         raise Exception("Cannot load and create a new user at the same time.")
@@ -62,5 +64,7 @@ def initializeUser(
             myUser.exportUser(filePath)
         else:
             myUser.exportEncryptedUser(filePath, userKey)
+
+        myUser.toPublicUser().exportUser(publicUserFilePath)
 
         return myUser, filePath
