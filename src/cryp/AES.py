@@ -26,3 +26,29 @@ class KeyAES:
 
     def __len__(self):
         return len(self.key) + len(self.nonce)
+
+
+def encryptAES(data: str, key: bytes, nonce: bytes) -> bytes:
+    """
+    Encrypts a string using AES.
+    :param data: String to be encrypted.
+    :param key: Bytes object that are going to be used as key.
+    :param nonce: Random bytes that are going to be used as nonce.
+    :return: Encrypted string.
+    """
+    objectAES = KeyAES(key, nonce)
+    encryptedData = objectAES.encrypt(data.encode())
+    return encryptedData
+
+
+def decryptAES(data: bytes, key: bytes, nonce: bytes) -> str:
+    """
+    Decrypts a string using AES.
+    :param data: String to be decrypted.
+    :param key: Bytes object that are going to be used as key.
+    :param nonce: Random bytes that are going to be used as nonce.
+    :return: Decrypted string.
+    """
+    objectAES = KeyAES(key, nonce)
+    decryptedData = objectAES.decrypt(data)
+    return decryptedData.decode()
