@@ -794,6 +794,15 @@ class AESTesting(unittest.TestCase):
 
         self.assertEqual(message, decMessage, "AES Encryption/Decryption failed.")
 
+    def testEncryptionDecryptionFunctions(self):
+        key, nonce = os.urandom(32), os.urandom(8)
+        message = "".join([chr(random.randint(32, 126)) for _ in range(100)])
+
+        encMessage = encryptAES(message, key, nonce)
+        decMessage = decryptAES(encMessage, key, nonce)
+
+        self.assertEqual(message, decMessage, "AES Encryption/Decryption failed.")
+
 
 if __name__ == "__main__":
     unittest.main()
