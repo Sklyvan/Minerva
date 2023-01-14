@@ -18,18 +18,6 @@ def createNetworkID():
     return networkID
 
 
-def decryptFileContentAES(fileContent: str, encKey: str, nonce: str) -> str:
-    userKey = KeyAES(encKey.encode(), nonce.encode())
-    decryptedContent = userKey.decrypt(fileContent)
-    return decryptedContent.decode()
-
-
-def encryptFileContentAES(fileContent: str, encKey: str, nonce: str) -> str:
-    userKey = KeyAES(encKey.encode(), nonce.encode())
-    encryptedContent = userKey.encrypt(fileContent)
-    return encryptedContent.decode()
-
-
 def initializeUser(sysArgs: list) -> (User, str):
     """
     This file is called with the arguments -l <filename> or -n <username>.
