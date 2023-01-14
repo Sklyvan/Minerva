@@ -12,7 +12,9 @@ class KeyAES:
         :param key: Bytes object that are going to be used as key.
         :param nonce: Random bytes that are going to be used as nonce.
         """
-        self.key, self.nonce = key[:AES_KEY_SIZE], nonce[:AES_NONCE_SIZE]
+        if len(nonce) > AES_NONCE_SIZE:
+            print("Warning: Nonce is too long, it will be truncated.")
+        self.key, self.nonce = key[:AES_KEY_SIZE], nonce[:AES_OPTIMAL_NONCE_SIZE]
         self.cipher = AES.new(self.key, AES.MODE_CTR, nonce=self.nonce)
 
     def encrypt(self, data: bytes) -> bytes:
@@ -52,3 +54,11 @@ def decryptAES(data: bytes, key: bytes, nonce: bytes) -> str:
     objectAES = KeyAES(key, nonce)
     decryptedData = objectAES.decrypt(data)
     return decryptedData.decode()
+
+
+def computeNonce(ofSize: int) -> bytes:
+    return os.urandom(ofSize)
+
+
+def computeOptimalNonce() -> bytes:
+    return computeNonce(AES_OPTIMAL_NONCE_SIZE)
