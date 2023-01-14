@@ -217,6 +217,45 @@ class User:
 
             self.messages = MessagesDB(dbPath=data["Messages"])
 
+    def exportEncryptedUser(self, path: str, password: str, nonce: bytes = None):
+        if not nonce:
+            nonce = computeOptimalNonce()
+        elif len(nonce) != AES_OPTIMAL_NONCE_SIZE:
+            raise ValueError(f"The nonce must be {AES_OPTIMAL_NONCE_SIZE} bytes long.")
+
+        jsonFileContent = json.dumps(self.asJSON())
+        encryptedContent = encryptAES(jsonFileContent, password.encode(), nonce)
+        with open(path, "wb") as f:
+            f.write(encryptedContent)
+            f.write(nonce)
+
+    def importEncryptedUser(self, path: str, password: str):
+        with open(path, "rb") as f:
+            encryptedContent = f.read()
+            nonce = encryptedContent[-AES_OPTIMAL_NONCE_SIZE:]
+            jsonFileContent = decryptAES(
+                encryptedContent[0:-AES_OPTIMAL_NONCE_SIZE], password.encode(), nonce
+            )
+            data = json.loads(jsonFileContent)
+            self.userID = data["UserID"]
+            self.userName = data["UserName"]
+            self.encryptionKeys = RSAKeys(
+                toImport=True, fileName=data["EncryptionKeys"]
+            )
+            self.signingKeys = RSAKeys(toImport=True, fileName=data["SigningKeys"])
+            self.IP = data["IP"]
+
+            self.forwardingTable = ForwardingTable()
+            self.forwardingTable.readTable(data["ForwardingTable"])
+
+            self.messagesQueue = Queue()
+            self.messagesQueue.readQueue(data["MessagesQueue"])
+
+            self.contacts = Contacts()
+            self.contacts.readContacts(data["UserFriends"])
+
+            self.messages = MessagesDB(dbPath=data["Messages"])
+
     def asJSON(self) -> dict:
         return {
             "UserID": self.userID,
