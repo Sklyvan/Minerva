@@ -93,7 +93,9 @@ def obtainPort():
     return atPort
 
 
-def main(userName: str, userKey: str, loadUser: bool = False, createUser: bool = False):
+def main(
+    userName: str, userKey: str = None, loadUser: bool = False, createUser: bool = False
+):
     print(f"ROOT = {ROOT}")
     atPort = obtainPort()
 
@@ -110,15 +112,17 @@ def main(userName: str, userKey: str, loadUser: bool = False, createUser: bool =
         print(f"[{emojiTick}] WebSocket Server Started")
 
     try:
-        myUser, filePath = initializeUser(userName, loadUser, createUser)
+        myUser, filePath = initializeUser(
+            userName, userKey, loadUser=loadUser, newUser=createUser
+        )
 
         # Make a copy of the file at filePath but change the name from UserName.json to tempUserFile.inst
         tempFilePath = filePath.replace(
             USERFILE_NAME + myUser.userName + "." + USERFILE_EXTENSION,
             TEMPUSERFILE_NAME + "." + TEMPUSERFILE_EXTENSION,
         )
-        shutil.copyfile(filePath, tempFilePath)
-        # This file extension indicates the HTML that is going to be used to render the user's profile.
+        with open(tempFilePath, "w") as f:
+            json.dump({"IP": myUser.IP}, f)
 
     except Exception as e:
         raise e
@@ -148,7 +152,3 @@ def main(userName: str, userKey: str, loadUser: bool = False, createUser: bool =
         print(f"[{emojiTick}] Browser Opened")
 
     return myUser, browserEmulator
-
-
-if __name__ == "__main__":
-    main()
