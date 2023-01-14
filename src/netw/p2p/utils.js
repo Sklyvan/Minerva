@@ -16,7 +16,7 @@ function cleanData(event)
 }
 
 
-function openXMLFile(filePath, withEncoding='utf8')
+function openXMLFile(filePath)
 {
     let xmlFileRequest = new XMLHttpRequest();
     xmlFileRequest.open("GET", filePath, false);
