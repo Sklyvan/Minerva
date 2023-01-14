@@ -12,9 +12,19 @@ class KeyAES:
         :param key: Bytes object that are going to be used as key.
         :param nonce: Random bytes that are going to be used as nonce.
         """
+        if len(key) < MINIMUM_AES_KEY_SIZE:
+            raise ValueError(f"Key must be at least {MINIMUM_AES_KEY_SIZE} bytes long.")
+        else:
+            if len(key) > AES_KEY_SIZE_3:
+                shortKey = key[:AES_KEY_SIZE_3]
+            elif len(key) > AES_KEY_SIZE_2:
+                shortKey = key[:AES_KEY_SIZE_2]
+            elif len(key) > AES_KEY_SIZE_1:
+                shortKey = key[:AES_KEY_SIZE_1]
+
         if len(nonce) > AES_NONCE_SIZE:
             print("Warning: Nonce is too long, it will be truncated.")
-        self.key, self.nonce = key[:AES_KEY_SIZE], nonce[:AES_OPTIMAL_NONCE_SIZE]
+        self.key, self.nonce = shortKey, nonce[:AES_OPTIMAL_NONCE_SIZE]
         self.cipher = AES.new(self.key, AES.MODE_CTR, nonce=self.nonce)
 
     def encrypt(self, data: bytes) -> bytes:
