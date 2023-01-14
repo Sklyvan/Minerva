@@ -4,3 +4,4 @@ cryptography >= 38.0.1
 websockets >= 10.4.0
 defusedxml >= 0.7.1
 selenium >= 4.7.2
+webdriver-manager >= 3.8.5
