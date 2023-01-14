@@ -151,7 +151,7 @@ def main():
     else:
         print(f"[{emojiTick}] Browser Opened")
 
-    return myUser
+    return myUser, browserEmulator
 
 
 if __name__ == "__main__":
