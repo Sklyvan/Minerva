@@ -71,7 +71,6 @@ def receiveMessages(forUser: User):
             if parsedMessage["toReceive"]:
                 parsedData = json.loads(parsedMessage["data"])
                 if parsedData["toNode"] == forUser.IP:
-                    # print(f"Received: {parsedData}")
                     msg = forUser.createMessageToReceive(
                         loadStringNetworkMessage(parsedData["Data"])
                     )
