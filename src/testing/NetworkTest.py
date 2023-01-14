@@ -1,4 +1,4 @@
-from src.main.App import *
+from src.main.MainSystem import *
 
 # This test may not continue working with the newcomunication branch.
 
