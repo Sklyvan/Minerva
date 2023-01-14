@@ -8,6 +8,7 @@ from src.netw.p2p import WebApp
 from src.netw.LocalSockets import WebSocketConnection
 from src.main.InitializeUser import *
 from src.netw.p2p.MessagesListener import messagesListener
+from src.netw.BrowserEmulator import *
 
 RECEIVED_MESSAGES = multiprocessing.Queue()
 SOCKET = WebSocketConnection(RECEIVED_MESSAGES)
@@ -142,7 +143,8 @@ def main():
         print(f"[{emojiTick}] Web Server Started")
 
     try:
-        webbrowser.open(openBrowser(atPort), new=2)
+        browserEmulator = BrowserEmulator("Firefox", openBrowser(atPort))
+        browserEmulator.startDriver()
     except Exception as e:
         raise e
         sys.exit(1)

@@ -18,5 +18,4 @@ import shutil
 import multiprocessing
 import socket
 import random
-import webbrowser
 from src.main.Constants import *
