@@ -27,7 +27,7 @@ class RSAKeys:
         self.importKeys(fileName)
 
     def updateKeys(self, keySize: int = RSA_KEY_SIZE):
-        system(f"{RSA_KEY_GEN} {keySize} {fileName}")
+        system(f"{RSA_KEY_GEN} {keySize} {fileName} {RSA_KEY_EXTENSION}")
         self.importKeys(self.filename)
 
     def canEncrypt(self, inputSize: int, keySize: int) -> bool:
