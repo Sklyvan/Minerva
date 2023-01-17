@@ -151,4 +151,4 @@ def startSystem(
     else:
         print(f"[{emojiTick}] Browser Opened")
 
-    return myUser, browserEmulator
+    return myUser, filePath, browserEmulator
