@@ -15,11 +15,11 @@ class KeyAES:
         if len(key) < MINIMUM_AES_KEY_SIZE:
             raise ValueError(f"Key must be at least {MINIMUM_AES_KEY_SIZE} bytes long.")
         else:
-            if len(key) > AES_KEY_SIZE_3:
+            if len(key) >= AES_KEY_SIZE_3:
                 shortKey = key[:AES_KEY_SIZE_3]
-            elif len(key) > AES_KEY_SIZE_2:
+            elif len(key) >= AES_KEY_SIZE_2:
                 shortKey = key[:AES_KEY_SIZE_2]
-            elif len(key) > AES_KEY_SIZE_1:
+            elif len(key) >= AES_KEY_SIZE_1:
                 shortKey = key[:AES_KEY_SIZE_1]
 
         if len(nonce) > AES_NONCE_SIZE:
