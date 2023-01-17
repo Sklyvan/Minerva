@@ -95,7 +95,7 @@ def obtainPort():
 
 def startSystem(
     userName: str, userKey: str = None, loadUser: bool = False, createUser: bool = False
-):
+) -> (User, str, BrowserEmulator):
     print(f"ROOT = {ROOT}")
     atPort = obtainPort()
 
