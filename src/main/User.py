@@ -180,13 +180,39 @@ class User:
     def updateTable(self, circuitID: str, node: Node):
         self.forwardingTable.replaceEntry(circuitID, node)
 
-    def exportKeys(self, encryptionPath: str, signingPath: str):
-        self.encryptionKeys.exportKeys(encryptionPath)
-        self.signingKeys.exportKeys(signingPath)
+    def exportKeys(
+        self, encryptionPath: str, signingPath: str, withPassword: str = None
+    ):
+        """
+        This method is used to export the RSA keys to a file.
+        :param encryptionPath: String with the path to the encryption key.
+        :param signingPath: String with the path to the signing key.
+        :param withPassword: String with the password to encrypt the keys.
+        :return: None
+        """
+        if withPassword:
+            self.encryptionKeys.exportKeys(encryptionPath, withPassword)
+            self.signingKeys.exportKeys(signingPath, withPassword)
+        else:
+            self.encryptionKeys.exportKeys(encryptionPath)
+            self.signingKeys.exportKeys(signingPath)
 
-    def importKeys(self, encryptionPath: str, signingPath: str):
-        self.encryptionKeys.importKeys(encryptionPath)
-        self.signingKeys.importKeys(signingPath)
+    def importKeys(
+        self, encryptionPath: str, signingPath: str, withPassword: str = None
+    ):
+        """
+        This method is used to import the RSA keys from a file.
+        :param encryptionPath: String with the path to the encryption key.
+        :param signingPath: String with the path to the signing key.
+        :param withPassword: String with the password to decrypt the keys.
+        :return: None
+        """
+        if withPassword:
+            self.encryptionKeys.importKeys(encryptionPath, withPassword)
+            self.signingKeys.importKeys(signingPath, withPassword)
+        else:
+            self.encryptionKeys.importKeys(encryptionPath)
+            self.signingKeys.importKeys(signingPath)
 
     def checkKeys(self) -> bool:
         return self.encryptionKeys.checkKeys() and self.signingKeys.checkKeys()

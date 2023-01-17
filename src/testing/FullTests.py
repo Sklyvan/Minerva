@@ -198,6 +198,46 @@ class UserTest(unittest.TestCase):
         for file in glob.glob("Test*.json"):
             os.remove(file)
 
+    def testImportExportEncryptedKeys(self):
+        keysPassword = "".join([chr(random.randint(32, 126)) for _ in range(100)])
+
+        MyUser1 = User(
+            1,
+            "User1",
+            [RSAKeys(fileName="TestEncKeys"), RSAKeys(fileName="TestSigKeys")],
+            "127.0.0.1",
+        )
+        MyUser1.exportKeys("TestEncKeys", "TestSigKeys", keysPassword)
+
+        MyUser2 = User(
+            2,
+            "User2",
+            [
+                RSAKeys(fileName="TestTempE", toImport=True),
+                RSAKeys(fileName="TestTempS", toImport=True),
+            ],
+            "127.0.0.2",
+        )
+        MyUser2.importKeys("TestEncKeys", "TestSigKeys", keysPassword)
+
+        self.assertEqual(
+            MyUser1.encryptionKeys,
+            MyUser2.encryptionKeys,
+            "Encryption keys are not equal.",
+        )
+        self.assertEqual(
+            MyUser1.signingKeys, MyUser2.signingKeys, "Signing keys are not equal."
+        )
+        self.assertTrue(MyUser1.checkKeys(), "Keys 1 are not valid.")
+        self.assertTrue(MyUser2.checkKeys(), "Keys 2 are not valid.")
+
+        for file in glob.glob("Test*.pem"):
+            os.remove(file)
+        for file in glob.glob("Test*.db"):
+            os.remove(file)
+        for file in glob.glob("Test*.json"):
+            os.remove(file)
+
 
 class NodeTest(unittest.TestCase):
     def testImportExportNode(self):
