@@ -196,16 +196,20 @@ class RSAKeys:
                 )
             return False
 
-    def exportKeys(self, fileName: str) -> bool:
+    def exportKeys(self, fileName: str, withPassword: str = None) -> bool:
         """
         Exports the keys to two files.
         :param fileName: Name of the file to be exported to.
+        :param withPassword: Password to be used to encrypt the keys.
         """
         try:
             with open(fileName + "-Publ." + RSA_KEY_EXTENSION, "wb") as file:
                 file.write(self.publicKey.exportKey())
             with open(fileName + "-Priv." + RSA_KEY_EXTENSION, "wb") as file:
-                file.write(self.secretKey.exportKey())
+                if withPassword:
+                    file.write(self.secretKey.exportKey(passphrase=withPassword))
+                else:
+                    file.write(self.secretKey.exportKey())
             with open(fileName + "-Info." + RSA_KEY_EXTENSION, "w") as file:
                 file.write(f"{self.keySize}\n{self.creationTime}")
             return True
@@ -213,16 +217,20 @@ class RSAKeys:
             print("ERROR: Could not export the keys, " + str(errorMessage) + ".")
             return False
 
-    def importKeys(self, fileName: str) -> bool:
+    def importKeys(self, fileName: str, withPassword: str = None) -> bool:
         """
         Imports the keys from a file.
         :param fileName: Name of the file to be imported from.
+        :param withPassword: Password to be used to decrypt the keys.
         """
         try:
             with open(fileName + "-Publ." + RSA_KEY_EXTENSION, "rb") as file:
                 self.publicKey = RSA.importKey(file.read())
             with open(fileName + "-Priv." + RSA_KEY_EXTENSION, "rb") as file:
-                self.secretKey = RSA.importKey(file.read())
+                if withPassword:
+                    self.secretKey = RSA.importKey(file.read(), passphrase=withPassword)
+                else:
+                    self.secretKey = RSA.importKey(file.read())
             with open(fileName + "-Info." + RSA_KEY_EXTENSION, "r") as file:
                 self.keySize = int(file.readline())
                 self.creationTime = float(file.readline())

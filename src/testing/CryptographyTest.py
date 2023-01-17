@@ -63,6 +63,19 @@ class RSATesting(unittest.TestCase):
         for file in glob.glob("Test*.pem"):
             os.remove(file)
 
+    def testEncryptedImportExport(self):
+        Keys1 = RSAKeys(fileName="TestKey")
+        Keys2 = RSAKeys(fileName="TestKey", toImport=True)
+
+        testPassword = "".join([chr(random.randint(32, 126)) for _ in range(15)])
+
+        Keys1.exportKeys("TestKey", withPassword=testPassword)
+        Keys2.importKeys("TestKey", withPassword=testPassword)
+
+        self.assertTrue(Keys1 == Keys2, "Encrypted Import/Export failed.")
+        for file in glob.glob("Test*.pem"):
+            os.remove(file)
+
 
 class DiffieHellmanTesting(unittest.TestCase):
     def testEncryptionDecryption(self):
