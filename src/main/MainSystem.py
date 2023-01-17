@@ -63,7 +63,7 @@ def sendMessage(
 
 
 def receiveMessages(forUser: User):
-    threading.Thread(target=SOCKET.receive).start()
+    SOCKET.start()
     while True:
         if not RECEIVED_MESSAGES.empty():
             message = RECEIVED_MESSAGES.get()
