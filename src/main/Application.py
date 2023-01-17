@@ -58,6 +58,7 @@ def anyArgument(args):
 
 def waitForMessages():
     time.sleep(3)
+    print("--- Reading Messages ---")
     try:
         for msg in receiveMessages(myUser):
             msgContent = msg.content
