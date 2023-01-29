@@ -7,7 +7,6 @@ from src.main.Imports import *
 from src.netw.p2p import WebApp
 from src.netw.LocalSockets import WebSocketConnection
 from src.main.InitializeUser import *
-from src.netw.p2p.MessagesListener import messagesListener
 from src.netw.BrowserEmulator import *
 
 RECEIVED_MESSAGES = multiprocessing.Queue()
