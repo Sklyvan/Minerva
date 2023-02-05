@@ -7,6 +7,7 @@ from src.main.PublicUser import *
 from src.cryp.RSAKeys import *
 from src.cryp.AES import *
 from src.netw.InternetPacket import Packet, cleanData
+from src.netw.bor.KeyRequests import *
 from time import time as getTime
 import time
 import json
