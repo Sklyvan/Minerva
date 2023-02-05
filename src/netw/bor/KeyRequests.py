@@ -1,4 +1,6 @@
 import json
+from cryptography.hazmat.primitives.serialization import Encoding, PublicFormat
+from cryptography.hazmat.primitives import serialization
 
 
 def createDiffieHellmanRequest(
@@ -17,6 +19,17 @@ def createDiffieHellmanRequest(
         "toNode": toNodeID,
         "fromNode": fromNodeID,
         "keyRequest": "DiffieHellman",
-        "publicPart": publicKey.public_numbers().encode_point().hex(),
+        "publicPart": publicKey.public_bytes(
+            Encoding.PEM, PublicFormat.SubjectPublicKeyInfo
+        ).decode(),
     }
     return json.dumps(keyRequest)
+
+
+def createDiffieHellmanKey(publicPart: str) -> "EllipticCurvePublicKey":
+    """
+    Creates a Diffie-Hellman key from the public part of the key.
+    :param publicPart: The public part of the Diffie-Hellman key, encoded in PEM.
+    :return: The Diffie-Hellman key.
+    """
+    return serialization.load_pem_public_key(publicPart.encode())
