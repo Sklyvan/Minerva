@@ -142,6 +142,17 @@ class User:
             f"{senderName}{receiverName}{timeCreated}{content}".encode()
         ).hexdigest()
 
+    def createSharedKey(self, publicPart: "EllipticCurvePublicKey"):
+        """
+        This method is used to create a shared key between two users.
+        We receive an already computed public part from another user and we use it to generate
+        our own shared key. The myKey element is the final shared key.
+        :param publicPart: Public part of the other user.
+        :return: The final shared key.
+        """
+        myKey = DiffieHellmanKey()
+        return myKey.generateSharedKey(publicPart)
+
     def deleteMessage(self, messageID: str):
         self.messages.deleteMessage(messageID)
 
