@@ -61,6 +61,25 @@ def sendMessage(
     return None
 
 
+def sendKeyRequest(
+    toNodeID: str, fromNodeID: str, keyType: str
+) -> (str, DiffieHellmanKey):
+    """
+    Generates the key request depending on the key type, then sends it to the Front-End.
+    :param toNodeID: WebRTC identifier of the node that will receive the request.
+    :param fromNodeID: WebRTC identifier of the node that is sending the request.
+    :param keyType: Type of key that is being requested. Options = {"DiffieHellman"}
+    :return: The request that has been sent and our key.
+    """
+    if keyType == "DiffieHellman":
+        myKey = DiffieHellmanKey()
+        keyRequest = createDiffieHellmanRequest(toNodeID, fromNodeID, myKey.publicKey)
+        SOCKET.send(keyRequest)
+        return keyRequest, myKey
+    else:
+        raise TypeError(f"Key type {keyType} not supported.")
+
+
 def receiveMessages(forUser: User):
     SOCKET.start()
     while True:
