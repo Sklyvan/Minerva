@@ -61,44 +61,6 @@ def sendMessage(
     return None
 
 
-def sendKeyRequest(
-    fromNodeID: str, toNodeID: str, keyType: str
-) -> (str, DiffieHellmanKey):
-    """
-    Generates the key request depending on the key type, then sends it to the Front-End.
-    :param fromNodeID: WebRTC identifier of the node that is sending the request.
-    :param toNodeID: WebRTC identifier of the node that will receive the request.
-    :param keyType: Type of key that is being requested. Options = {"DiffieHellman"}
-    :return: The request that has been sent and our key.
-    """
-    if keyType == "DiffieHellman":
-        myKey = DiffieHellmanKey()
-        keyRequest = createDiffieHellmanRequest(toNodeID, fromNodeID, myKey.publicKey)
-        requestID = hashlib.sha256(keyRequest.encode()).hexdigest()
-        frontEndPacket = buildFrontEndPacket(keyRequest, requestID)
-        SOCKET.send(frontEndPacket)
-        return keyRequest, myKey
-    else:
-        raise TypeError(f"Key type {keyType} not supported.")
-
-
-def answerKeyRequest(
-    fromNodeID: str, toNodeID: str, publicPart: "EllipticCurvePublicKey", requestID: str
-):
-    """
-    Generates the answer to a key request and sends it to the Front-End.
-    :param fromNodeID: WebRTC identifier of the node that is sending the request.
-    :param toNodeID: WebRTC identifier of the node that will receive the request.
-    :param publicPart: Public part of the key that is being requested.
-    :param requestID: ID of the request that is being answered.
-    :return: None
-    """
-    keyAnswer = createDiffieHellmanRequest(toNodeID, fromNodeID, publicPart)
-    frontEndPacket = buildFrontEndPacket(keyAnswer, requestID)
-    SOCKET.send(frontEndPacket)
-    return None
-
-
 def receiveMessages(forUser: User):
     SOCKET.start()
     while True:
@@ -108,24 +70,10 @@ def receiveMessages(forUser: User):
             if parsedMessage["toReceive"]:
                 parsedData = json.loads(parsedMessage["data"])
                 if parsedData["toNode"] == forUser.IP:
-                    if "keyRequest" in parsedData:
-                        keyType = parsedData["keyRequest"]
-                        if keyType == "DiffieHellman":
-                            publicPart = parsedData["publicPart"]
-                            publicPartKey = createDiffieHellmanKey(publicPart)
-                            sharedKey = forUser.createSharedKey(publicPartKey)
-                            print(sharedKey)
-                            answerKeyRequest(
-                                parsedData["toNode"],
-                                parsedData["fromNode"],
-                                publicPartKey,
-                                parsedData["ID"],
-                            )
-                    else:
-                        msg = forUser.createMessageToReceive(
-                            loadStringNetworkMessage(parsedData["Data"])
-                        )
-                        yield msg
+                    msg = forUser.createMessageToReceive(
+                        loadStringNetworkMessage(parsedData["Data"])
+                    )
+                    yield msg
 
 
 def isUsed(checkPort):
