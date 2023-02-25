@@ -6,6 +6,8 @@ from src.cryp.AES import *
 from src.data.MessagesDB import *
 from src.data.MessagesQueue import *
 from src.main.User import *
+from src.netw.bor.RoutingPackets import *
+from src.main.MainSystem import *
 
 from src.main.User import *
 import glob, os
@@ -929,6 +931,74 @@ class AESTesting(unittest.TestCase):
         decMessage = decryptAES(encMessage, key, nonce)
 
         self.assertEqual(message, decMessage, "AES Encryption/Decryption failed.")
+
+
+class PacketsRoutingTesting(unittest.TestCase):
+    def testPacking(self):
+        User1 = User(
+            1,
+            "User1",
+            [RSAKeys(fileName="TestKey"), RSAKeys(fileName="TestKey")],
+            "127.0.0.1",
+            ForwardingTable(),
+            Queue(),
+            Contacts(),
+            MessagesDB("Test1.db"),
+        )
+        User1Public = PublicUser(
+            1,
+            "User1",
+            [User1.encryptionKeys.publicKey, User1.signingKeys.publicKey],
+            Circuit(),
+        )
+        User2 = User(
+            2,
+            "User2",
+            [RSAKeys(fileName="TestKey"), RSAKeys(fileName="TestKey")],
+            "127.0.0.2",
+            ForwardingTable(),
+            Queue(),
+            Contacts(),
+            MessagesDB("Test2.db"),
+        )
+        User2Public = PublicUser(
+            2,
+            "User2",
+            [User2.encryptionKeys.publicKey, User2.signingKeys.publicKey],
+            Circuit(),
+        )
+
+        User1.contacts.addContact(User2Public)
+        User2.contacts.addContact(User1Public)
+
+        CIRCUIT = ["NodeA", "Node1", "Node2", "Node3"]
+
+        msg1 = User1.createMessageToSend("Hello World!", User2.userName)
+        networkMessage = createNetworkMessage(msg1)
+        base64NetworkMessage = base64.b64encode(networkMessage).decode()
+        routingPacket = createBlindOnionPackets(
+            base64NetworkMessage, CIRCUIT, "CIRCUIT_ID"
+        )
+        routingPacket = createOnionPacketsJson(routingPacket)
+        frontEndPacket = buildFrontEndPacket(routingPacket, msg1.messageID)
+
+        receivedPacket = json.loads(frontEndPacket)["data"]
+        receivedPacket = json.loads(receivedPacket)
+        finalPacket = None
+        for i in range(len(CIRCUIT)):
+            if type(finalPacket) is str:
+                break
+            if (
+                receivedPacket["fromNode"] == CIRCUIT[i]
+                and receivedPacket["toNode"] == CIRCUIT[i + 1]
+            ):
+                finalPacket = receivedPacket["Data"]
+                receivedPacket = receivedPacket["Data"]
+
+        stringMessage = loadStringNetworkMessage(finalPacket)
+        msg2 = User2.createMessageToReceive(stringMessage)
+
+        self.assertEqual(msg1, msg2, "Packing/Unpacking failed.")
 
 
 if __name__ == "__main__":
