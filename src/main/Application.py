@@ -41,6 +41,13 @@ def readArgs():
         help="The id of the node to send the message to.",
         type=str,
     )
+
+    parser.add_argument(
+        "--addUser",
+        help="The JSON file of the public user to add.",
+        type=str,
+    )
+
     args = parser.parse_args()
     return args
 
@@ -53,6 +60,7 @@ def anyArgument(args):
         or args.receiver
         or args.message
         or args.nodeid
+        or args.addUser
     )
 
 
@@ -89,14 +97,20 @@ if __name__ == "__main__":
                 )
                 waitForMessages()
         else:
-            """
-            In this case, we are not starting the system, but sending a message.
-            We need to extract the username, then initialize the user and send the message.
-            """
-            sender = sysArgs.sender
-            receiver = sysArgs.receiver
-            message = sysArgs.message
-            myUser, _ = initializeUser(sender, userKey, loadUser=True)
-            sendMessage(message, myUser, myUser.getContact(receiver), sysArgs.nodeid)
+            # In this case, we are not starting the system, but sending a message.
+            # We need to extract the username, then initialize the user and send the message.
+            if sysArgs.message:
+                sender = sysArgs.sender
+                receiver = sysArgs.receiver
+                message = sysArgs.message
+                myUser, _ = initializeUser(sender, userKey, loadUser=True)
+                sendMessage(
+                    message, myUser, myUser.getContact(receiver), sysArgs.nodeid
+                )
+            elif sysArgs.addUser:
+                myUser, _ = initializeUser(sender, userKey, loadUser=True)
+                publicUser = PublicUser(None, None, [None, None], None)
+                publicUser.readUser(sysArgs.addUser)
+                myUser.addContact(publicUser)
     else:
         sys.exit(1)
