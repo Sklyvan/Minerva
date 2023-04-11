@@ -22,30 +22,20 @@ def readArgs():
     )
 
     parser.add_argument(
-        "--sender",
-        help="The username of the sender.",
-        type=str,
+        "--sender", help="The username of the sender of the message.", type=str
     )
     parser.add_argument(
         "--receiver",
         help="The username of the receiver when we send a message.",
         type=str,
     )
+    parser.add_argument("--message", help="The message to send.", type=str)
     parser.add_argument(
-        "--message",
-        help="The message to send.",
-        type=str,
-    )
-    parser.add_argument(
-        "--nodeid",
-        help="The id of the node to send the message to.",
-        type=str,
+        "--nodeid", help="The id of the node to send the message to.", type=str
     )
 
     parser.add_argument(
-        "--addUser",
-        help="The JSON file of the public user to add.",
-        type=str,
+        "--addUser", help="The JSON file of the public user to add.", type=str
     )
 
     args = parser.parse_args()
